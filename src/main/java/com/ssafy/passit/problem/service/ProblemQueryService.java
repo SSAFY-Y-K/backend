@@ -18,10 +18,22 @@ public class ProblemQueryService {
     private final TestCaseMapper testCaseMapper;
 
     public Problem getPublishedCodingProblem(Long problemId) {
-        throw new ApiException(ErrorCode.NOT_IMPLEMENTED, "문제 조회 로직은 다음 단계에서 구현합니다.");
+        Problem problem = problemMapper.findPublishedCodingProblemById(problemId);
+
+        if (problem == null) {
+            throw new ApiException(ErrorCode.PROBLEM_NOT_FOUND);
+        }
+
+        return problem;
     }
 
     public List<TestCase> getHiddenTestCases(Long problemId) {
-        throw new ApiException(ErrorCode.NOT_IMPLEMENTED, "숨은 테스트케이스 조회 로직은 다음 단계에서 구현합니다.");
+        List<TestCase> testCases = testCaseMapper.findHiddenTestCasesByProblemId(problemId);
+
+        if (testCases == null || testCases.isEmpty()) {
+            throw new ApiException(ErrorCode.INVALID_REQUEST, "채점 가능한 숨은 테스트케이스가 없습니다.");
+        }
+
+        return testCases;
     }
 }
