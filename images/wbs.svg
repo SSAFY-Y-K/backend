@@ -1,0 +1,271 @@
+<svg width="900" height="820" viewBox="0 0 900 820" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <rect width="900" height="820" fill="#ffffff"/>
+
+  <!-- 헤더 -->
+  <rect x="20" y="20" width="860" height="36" rx="8" fill="#EEEDFE" stroke="#7F77DD" stroke-width="1"/>
+  <text x="30" y="43" font-size="13" font-weight="700" fill="#26215C">Pass-IT WBS (작업 분류 체계)</text>
+
+  <!-- 컬럼 헤더 -->
+  <rect x="20" y="60" width="860" height="28" fill="#f0f0f0" stroke="#ddd" stroke-width="0.5"/>
+  <text x="30"  y="78" font-size="11" font-weight="600" fill="#555">ID</text>
+  <text x="70"  y="78" font-size="11" font-weight="600" fill="#555">작업명</text>
+  <text x="450" y="78" font-size="11" font-weight="600" fill="#555">담당</text>
+  <text x="530" y="78" font-size="11" font-weight="600" fill="#555">기간</text>
+  <text x="610" y="78" font-size="11" font-weight="600" fill="#555">우선순위</text>
+  <text x="700" y="78" font-size="11" font-weight="600" fill="#555">산출물</text>
+
+  <!-- 세로 구분선 -->
+  <line x1="445" y1="60" x2="445" y2="810" stroke="#e0e0e0" stroke-width="0.5"/>
+  <line x1="525" y1="60" x2="525" y2="810" stroke="#e0e0e0" stroke-width="0.5"/>
+  <line x1="605" y1="60" x2="605" y2="810" stroke="#e0e0e0" stroke-width="0.5"/>
+  <line x1="695" y1="60" x2="695" y2="810" stroke="#e0e0e0" stroke-width="0.5"/>
+
+  <!-- ===== 1. 프로젝트 관리 (회색) ===== -->
+  <rect x="20" y="88" width="860" height="26" rx="0" fill="#F1EFE8" stroke="#ddd" stroke-width="0.5"/>
+  <text x="30"  y="105" font-size="12" font-weight="700" fill="#2C2C2A">1</text>
+  <text x="70"  y="105" font-size="12" font-weight="700" fill="#2C2C2A">프로젝트 관리</text>
+
+  <rect x="20" y="114" width="860" height="24" fill="#fafafa" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="130" font-size="11" fill="#666">1.1</text>
+  <text x="85"  y="130" font-size="11" fill="#333">요구사항 분석 및 기획</text>
+  <text x="455" y="130" font-size="11" fill="#555">PM</text>
+  <text x="535" y="130" font-size="11" fill="#555">W1–W2</text>
+  <rect x="612" y="118" width="22" height="14" rx="4" fill="#FCEBEB"/>
+  <text x="623" y="129" text-anchor="middle" font-size="10" font-weight="600" fill="#A32D2D">상</text>
+  <text x="705" y="130" font-size="11" fill="#555">요구사항 명세서</text>
+
+  <rect x="20" y="138" width="860" height="24" fill="#ffffff" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="154" font-size="11" fill="#666">1.2</text>
+  <text x="85"  y="154" font-size="11" fill="#333">팀 구성 및 역할 정의</text>
+  <text x="455" y="154" font-size="11" fill="#555">PM</text>
+  <text x="535" y="154" font-size="11" fill="#555">W1</text>
+  <rect x="612" y="142" width="22" height="14" rx="4" fill="#FCEBEB"/>
+  <text x="623" y="153" text-anchor="middle" font-size="10" font-weight="600" fill="#A32D2D">상</text>
+  <text x="705" y="154" font-size="11" fill="#555">역할분담표</text>
+
+  <rect x="20" y="162" width="860" height="24" fill="#fafafa" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="178" font-size="11" fill="#666">1.3</text>
+  <text x="85"  y="178" font-size="11" fill="#333">기술 스택 확정</text>
+  <text x="455" y="178" font-size="11" fill="#555">전체</text>
+  <text x="535" y="178" font-size="11" fill="#555">W2</text>
+  <rect x="612" y="166" width="22" height="14" rx="4" fill="#FCEBEB"/>
+  <text x="623" y="177" text-anchor="middle" font-size="10" font-weight="600" fill="#A32D2D">상</text>
+  <text x="705" y="178" font-size="11" fill="#555">기술스택 문서</text>
+
+  <!-- ===== 2. 인프라 및 DevOps (파랑) ===== -->
+  <rect x="20" y="186" width="860" height="26" fill="#E6F1FB" stroke="#ddd" stroke-width="0.5"/>
+  <text x="30"  y="203" font-size="12" font-weight="700" fill="#042C53">2</text>
+  <text x="70"  y="203" font-size="12" font-weight="700" fill="#042C53">인프라 및 DevOps</text>
+
+  <rect x="20" y="212" width="860" height="24" fill="#fafafa" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="228" font-size="11" fill="#666">2.1</text>
+  <text x="85"  y="228" font-size="11" fill="#333">AWS 환경 구성</text>
+  <text x="455" y="228" font-size="11" fill="#555">DevOps</text>
+  <text x="535" y="228" font-size="11" fill="#555">W2–W3</text>
+  <rect x="612" y="216" width="22" height="14" rx="4" fill="#FCEBEB"/>
+  <text x="623" y="227" text-anchor="middle" font-size="10" font-weight="600" fill="#A32D2D">상</text>
+  <text x="705" y="228" font-size="11" fill="#555">AWS 구성도</text>
+
+  <rect x="20" y="236" width="860" height="24" fill="#ffffff" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="252" font-size="11" fill="#666">2.2</text>
+  <text x="85"  y="252" font-size="11" fill="#333">Docker 컨테이너 설정</text>
+  <text x="455" y="252" font-size="11" fill="#555">DevOps</text>
+  <text x="535" y="252" font-size="11" fill="#555">W3–W4</text>
+  <rect x="612" y="240" width="22" height="14" rx="4" fill="#FCEBEB"/>
+  <text x="623" y="251" text-anchor="middle" font-size="10" font-weight="600" fill="#A32D2D">상</text>
+  <text x="705" y="252" font-size="11" fill="#555">Dockerfile</text>
+
+  <rect x="20" y="260" width="860" height="24" fill="#fafafa" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="276" font-size="11" fill="#666">2.3</text>
+  <text x="85"  y="276" font-size="11" fill="#333">Jenkins CI/CD 파이프라인</text>
+  <text x="455" y="276" font-size="11" fill="#555">DevOps</text>
+  <text x="535" y="276" font-size="11" fill="#555">W4–W5</text>
+  <rect x="612" y="264" width="22" height="14" rx="4" fill="#FCEBEB"/>
+  <text x="623" y="275" text-anchor="middle" font-size="10" font-weight="600" fill="#A32D2D">상</text>
+  <text x="705" y="276" font-size="11" fill="#555">Jenkins 파이프라인</text>
+
+  <rect x="20" y="284" width="860" height="24" fill="#ffffff" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="300" font-size="11" fill="#666">2.4</text>
+  <text x="85"  y="300" font-size="11" fill="#333">MySQL DB 설계</text>
+  <text x="455" y="300" font-size="11" fill="#555">백엔드</text>
+  <text x="535" y="300" font-size="11" fill="#555">W2–W4</text>
+  <rect x="612" y="288" width="22" height="14" rx="4" fill="#FCEBEB"/>
+  <text x="623" y="299" text-anchor="middle" font-size="10" font-weight="600" fill="#A32D2D">상</text>
+  <text x="705" y="300" font-size="11" fill="#555">ERD 다이어그램</text>
+
+  <!-- ===== 3. AI 기능 개발 (보라) ===== -->
+  <rect x="20" y="308" width="860" height="26" fill="#EEEDFE" stroke="#ddd" stroke-width="0.5"/>
+  <text x="30"  y="325" font-size="12" font-weight="700" fill="#26215C">3</text>
+  <text x="70"  y="325" font-size="12" font-weight="700" fill="#26215C">AI 기능 개발</text>
+
+  <rect x="20" y="334" width="860" height="24" fill="#fafafa" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="350" font-size="11" fill="#666">3.1</text>
+  <text x="85"  y="350" font-size="11" fill="#333">기출 문제 PDF 크롤링 및 전처리</text>
+  <text x="455" y="350" font-size="11" fill="#555">AI</text>
+  <text x="535" y="350" font-size="11" fill="#555">W3–W5</text>
+  <rect x="612" y="338" width="22" height="14" rx="4" fill="#FCEBEB"/>
+  <text x="623" y="349" text-anchor="middle" font-size="10" font-weight="600" fill="#A32D2D">상</text>
+  <text x="705" y="350" font-size="11" fill="#555">전처리 데이터셋</text>
+
+  <rect x="20" y="358" width="860" height="24" fill="#ffffff" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="374" font-size="11" fill="#666">3.2</text>
+  <text x="85"  y="374" font-size="11" fill="#333">RAG + LangChain 파이프라인 구축</text>
+  <text x="455" y="374" font-size="11" fill="#555">AI</text>
+  <text x="535" y="374" font-size="11" fill="#555">W5–W8</text>
+  <rect x="612" y="362" width="22" height="14" rx="4" fill="#FCEBEB"/>
+  <text x="623" y="373" text-anchor="middle" font-size="10" font-weight="600" fill="#A32D2D">상</text>
+  <text x="705" y="374" font-size="11" fill="#555">RAG 파이프라인</text>
+
+  <rect x="20" y="382" width="860" height="24" fill="#fafafa" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="398" font-size="11" fill="#666">3.3</text>
+  <text x="85"  y="398" font-size="11" fill="#333">AI 문제 생성 모듈 개발</text>
+  <text x="455" y="398" font-size="11" fill="#555">AI</text>
+  <text x="535" y="398" font-size="11" fill="#555">W7–W10</text>
+  <rect x="612" y="386" width="22" height="14" rx="4" fill="#FCEBEB"/>
+  <text x="623" y="397" text-anchor="middle" font-size="10" font-weight="600" fill="#A32D2D">상</text>
+  <text x="705" y="398" font-size="11" fill="#555">문제 생성 API</text>
+
+  <rect x="20" y="406" width="860" height="24" fill="#ffffff" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="422" font-size="11" fill="#666">3.4</text>
+  <text x="85"  y="422" font-size="11" fill="#333">문제 검수 AI 모듈 개발</text>
+  <text x="455" y="422" font-size="11" fill="#555">AI</text>
+  <text x="535" y="422" font-size="11" fill="#555">W9–W11</text>
+  <rect x="612" y="410" width="22" height="14" rx="4" fill="#FAEEDA"/>
+  <text x="623" y="421" text-anchor="middle" font-size="10" font-weight="600" fill="#854F0B">중</text>
+  <text x="705" y="422" font-size="11" fill="#555">검수 모듈</text>
+
+  <!-- ===== 4. 백엔드 (청록) ===== -->
+  <rect x="20" y="430" width="860" height="26" fill="#E1F5EE" stroke="#ddd" stroke-width="0.5"/>
+  <text x="30"  y="447" font-size="12" font-weight="700" fill="#04342C">4</text>
+  <text x="70"  y="447" font-size="12" font-weight="700" fill="#04342C">백엔드 개발 (Spring Boot)</text>
+
+  <rect x="20" y="456" width="860" height="24" fill="#fafafa" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="472" font-size="11" fill="#666">4.1</text>
+  <text x="85"  y="472" font-size="11" fill="#333">회원 인증/인가 (JWT)</text>
+  <text x="455" y="472" font-size="11" fill="#555">백엔드</text>
+  <text x="535" y="472" font-size="11" fill="#555">W4–W5</text>
+  <rect x="612" y="460" width="22" height="14" rx="4" fill="#FCEBEB"/>
+  <text x="623" y="471" text-anchor="middle" font-size="10" font-weight="600" fill="#A32D2D">상</text>
+  <text x="705" y="472" font-size="11" fill="#555">인증 API</text>
+
+  <rect x="20" y="480" width="860" height="24" fill="#ffffff" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="496" font-size="11" fill="#666">4.2</text>
+  <text x="85"  y="496" font-size="11" fill="#333">문제 CRUD API</text>
+  <text x="455" y="496" font-size="11" fill="#555">백엔드</text>
+  <text x="535" y="496" font-size="11" fill="#555">W5–W8</text>
+  <rect x="612" y="484" width="22" height="14" rx="4" fill="#FCEBEB"/>
+  <text x="623" y="495" text-anchor="middle" font-size="10" font-weight="600" fill="#A32D2D">상</text>
+  <text x="705" y="496" font-size="11" fill="#555">문제 REST API</text>
+
+  <rect x="20" y="504" width="860" height="24" fill="#fafafa" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="520" font-size="11" fill="#666">4.3</text>
+  <text x="85"  y="520" font-size="11" fill="#333">풀이 채점 및 통계 API</text>
+  <text x="455" y="520" font-size="11" fill="#555">백엔드</text>
+  <text x="535" y="520" font-size="11" fill="#555">W7–W10</text>
+  <rect x="612" y="508" width="22" height="14" rx="4" fill="#FAEEDA"/>
+  <text x="623" y="519" text-anchor="middle" font-size="10" font-weight="600" fill="#854F0B">중</text>
+  <text x="705" y="520" font-size="11" fill="#555">채점 서비스</text>
+
+  <rect x="20" y="528" width="860" height="24" fill="#ffffff" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="544" font-size="11" fill="#666">4.4</text>
+  <text x="85"  y="544" font-size="11" fill="#333">커뮤니티 게시판 API</text>
+  <text x="455" y="544" font-size="11" fill="#555">백엔드</text>
+  <text x="535" y="544" font-size="11" fill="#555">W8–W11</text>
+  <rect x="612" y="532" width="22" height="14" rx="4" fill="#FAEEDA"/>
+  <text x="623" y="543" text-anchor="middle" font-size="10" font-weight="600" fill="#854F0B">중</text>
+  <text x="705" y="544" font-size="11" fill="#555">커뮤니티 API</text>
+
+  <rect x="20" y="552" width="860" height="24" fill="#fafafa" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="568" font-size="11" fill="#666">4.5</text>
+  <text x="85"  y="568" font-size="11" fill="#333">코드 실행 환경 API</text>
+  <text x="455" y="568" font-size="11" fill="#555">백엔드</text>
+  <text x="535" y="568" font-size="11" fill="#555">W9–W12</text>
+  <rect x="612" y="556" width="22" height="14" rx="4" fill="#FAEEDA"/>
+  <text x="623" y="567" text-anchor="middle" font-size="10" font-weight="600" fill="#854F0B">중</text>
+  <text x="705" y="568" font-size="11" fill="#555">코드 실행 API</text>
+
+  <!-- ===== 5. 프론트엔드 (산호) ===== -->
+  <rect x="20" y="576" width="860" height="26" fill="#FAECE7" stroke="#ddd" stroke-width="0.5"/>
+  <text x="30"  y="593" font-size="12" font-weight="700" fill="#4A1B0C">5</text>
+  <text x="70"  y="593" font-size="12" font-weight="700" fill="#4A1B0C">프론트엔드 개발</text>
+
+  <rect x="20" y="602" width="860" height="24" fill="#fafafa" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="618" font-size="11" fill="#666">5.1</text>
+  <text x="85"  y="618" font-size="11" fill="#333">UI/UX 디자인 (Figma)</text>
+  <text x="455" y="618" font-size="11" fill="#555">FE</text>
+  <text x="535" y="618" font-size="11" fill="#555">W3–W5</text>
+  <rect x="612" y="606" width="22" height="14" rx="4" fill="#FCEBEB"/>
+  <text x="623" y="617" text-anchor="middle" font-size="10" font-weight="600" fill="#A32D2D">상</text>
+  <text x="705" y="618" font-size="11" fill="#555">Figma 디자인</text>
+
+  <rect x="20" y="626" width="860" height="24" fill="#ffffff" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="642" font-size="11" fill="#666">5.2</text>
+  <text x="85"  y="642" font-size="11" fill="#333">문제 풀이 화면</text>
+  <text x="455" y="642" font-size="11" fill="#555">FE</text>
+  <text x="535" y="642" font-size="11" fill="#555">W6–W9</text>
+  <rect x="612" y="630" width="22" height="14" rx="4" fill="#FCEBEB"/>
+  <text x="623" y="641" text-anchor="middle" font-size="10" font-weight="600" fill="#A32D2D">상</text>
+  <text x="705" y="642" font-size="11" fill="#555">풀이 화면</text>
+
+  <rect x="20" y="650" width="860" height="24" fill="#fafafa" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="666" font-size="11" fill="#666">5.3</text>
+  <text x="85"  y="666" font-size="11" fill="#333">문제 출제 에디터</text>
+  <text x="455" y="666" font-size="11" fill="#555">FE</text>
+  <text x="535" y="666" font-size="11" fill="#555">W8–W11</text>
+  <rect x="612" y="654" width="22" height="14" rx="4" fill="#FAEEDA"/>
+  <text x="623" y="665" text-anchor="middle" font-size="10" font-weight="600" fill="#854F0B">중</text>
+  <text x="705" y="666" font-size="11" fill="#555">출제 에디터</text>
+
+  <rect x="20" y="674" width="860" height="24" fill="#ffffff" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="690" font-size="11" fill="#666">5.4</text>
+  <text x="85"  y="690" font-size="11" fill="#333">커뮤니티 화면</text>
+  <text x="455" y="690" font-size="11" fill="#555">FE</text>
+  <text x="535" y="690" font-size="11" fill="#555">W9–W12</text>
+  <rect x="612" y="678" width="22" height="14" rx="4" fill="#FAEEDA"/>
+  <text x="623" y="689" text-anchor="middle" font-size="10" font-weight="600" fill="#854F0B">중</text>
+  <text x="705" y="690" font-size="11" fill="#555">커뮤니티 화면</text>
+
+  <rect x="20" y="698" width="860" height="24" fill="#fafafa" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="714" font-size="11" fill="#666">5.5</text>
+  <text x="85"  y="714" font-size="11" fill="#333">코드 편집기 (웹 IDE)</text>
+  <text x="455" y="714" font-size="11" fill="#555">FE</text>
+  <text x="535" y="714" font-size="11" fill="#555">W10–W13</text>
+  <rect x="612" y="702" width="22" height="14" rx="4" fill="#EAF3DE"/>
+  <text x="623" y="713" text-anchor="middle" font-size="10" font-weight="600" fill="#3B6D11">하</text>
+  <text x="705" y="714" font-size="11" fill="#555">웹 IDE 컴포넌트</text>
+
+  <!-- ===== 6. 테스트 및 배포 (초록) ===== -->
+  <rect x="20" y="722" width="860" height="26" fill="#EAF3DE" stroke="#ddd" stroke-width="0.5"/>
+  <text x="30"  y="739" font-size="12" font-weight="700" fill="#173404">6</text>
+  <text x="70"  y="739" font-size="12" font-weight="700" fill="#173404">테스트 및 배포</text>
+
+  <rect x="20" y="748" width="860" height="24" fill="#fafafa" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="764" font-size="11" fill="#666">6.1</text>
+  <text x="85"  y="764" font-size="11" fill="#333">단위/통합 테스트</text>
+  <text x="455" y="764" font-size="11" fill="#555">전체</text>
+  <text x="535" y="764" font-size="11" fill="#555">W12–W14</text>
+  <rect x="612" y="752" width="22" height="14" rx="4" fill="#FCEBEB"/>
+  <text x="623" y="763" text-anchor="middle" font-size="10" font-weight="600" fill="#A32D2D">상</text>
+  <text x="705" y="764" font-size="11" fill="#555">테스트 리포트</text>
+
+  <rect x="20" y="772" width="860" height="24" fill="#ffffff" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="788" font-size="11" fill="#666">6.2</text>
+  <text x="85"  y="788" font-size="11" fill="#333">베타 테스트 및 피드백</text>
+  <text x="455" y="788" font-size="11" fill="#555">전체</text>
+  <text x="535" y="788" font-size="11" fill="#555">W14–W15</text>
+  <rect x="612" y="776" width="22" height="14" rx="4" fill="#FAEEDA"/>
+  <text x="623" y="787" text-anchor="middle" font-size="10" font-weight="600" fill="#854F0B">중</text>
+  <text x="705" y="788" font-size="11" fill="#555">베타 피드백 문서</text>
+
+  <rect x="20" y="796" width="860" height="24" fill="#fafafa" stroke="#eee" stroke-width="0.5"/>
+  <text x="30"  y="812" font-size="11" fill="#666">6.3</text>
+  <text x="85"  y="812" font-size="11" fill="#333">최종 배포</text>
+  <text x="455" y="812" font-size="11" fill="#555">전체</text>
+  <text x="535" y="812" font-size="11" fill="#555">W15–W16</text>
+  <rect x="612" y="800" width="22" height="14" rx="4" fill="#FCEBEB"/>
+  <text x="623" y="811" text-anchor="middle" font-size="10" font-weight="600" fill="#A32D2D">상</text>
+  <text x="705" y="812" font-size="11" fill="#555">배포 완료</text>
+
+  <!-- 외곽선 -->
+  <rect x="20" y="88" width="860" height="732" fill="none" stroke="#ccc" stroke-width="1"/>
+</svg>
