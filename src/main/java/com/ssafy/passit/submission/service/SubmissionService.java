@@ -37,6 +37,7 @@ public class SubmissionService {
             .build();
 
         submissionMapper.insertSubmission(submission);
+        judgeService.judge(submission.getSubmissionId());
 
         return SubmissionResultResponse.from(findById(submission.getSubmissionId()));
     }

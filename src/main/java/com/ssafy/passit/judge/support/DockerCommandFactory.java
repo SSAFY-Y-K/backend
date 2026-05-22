@@ -20,7 +20,11 @@ public class DockerCommandFactory {
             request,
             workspace,
             "eclipse-temurin:21",
-            List.of("sh", "-c", "javac Main.java && java Main")
+            List.of(
+                "sh",
+                "-c",
+                "javac Main.java; status=$?; if [ $status -ne 0 ]; then echo '__PASSIT_COMPILE_ERROR__' >&2; exit 101; fi; java Main"
+            )
         );
     }
 
@@ -29,7 +33,11 @@ public class DockerCommandFactory {
             request,
             workspace,
             "gcc:13",
-            List.of("sh", "-c", "g++ -O2 -std=c++17 main.cpp -o main && ./main")
+            List.of(
+                "sh",
+                "-c",
+                "g++ -O2 -std=c++17 main.cpp -o main; status=$?; if [ $status -ne 0 ]; then echo '__PASSIT_COMPILE_ERROR__' >&2; exit 101; fi; ./main"
+            )
         );
     }
 
@@ -43,6 +51,7 @@ public class DockerCommandFactory {
         command.add("docker");
         command.add("run");
         command.add("--rm");
+        command.add("-i");
         command.add("--network");
         command.add("none");
         command.add("--cpus");
