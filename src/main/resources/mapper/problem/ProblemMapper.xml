@@ -3,4 +3,51 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.passit.problem.mapper.ProblemMapper">
+
+    <resultMap id="problemResultMap" type="com.ssafy.passit.problem.model.Problem">
+        <id property="problemId" column="problem_id"/>
+        <result property="certId" column="cert_id"/>
+        <result property="authorId" column="author_id"/>
+        <result property="problemType" column="problem_type"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="inputDescription" column="input_description"/>
+        <result property="outputDescription" column="output_description"/>
+        <result property="constraintText" column="constraint_text"/>
+        <result property="timeLimit" column="time_limit"/>
+        <result property="memoryLimit" column="memory_limit"/>
+        <result property="sourceType" column="source_type"/>
+        <result property="status" column="status"/>
+        <result property="lastValidationScore" column="last_validation_score"/>
+        <result property="publishedAt" column="published_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findPublishedCodingProblemById"
+            parameterType="long"
+            resultMap="problemResultMap">
+        SELECT
+            problem_id,
+            cert_id,
+            author_id,
+            problem_type,
+            title,
+            description,
+            input_description,
+            output_description,
+            constraint_text,
+            time_limit,
+            memory_limit,
+            source_type,
+            status,
+            last_validation_score,
+            published_at,
+            created_at,
+            updated_at
+        FROM problems
+        WHERE problem_id = #{problemId}
+          AND problem_type = 'CODING'
+          AND status = 'PUBLISHED'
+    </select>
 </mapper>

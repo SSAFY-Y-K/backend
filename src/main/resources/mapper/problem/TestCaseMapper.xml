@@ -3,4 +3,33 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.passit.problem.mapper.TestCaseMapper">
+
+    <resultMap id="testCaseResultMap" type="com.ssafy.passit.problem.model.TestCase">
+        <id property="testCaseId" column="test_case_id"/>
+        <result property="problemId" column="problem_id"/>
+        <result property="inputData" column="input_data"/>
+        <result property="expectedOutput" column="expected_output"/>
+        <result property="isSample" column="is_sample"/>
+        <result property="caseOrder" column="case_order"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findHiddenTestCasesByProblemId"
+            parameterType="long"
+            resultMap="testCaseResultMap">
+        SELECT
+            test_case_id,
+            problem_id,
+            input_data,
+            expected_output,
+            is_sample,
+            case_order,
+            created_at,
+            updated_at
+        FROM test_cases
+        WHERE problem_id = #{problemId}
+          AND is_sample = FALSE
+        ORDER BY case_order ASC
+    </select>
 </mapper>

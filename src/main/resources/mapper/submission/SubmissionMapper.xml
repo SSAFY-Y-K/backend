@@ -3,4 +3,87 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.passit.submission.mapper.SubmissionMapper">
+
+    <resultMap id="submissionResultMap" type="com.ssafy.passit.submission.model.Submission">
+        <id property="submissionId" column="submission_id"/>
+        <result property="problemId" column="problem_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="language" column="language"/>
+        <result property="sourceCode" column="source_code"/>
+        <result property="status" column="status"/>
+        <result property="verdict" column="verdict"/>
+        <result property="execTimeMs" column="exec_time_ms"/>
+        <result property="memoryKb" column="memory_kb"/>
+        <result property="errorMessage" column="error_message"/>
+        <result property="submittedAt" column="submitted_at"/>
+        <result property="judgedAt" column="judged_at"/>
+    </resultMap>
+
+    <insert id="insertSubmission"
+            parameterType="com.ssafy.passit.submission.model.Submission"
+            useGeneratedKeys="true"
+            keyProperty="submissionId">
+        INSERT INTO submissions (
+            problem_id,
+            user_id,
+            language,
+            source_code,
+            status
+        )
+        VALUES (
+            #{problemId},
+            #{userId},
+            #{language},
+            #{sourceCode},
+            'PENDING'
+        )
+    </insert>
+
+    <select id="findById"
+            parameterType="long"
+            resultMap="submissionResultMap">
+        SELECT
+            submission_id,
+            problem_id,
+            user_id,
+            language,
+            source_code,
+            status,
+            verdict,
+            exec_time_ms,
+            memory_kb,
+            error_message,
+            submitted_at,
+            judged_at
+        FROM submissions
+        WHERE submission_id = #{submissionId}
+    </select>
+
+    <update id="updateStatusRunning"
+            parameterType="long">
+        UPDATE submissions
+        SET status = 'RUNNING'
+        WHERE submission_id = #{submissionId}
+    </update>
+
+    <update id="updateJudgeSuccess"
+            parameterType="com.ssafy.passit.submission.model.Submission">
+        UPDATE submissions
+        SET status = #{status},
+            verdict = #{verdict},
+            exec_time_ms = #{execTimeMs},
+            memory_kb = #{memoryKb},
+            error_message = #{errorMessage},
+            judged_at = #{judgedAt}
+        WHERE submission_id = #{submissionId}
+    </update>
+
+    <update id="updateJudgeFailure">
+        UPDATE submissions
+        SET status = 'FAILED',
+            verdict = NULL,
+            error_message = #{errorMessage},
+            judged_at = NOW()
+        WHERE submission_id = #{submissionId}
+    </update>
 </mapper>
