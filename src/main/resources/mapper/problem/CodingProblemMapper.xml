@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.passit.problem.mapper.CodingProblemMapper">
+
+    <resultMap id="codingProblemResultMap" type="com.ssafy.passit.problem.model.CodingProblem">
+        <id property="problemId" column="problem_id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="inputDescription" column="input_description"/>
+        <result property="outputDescription" column="output_description"/>
+        <result property="constraintText" column="constraint_text"/>
+        <result property="timeLimit" column="time_limit"/>
+        <result property="memoryLimit" column="memory_limit"/>
+        <result property="difficulty" column="difficulty"/>
+        <result property="category" column="category"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <insert id="insertCodingProblem"
+            parameterType="com.ssafy.passit.problem.model.CodingProblem"
+            useGeneratedKeys="true"
+            keyProperty="problemId">
+        INSERT INTO coding_problems (
+            title,
+            description,
+            input_description,
+            output_description,
+            constraint_text,
+            time_limit,
+            memory_limit,
+            difficulty,
+            category
+        ) VALUES (
+            #{title},
+            #{description},
+            #{inputDescription},
+            #{outputDescription},
+            #{constraintText},
+            #{timeLimit},
+            #{memoryLimit},
+            #{difficulty},
+            #{category}
+        )
+    </insert>
+
+    <select id="findById"
+            parameterType="long"
+            resultMap="codingProblemResultMap">
+        SELECT
+            problem_id,
+            title,
+            description,
+            input_description,
+            output_description,
+            constraint_text,
+            time_limit,
+            memory_limit,
+            difficulty,
+            category,
+            created_at,
+            updated_at
+        FROM coding_problems
+        WHERE problem_id = #{problemId}
+    </select>
+
+</mapper>
