@@ -110,7 +110,7 @@ public class SubmissionService {
             throw new ApiException(ErrorCode.INVALID_REQUEST, "소스코드는 비어 있을 수 없습니다.");
         }
 
-        problemQueryService.getPublishedCodingProblem(problemId);
+        problemQueryService.getCodingProblem(problemId);
         parseLanguage(request.language());
     }
 

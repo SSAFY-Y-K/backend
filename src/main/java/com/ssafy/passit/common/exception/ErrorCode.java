@@ -9,7 +9,8 @@ public enum ErrorCode {
     SUBMISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "SUBMISSION_NOT_FOUND", "제출 정보를 찾을 수 없습니다."),
     UNSUPPORTED_LANGUAGE(HttpStatus.BAD_REQUEST, "UNSUPPORTED_LANGUAGE", "지원하지 않는 언어입니다."),
     NOT_IMPLEMENTED(HttpStatus.NOT_IMPLEMENTED, "NOT_IMPLEMENTED", "아직 구현되지 않은 기능입니다."),
-    INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", "서버 내부 오류가 발생했습니다.");
+    INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", "서버 내부 오류가 발생했습니다."),
+    AI_SERVER_ERROR(HttpStatus.BAD_GATEWAY, "AI_SERVER_ERROR", "AI 서버 호출에 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

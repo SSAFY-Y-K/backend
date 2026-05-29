@@ -58,6 +58,8 @@ public class DockerCommandFactory {
         command.add("1");
         command.add("--memory");
         command.add(request.memoryLimitMb() + "m");
+        command.add("--memory-swap");
+        command.add(request.memoryLimitMb() + "m");
         command.add("--volume");
         command.add(workspace.toAbsolutePath() + ":" + WORKSPACE_DIR);
         command.add("--workdir");
