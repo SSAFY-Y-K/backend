@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS problems (
     problem_number INT NOT NULL COMMENT '문제 번호',
     problem_type VARCHAR(20) NOT NULL COMMENT 'MULTIPLE, SHORT_ANSWER',
     question TEXT NOT NULL COMMENT '문제',
-    answer_correct_number NULL COMMENT '객관식일 경우 정답',
+    answer_correct_number INT NULL COMMENT '객관식일 경우 정답',
     answer_text TEXT NULL COMMENT '주관식일 경우 정답',
 
     PRIMARY KEY (problem_id),
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS problems (
         CHECK (problem_type IN ('MULTIPLE', 'SHORT_ANSWER')),
     CONSTRAINT check_problem_answer
         CHECK (answer_correct_number IS NOT NULL OR answer_text IS NOT NULL)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8m64 COLLATE=utf8m64_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -------------------------------------------------------------
 -- PROBLEM_CHOICES(객관식 문제 보기)
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS problem_choices (
         REFERENCES problems (problem_id) ON DELETE CASCADE,
     CONSTRAINT check_choice_number_range
         CHECK (choice_number BETWEEN 1 AND 4)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8m64_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -------------------------------------------------------------
 -- TEST_CASES (코딩 문제 테스트케이스)
