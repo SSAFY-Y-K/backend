@@ -9,7 +9,7 @@ USE passit;
 -- -------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS users (
     user_id    BIGINT       NOT NULL AUTO_INCREMENT,
-    login_id   VARCHAR(50)  NOT NULL,
+    username   VARCHAR(50)  NOT NULL,
     password   VARCHAR(255) NOT NULL,
     nickname   VARCHAR(50)  NOT NULL,
     role       VARCHAR(20)  NOT NULL DEFAULT 'USER',
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (user_id),
-    UNIQUE KEY uq_users_login_id (login_id),
+    UNIQUE KEY uq_username_id (username),
     UNIQUE KEY uq_users_nickname (nickname),
     CONSTRAINT chk_users_role
         CHECK (role IN ('USER', 'ADMIN'))
