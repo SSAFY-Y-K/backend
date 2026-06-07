@@ -97,6 +97,26 @@ CREATE TABLE IF NOT EXISTS problem_choices (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -------------------------------------------------------------
+-- CODING_PROBLEMS (AI 생성 알고리즘 코딩 문제)
+-- -------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS coding_problems (
+    problem_id         BIGINT       NOT NULL AUTO_INCREMENT,
+    title              VARCHAR(255) NOT NULL,
+    description        TEXT         NOT NULL,
+    input_description  TEXT         NULL,
+    output_description TEXT         NULL,
+    constraint_text    TEXT         NULL,
+    time_limit         INT          NOT NULL DEFAULT 1000 COMMENT '시간 제한 (ms)',
+    memory_limit       INT          NOT NULL DEFAULT 256  COMMENT '메모리 제한 (MB)',
+    difficulty         VARCHAR(10)  NULL COMMENT 'EASY / MEDIUM / HARD',
+    category           VARCHAR(50)  NULL,
+    created_at         DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at         DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (problem_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- -------------------------------------------------------------
 -- TEST_CASES (코딩 문제 테스트케이스)
 --    공개 예제와 숨은 채점 케이스를 함께 저장
 -- -------------------------------------------------------------
@@ -115,7 +135,7 @@ CREATE TABLE IF NOT EXISTS test_cases (
     KEY idx_test_cases_problem_sample_order (problem_id, is_sample, case_order),
     CONSTRAINT fk_test_cases_problem
         FOREIGN KEY (problem_id)
-        REFERENCES problems (problem_id) ON DELETE CASCADE,
+        REFERENCES coding_problems (problem_id) ON DELETE CASCADE,
     CONSTRAINT chk_test_cases_case_order
         CHECK (case_order >= 1)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -143,7 +163,7 @@ CREATE TABLE IF NOT EXISTS submissions (
     KEY idx_submissions_status (status),
     CONSTRAINT fk_submissions_problem
         FOREIGN KEY (problem_id)
-        REFERENCES problems (problem_id) ON DELETE CASCADE,
+        REFERENCES coding_problems (problem_id) ON DELETE CASCADE,
     CONSTRAINT fk_submissions_user
         FOREIGN KEY (user_id)
         REFERENCES users (user_id) ON DELETE CASCADE,

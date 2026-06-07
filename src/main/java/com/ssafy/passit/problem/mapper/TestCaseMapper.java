@@ -9,4 +9,6 @@ import org.apache.ibatis.annotations.Param;
 public interface TestCaseMapper {
 
     List<TestCase> findHiddenTestCasesByProblemId(@Param("problemId") Long problemId);
+
+    void insertTestCases(@Param("list") List<TestCase> testCases);
 }
