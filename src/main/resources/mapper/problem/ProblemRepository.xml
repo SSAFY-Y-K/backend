@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.passit.problem.repository.ProblemRepository">
+    <insert id="saveProblemSet" useGeneratedKeys="true" keyProperty="problemSetId">
+        INSERT INTO problem_sets (cert_id, user_id)
+        VALUES (#{certId}, #{userId});
+    </insert>
+
+    <insert id="saveProblem" useGeneratedKeys="true" keyProperty="problemId">
+        INSERT INTO problems (
+                              problem_set_id,
+                              problem_number,
+                              problem_type,
+                              question,
+                              answer_correct_number,
+                              answer_text
+        )
+        VALUES (
+                #{problemSetId},
+                #{problemNumber},
+                #{problemType},
+                #{question},
+                #{answerCorrectNumber},
+                #{answerText}
+               );
+    </insert>
+
+    <insert id="saveProblemChoice">
+        INSERT INTO problem_choices (problem_id,
+                                     choice_number,
+                                     content
+        )
+        VALUES (
+                 #{problemId},
+                 #{choiceNumber},
+                 #{content}
+        );
+    </insert>
+
+    <select id="findCertificationByCertId" parameterType="Integer" resultType="String">
+        SELECT
+            name
+        FROM certifications
+        WHERE cert_id = #{certId};
+    </select>
+</mapper>
