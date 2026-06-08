@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 public class SignupRequest {
 
-    @Schema(description = "아이디(유저네임)", example = "id1234")
+    @Schema(description = "아이디(유저네임)", example = "username1234")
     private String username;
     @Schema(description = "비밀번호", example = "pass1234")
     private String password;

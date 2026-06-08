@@ -1,7 +1,7 @@
 package com.ssafy.passit.problem.service;
 
-import com.ssafy.passit.client.AiServerClient;
 import com.ssafy.passit.common.type.ProblemType;
+import com.ssafy.passit.problem.client.ExternalServerClient;
 import com.ssafy.passit.problem.dto.ProblemCreateFromAiRequest;
 import com.ssafy.passit.problem.dto.ProblemCreateRequest;
 import com.ssafy.passit.problem.dto.ProblemSet;
@@ -15,10 +15,10 @@ import java.util.List;
 @Service
 public class BasicProblemService implements ProblemService {
 
-    private final AiServerClient client;
+    private final ExternalServerClient client;
     private final ProblemRepository problemRepository;
 
-    public BasicProblemService(AiServerClient client, ProblemRepository problemRepository) {
+    public BasicProblemService(ExternalServerClient client, ProblemRepository problemRepository) {
         this.client = client;
         this.problemRepository = problemRepository;
     }

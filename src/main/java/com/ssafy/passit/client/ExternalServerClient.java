@@ -1,4 +1,4 @@
-package com.ssafy.passit.client;
+package com.ssafy.passit.problem.client;
 
 import com.ssafy.passit.problem.dto.ProblemCreateRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,11 +9,11 @@ import org.springframework.web.client.RestClient;
 import java.util.Map;
 
 @Component
-public class AiServerClient {
+public class ExternalServerClient {
 
     private final RestClient restClient;
 
-    public AiServerClient(@Value("${ai.base-url}") String baseUrl) {
+    public ExternalServerClient(@Value("${ai.base-url}") String baseUrl) {
         this.restClient = RestClient.builder()
                 .baseUrl(baseUrl)
                 .build();

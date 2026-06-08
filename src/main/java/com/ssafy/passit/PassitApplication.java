@@ -6,9 +6,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @MapperScan({
+        "com.ssafy.passit.user.repository",
         "com.ssafy.passit.problem.repository",
         "com.ssafy.passit.problem.mapper",
-        "com.ssafy.passit.submission.mapper"
+        "com.ssafy.passit.post.mapper",
+        "com.ssafy.passit.submission.mapper",
+        "com.ssafy.passit.user.repository",
 })
 public class PassitApplication {
 
