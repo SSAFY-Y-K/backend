@@ -6,22 +6,12 @@
 
     <resultMap id="problemResultMap" type="com.ssafy.passit.problem.model.Problem">
         <id property="problemId" column="problem_id"/>
-        <result property="certId" column="cert_id"/>
-        <result property="authorId" column="author_id"/>
+        <result property="problemSetId" column="problem_set_id"/>
+        <result property="problemNumber" column="problem_number"/>
         <result property="problemType" column="problem_type"/>
-        <result property="title" column="title"/>
-        <result property="description" column="description"/>
-        <result property="inputDescription" column="input_description"/>
-        <result property="outputDescription" column="output_description"/>
-        <result property="constraintText" column="constraint_text"/>
-        <result property="timeLimit" column="time_limit"/>
-        <result property="memoryLimit" column="memory_limit"/>
-        <result property="sourceType" column="source_type"/>
-        <result property="status" column="status"/>
-        <result property="lastValidationScore" column="last_validation_score"/>
-        <result property="publishedAt" column="published_at"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
+        <result property="question" column="question"/>
+        <result property="answerCorrectNumber" column="answer_correct_number"/>
+        <result property="answerText" column="answer_text"/>
     </resultMap>
 
     <select id="findPublishedCodingProblemById"
@@ -29,25 +19,14 @@
             resultMap="problemResultMap">
         SELECT
             problem_id,
-            cert_id,
-            author_id,
+            problem_set_id,
+            problem_number,
             problem_type,
-            title,
-            description,
-            input_description,
-            output_description,
-            constraint_text,
-            time_limit,
-            memory_limit,
-            source_type,
-            status,
-            last_validation_score,
-            published_at,
-            created_at,
-            updated_at
+            question,
+            answer_correct_number,
+            answer_text
         FROM problems
         WHERE problem_id = #{problemId}
-          AND problem_type = 'CODING'
-          AND status = 'PUBLISHED'
     </select>
+
 </mapper>

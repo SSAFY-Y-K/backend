@@ -39,13 +39,16 @@ public class ProcessExecutor {
                 process.destroyForcibly();
                 process.waitFor(5, TimeUnit.SECONDS);
 
-                return new ProcessExecutionResult(
-                    -1,
-                    true,
-                    elapsedMillis(startedAt),
-                    getFutureValue(stdoutFuture),
-                    getFutureValue(stderrFuture)
-                );
+                String stdout = "";
+                String stderr = "";
+                try {
+                    stdout = getFutureValue(stdoutFuture);
+                    stderr = getFutureValue(stderrFuture);
+                } catch (Exception ignored) {
+                    // 강제 종료 시 스트림 읽기 실패는 무시
+                }
+
+                return new ProcessExecutionResult(-1, true, elapsedMillis(startedAt), stdout, stderr);
             }
 
             return new ProcessExecutionResult(

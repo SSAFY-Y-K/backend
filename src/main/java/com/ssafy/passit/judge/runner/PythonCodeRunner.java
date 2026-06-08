@@ -90,6 +90,17 @@ public class PythonCodeRunner implements CodeRunner {
             );
         }
 
+        if (processResult.exitCode() == 137) {
+            return new ExecutionResult(
+                VerdictType.MLE,
+                processResult.execTimeMs(),
+                null,
+                processResult.stdout(),
+                processResult.stderr(),
+                "메모리 제한을 초과했습니다."
+            );
+        }
+
         if (processResult.exitCode() != 0) {
             return new ExecutionResult(
                 VerdictType.RE,

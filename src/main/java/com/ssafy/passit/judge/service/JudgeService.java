@@ -9,7 +9,7 @@ import com.ssafy.passit.judge.dto.ExecutionResult;
 import com.ssafy.passit.judge.dto.JudgeResult;
 import com.ssafy.passit.judge.runner.CodeRunner;
 import com.ssafy.passit.judge.support.OutputComparator;
-import com.ssafy.passit.problem.model.Problem;
+import com.ssafy.passit.problem.model.CodingProblem;
 import com.ssafy.passit.problem.model.TestCase;
 import com.ssafy.passit.problem.service.ProblemQueryService;
 import com.ssafy.passit.submission.model.Submission;
@@ -37,7 +37,7 @@ public class JudgeService {
         try {
             updateStatusRunning(submissionId);
 
-            Problem problem = problemQueryService.getPublishedCodingProblem(submission.getProblemId());
+            CodingProblem problem = problemQueryService.getCodingProblem(submission.getProblemId());
             List<TestCase> hiddenTestCases = problemQueryService.getHiddenTestCases(problem.getProblemId());
             CodeRunner codeRunner = findCodeRunner(submission);
 
@@ -94,7 +94,7 @@ public class JudgeService {
 
     private JudgeResult executeTestCases(
         Submission submission,
-        Problem problem,
+        CodingProblem problem,
         List<TestCase> hiddenTestCases,
         CodeRunner codeRunner
     ) {

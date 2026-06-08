@@ -15,6 +15,14 @@
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
+    <insert id="insertTestCases" parameterType="java.util.List">
+        INSERT INTO test_cases (problem_id, input_data, expected_output, is_sample, case_order)
+        VALUES
+        <foreach collection="list" item="tc" separator=",">
+            (#{tc.problemId}, #{tc.inputData}, #{tc.expectedOutput}, #{tc.isSample}, #{tc.caseOrder})
+        </foreach>
+    </insert>
+
     <select id="findHiddenTestCasesByProblemId"
             parameterType="long"
             resultMap="testCaseResultMap">
