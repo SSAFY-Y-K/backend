@@ -1,9 +1,14 @@
 <template>
-	<div>
-		<RouterView />
+	<div class="flex h-screen flex-col">
+		<NavBar />
+		<main class="flex-1">
+			<RouterView />
+		</main>
 	</div>
 </template>
 
-<script setup></script>
+<script setup>
+import NavBar from "./components/NavBar.vue";
+</script>
 
 <style lang="scss" scoped></style>
