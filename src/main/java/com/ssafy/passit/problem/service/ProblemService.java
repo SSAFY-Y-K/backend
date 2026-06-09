@@ -2,6 +2,10 @@ package com.ssafy.passit.problem.service;
 
 import com.ssafy.passit.problem.dto.ProblemCreateRequest;
 import com.ssafy.passit.problem.dto.ProblemCreateFromAiRequest;
+import com.ssafy.passit.problem.dto.ProblemSet;
+import jakarta.annotation.Nullable;
+
+import java.util.List;
 
 public interface ProblemService {
 
@@ -16,4 +20,6 @@ public interface ProblemService {
      * @return
      */
     void createFromAi(ProblemCreateFromAiRequest request);
+
+    List<ProblemSet> getProblemSets(@Nullable Integer certId);
 }

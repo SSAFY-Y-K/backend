@@ -2,6 +2,7 @@ package com.ssafy.passit.problem.controller;
 
 import com.ssafy.passit.problem.dto.ProblemCreateRequest;
 import com.ssafy.passit.problem.dto.ProblemCreateFromAiRequest;
+import com.ssafy.passit.problem.dto.ProblemSet;
 import com.ssafy.passit.problem.service.ProblemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,6 +11,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/problem")
@@ -43,5 +46,16 @@ public class ProblemController {
         problemService.createFromAi(request);
 
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "문제 셋 조회", description = "문제 셋 조회 엔드포인트")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "문제 셋 조회 성공")
+    })
+    @GetMapping
+    public ResponseEntity<List<ProblemSet>> getProblemSets(@RequestParam(value = "certId", required = false) Integer certId) {
+        var problemSets = problemService.getProblemSets(certId);
+
+        return ResponseEntity.ok().body(problemSets);
     }
 }

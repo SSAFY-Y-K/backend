@@ -45,4 +45,17 @@
         FROM certifications
         WHERE cert_id = #{certId};
     </select>
+
+    <select id="findProblemSetByCertId" parameterType="Integer" resultType="ProblemSet">
+        SELECT
+            problem_set_id,
+            cert_id,
+            user_id
+        FROM problem_sets
+        <where>
+            <if test="certId != null">
+                AND cert_id = #{certId}
+            </if>
+        </where>
+    </select>
 </mapper>

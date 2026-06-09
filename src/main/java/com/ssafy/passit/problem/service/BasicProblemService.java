@@ -7,6 +7,7 @@ import com.ssafy.passit.problem.dto.ProblemCreateRequest;
 import com.ssafy.passit.problem.dto.ProblemSet;
 import com.ssafy.passit.problem.dto.SingleProblem;
 import com.ssafy.passit.problem.repository.ProblemRepository;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,11 @@ public class BasicProblemService implements ProblemService {
 
         ProblemSet problemSet = createProblemSet(request.getCertId(), request.getUserId());
         createProblems(problemCreateRequest.getProblems(), problemSet.getProblemSetId());
+    }
+
+    @Override
+    public List<ProblemSet> getProblemSets(@Nullable Integer certId) {
+        return problemRepository.findProblemSetByCertId(certId);
     }
 
     /**

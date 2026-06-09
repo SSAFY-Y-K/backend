@@ -4,6 +4,9 @@ import com.ssafy.passit.problem.dto.ProblemChoice;
 import com.ssafy.passit.problem.dto.ProblemSet;
 import com.ssafy.passit.problem.dto.SingleProblem;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface ProblemRepository {
@@ -14,4 +17,6 @@ public interface ProblemRepository {
     void saveProblemChoice(ProblemChoice problemChoice);
 
     String findCertificationByCertId(Integer certId);
+
+    List<ProblemSet> findProblemSetByCertId(@Param("certId") Integer certId);
 }
