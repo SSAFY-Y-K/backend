@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/problem")
+@RequestMapping("/api/problem")
 @Tag(name = "Problem API", description = "문제 생성 및 조회, 풀이 관련 API")
 public class ProblemController {
 
