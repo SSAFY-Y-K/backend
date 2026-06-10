@@ -1,7 +1,7 @@
 package com.ssafy.passit.common.type;
 
 public enum ProblemType {
-    MULTIPLE,
+    MULTIPLE_CHOICE,
     SHORT_ANSWER,
     CODING,
 }

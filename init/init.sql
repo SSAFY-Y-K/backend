@@ -46,14 +46,14 @@ INSERT IGNORE INTO certifications (name) VALUES
 CREATE TABLE IF NOT EXISTS problems (
     problem_id BIGINT NOT NULL AUTO_INCREMENT,
     cert_id BIGINT NOT NULL,
-    problem_type VARCHAR(20) NOT NULL COMMENT 'MULTIPLE, SHORT_ANSWER, CODING',
+    problem_type VARCHAR(20) NOT NULL COMMENT 'MULTIPLE_CHOICE, SHORT_ANSWER, CODING',
 
     PRIMARY KEY (problem_id),
     CONSTRAINT fk_problems_cert_id
         FOREIGN KEY (cert_id)
         REFERENCES certifications (cert_id) ON DELETE CASCADE,
     CONSTRAINT check_problem_type
-        CHECK (problem_type IN ('MULTIPLE', 'SHORT_ANSWER', 'CODING'))
+        CHECK (problem_type IN ('MULTIPLE_CHOICE', 'SHORT_ANSWER', 'CODING'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -------------------------------------------------------------
