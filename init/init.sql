@@ -2,6 +2,7 @@
 -- Pass-IT Database Initialization Script
 -- =============================================================
 
+CREATE DATABASE IF NOT EXISTS passit;
 USE passit;
 
 -- -------------------------------------------------------------
@@ -40,67 +41,60 @@ INSERT IGNORE INTO certifications (name) VALUES
     ('SQLD');
 
 -- -------------------------------------------------------------
--- PROBLEM_SETS(문제 세트)
--- -------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS problem_sets (
-    problem_set_id BIGINT NOT NULL AUTO_INCREMENT,
-    cert_id        BIGINT NOT NULL,
-    user_id        BIGINT NOT NULL,
-
-    PRIMARY KEY (problem_set_id),
-    CONSTRAINT fk_problem_sets_cert_id
-        FOREIGN KEY (cert_id)
-        REFERENCES certifications (cert_id) ON DELETE CASCADE,
-    CONSTRAINT fk_problem_sets_user_id
-        FOREIGN KEY (user_id)
-        REFERENCES users (user_id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- -------------------------------------------------------------
 -- PROBLEMS (문제)
 -- -------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS problems (
     problem_id BIGINT NOT NULL AUTO_INCREMENT,
-    problem_set_id BIGINT NOT NULL,
-    problem_number INT NOT NULL COMMENT '문제 번호',
-    problem_type VARCHAR(20) NOT NULL COMMENT 'MULTIPLE, SHORT_ANSWER',
-    question TEXT NOT NULL COMMENT '문제',
-    answer_correct_number INT NULL COMMENT '객관식일 경우 정답',
-    answer_text TEXT NULL COMMENT '주관식일 경우 정답',
+    cert_id BIGINT NOT NULL,
+    problem_type VARCHAR(20) NOT NULL COMMENT 'MULTIPLE, SHORT_ANSWER, CODING',
 
     PRIMARY KEY (problem_id),
-    CONSTRAINT fk_problems_problem_set_id
-        FOREIGN KEY (problem_set_id)
-        REFERENCES problem_sets (problem_set_id) ON DELETE CASCADE,
+    CONSTRAINT fk_problems_cert_id
+        FOREIGN KEY (cert_id)
+        REFERENCES certifications (cert_id) ON DELETE CASCADE,
     CONSTRAINT check_problem_type
-        CHECK (problem_type IN ('MULTIPLE', 'SHORT_ANSWER')),
-    CONSTRAINT check_problem_answer
-        CHECK (answer_correct_number IS NOT NULL OR answer_text IS NOT NULL)
+        CHECK (problem_type IN ('MULTIPLE', 'SHORT_ANSWER', 'CODING'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -------------------------------------------------------------
--- PROBLEM_CHOICES(객관식 문제 보기)
+-- multiple_choice_problems (객관식 문제)
 -- -------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS problem_choices (
-    problem_choice_id BIGINT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS multiple_choice_problems (
     problem_id BIGINT NOT NULL,
-    choice_number INT NOT NULL,
-    content TEXT NOT NULL,
+    question TEXT NOT NULL COMMENT '문제',
+    choice_1_content TEXT NOT NULL COMMENT '1번 선택지',
+    choice_2_content TEXT NOT NULL COMMENT '2번 선택지',
+    choice_3_content TEXT NOT NULL COMMENT '3번 선택지',
+    choice_4_content TEXT NOT NULL COMMENT '4번 선택지',
+    answer_number INT NOT NULL COMMENT '정답',
 
-    PRIMARY KEY (problem_choice_id),
-    UNIQUE KEY uq_problem_choices_number (problem_id, choice_number),
-    CONSTRAINT fk_problem_choices_problem_id
+    PRIMARY KEY (problem_id),
+    CONSTRAINT fk_multiple_choice_problems_problem_id
         FOREIGN KEY (problem_id)
         REFERENCES problems (problem_id) ON DELETE CASCADE,
-    CONSTRAINT check_choice_number_range
-        CHECK (choice_number BETWEEN 1 AND 4)
+    CONSTRAINT chk_multiple_choice_answer_number
+        CHECK (answer_number BETWEEN 1 AND 4)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- -------------------------------------------------------------
+-- short_answer_problems (주관식 문제)
+-- -------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS short_answer_problems (
+    problem_id BIGINT NOT NULL,
+    question TEXT NOT NULL COMMENT '문제',
+    answer TEXT NOT NULL COMMENT '정답',
+
+    PRIMARY KEY (problem_id),
+    CONSTRAINT fk_short_answer_problems_problem_id
+        FOREIGN KEY (problem_id)
+        REFERENCES problems (problem_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -------------------------------------------------------------
 -- CODING_PROBLEMS (AI 생성 알고리즘 코딩 문제)
 -- -------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS coding_problems (
-    problem_id         BIGINT       NOT NULL AUTO_INCREMENT,
+    problem_id         BIGINT       NOT NULL,
     title              VARCHAR(255) NOT NULL,
     description        TEXT         NOT NULL,
     input_description  TEXT         NULL,
@@ -113,7 +107,12 @@ CREATE TABLE IF NOT EXISTS coding_problems (
     created_at         DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at         DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    PRIMARY KEY (problem_id)
+    PRIMARY KEY (problem_id),
+    CONSTRAINT fk_coding_problems_problem_id
+        FOREIGN KEY (problem_id)
+        REFERENCES problems (problem_id) ON DELETE CASCADE,
+    CONSTRAINT chk_coding_problems_difficulty
+        CHECK (difficulty IS NULL OR difficulty IN ('EASY', 'MEDIUM', 'HARD'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -------------------------------------------------------------

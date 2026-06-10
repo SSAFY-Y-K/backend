@@ -91,3 +91,45 @@ AI 기반 문제 생성, 사용자 직접 출제, 커뮤니티 기능, 웹 기�
 ![문제생성](./images/c3.png)
 ### 커뮤니티 화면
 ![커뮤니티](./images/c4.png)    
+
+---
+
+## DB 스키마 변경 보고서 (2026-06-10)
+
+### 변경 요약
+
+| 항목 | 기존 | 변경 후 |
+|------|------|---------|
+| 문제 제공 단위 | `problem_sets` 기반 문제 세트 | 개별 문제 단위 |
+| 공통 문제 테이블 | `problems`에 문제 본문/정답 포함 | `problems`는 공통 메타 정보만 보관 |
+| 객관식 구조 | `problems` + `problem_choices` | `multiple_choice_problems`로 통합 |
+| 주관식 구조 | `problems.answer_text` 사용 | `short_answer_problems` 분리 |
+| 코딩 문제 구조 | `coding_problems` 독립 운영 | `problems` 하위 상세 테이블로 편입 |
+
+### 테이블 변경 내역
+
+| 구분 | 테이블 | 변경 내용 |
+|------|--------|-----------|
+| 삭제 | `problem_sets` | 문제 세트 개념 제거 |
+| 삭제 | `problem_choices` | 객관식 보기를 별도 테이블로 관리하던 구조 제거 |
+| 변경 | `problems` | `problem_set_id`, `problem_number`, `question`, `answer_correct_number`, `answer_text` 제거, `cert_id`, `problem_type` 중심으로 재구성 |
+| 신설 | `multiple_choice_problems` | 객관식 문제 본문, 4개 선택지, 정답 번호 저장 |
+| 신설 | `short_answer_problems` | 주관식 문제 본문과 정답 저장 |
+| 변경 | `coding_problems` | 독립 문제 테이블에서 `problems.problem_id`를 참조하는 상세 테이블로 변경 |
+
+### 관계 구조 비교
+
+| 구분 | 기존 구조 | 변경 후 구조 |
+|------|-----------|-------------|
+| 일반 문제 흐름 | `certifications -> problem_sets -> problems -> problem_choices` | `certifications -> problems -> multiple_choice_problems / short_answer_problems / coding_problems` |
+| 코딩 문제 흐름 | `coding_problems -> test_cases, submissions` | `problems -> coding_problems -> test_cases, submissions` |
+| 자격증 연결 기준 | `problem_sets.cert_id` | `problems.cert_id` |
+
+### 설계상 의미
+
+| 항목 | 변경 의미 |
+|------|-----------|
+| 문제 관리 방식 | 세트 중심 관리에서 문제 중심 관리로 변경 |
+| 타입 분리 | 객관식, 주관식, 코딩 문제를 타입별 상세 테이블로 명확히 분리 |
+| 확장성 | 새로운 문제 유형 추가 시 `problems` 하위 상세 테이블 추가 방식으로 확장 가능 |
+| 조회 구조 | 문제 공통 정보와 상세 정보를 역할별로 분리해 구조 명확성 향상 |
