@@ -1,84 +1,119 @@
 package com.ssafy.passit.problem.service;
 
+import com.ssafy.passit.client.ExternalServerClient;
 import com.ssafy.passit.common.type.ProblemType;
-import com.ssafy.passit.problem.client.ExternalServerClient;
-import com.ssafy.passit.problem.dto.ProblemCreateFromAiRequest;
-import com.ssafy.passit.problem.dto.ProblemCreateRequest;
-import com.ssafy.passit.problem.dto.ProblemSet;
-import com.ssafy.passit.problem.dto.SingleProblem;
+import com.ssafy.passit.problem.dto.entity.MultipleChoiceProblemEntity;
+import com.ssafy.passit.problem.dto.entity.ProblemEntity;
+import com.ssafy.passit.problem.dto.entity.ShortAnswerProblemEntity;
+import com.ssafy.passit.problem.dto.request.AiResponse;
+import com.ssafy.passit.problem.dto.request.MultipleChoiceProblemCreateRequest;
+import com.ssafy.passit.problem.dto.request.ShortAnswerProblemCreateRequest;
 import com.ssafy.passit.problem.repository.ProblemRepository;
-import org.jspecify.annotations.Nullable;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class BasicProblemService implements ProblemService {
 
     private final ExternalServerClient client;
     private final ProblemRepository problemRepository;
 
-    public BasicProblemService(ExternalServerClient client, ProblemRepository problemRepository) {
-        this.client = client;
-        this.problemRepository = problemRepository;
+    @Override
+    @Transactional
+    public void saveMultipleChoiceProblem(
+            MultipleChoiceProblemCreateRequest request) {
+        Long problemId = saveProblemAndGetId(ProblemEntity.builder()
+                .certId(request.getCertId())
+                .problemType(ProblemType.MULTIPLE_CHOICE)
+                .build());
+
+        problemRepository.saveMultipleChoiceProblem(
+                MultipleChoiceProblemEntity.builder()
+                        .problemId(problemId)
+                        .question(request.getQuestion())
+                        .choice1Content(request.getChoice1Content())
+                        .choice2Content(request.getChoice2Content())
+                        .choice3Content(request.getChoice3Content())
+                        .choice4Content(request.getChoice4Content())
+                        .answerNumber(request.getAnswerNumber())
+                        .build());
     }
 
     @Override
     @Transactional
-    public void saveProblems(ProblemCreateRequest request) {
-        ProblemSet problemSet = createProblemSet(request.getCertId(), request.getUserId());
-        createProblems(request.getProblems(), problemSet.getProblemSetId());
+    public void saveShortChoiceProblem(ShortAnswerProblemCreateRequest request) {
+        Long problemId = saveProblemAndGetId(ProblemEntity.builder()
+                .certId(request.getCertId())
+                .problemType(ProblemType.SHORT_ANSWER)
+                .build());
+
+        problemRepository.saveShortAnswerProblem(
+                ShortAnswerProblemEntity.builder()
+                        .problemId(problemId)
+                        .question(request.getQuestion())
+                        .answer(request.getAnswer())
+                        .build());
     }
 
     @Override
-    public void createFromAi(ProblemCreateFromAiRequest request) {
-        String certification = problemRepository.findCertificationByCertId(request.getCertId());
-        var problemCreateRequest = client.requestProblemCreate(certification, request.getProblemCount());
+    @Transactional
+    public void generateAndSaveMultipleChoiceProblemFromAi(Long certId) {
+        var createRequest = generateProblemFromAi(
+                certId,
+                ProblemType.MULTIPLE_CHOICE,
+                MultipleChoiceProblemCreateRequest.class
+        );
+        createRequest.setCertId(certId);
 
-        ProblemSet problemSet = createProblemSet(request.getCertId(), request.getUserId());
-        createProblems(problemCreateRequest.getProblems(), problemSet.getProblemSetId());
+        saveMultipleChoiceProblem(createRequest);
     }
 
     @Override
-    public List<ProblemSet> getProblemSets(@Nullable Integer certId) {
-        return problemRepository.findProblemSetByCertId(certId);
+    @Transactional
+    public void generateAndSaveShortAnswerProblemFromAi(Long certId) {
+        var createRequest = generateProblemFromAi(
+                certId,
+                ProblemType.SHORT_ANSWER,
+                ShortAnswerProblemCreateRequest.class
+        );
+        createRequest.setCertId(certId);
+
+        saveShortChoiceProblem(createRequest);
+    }
+
+    private <T extends AiResponse> T generateProblemFromAi(
+            Long certId,
+            ProblemType problemType,
+            Class<T> responseType) {
+        String certificationName = findCertificationNameByCertId(certId);
+
+        return client.generateProblem(
+                certificationName,
+                problemType,
+                responseType
+        );
     }
 
     /**
-     * 해당 certId와 userId를 가진 ProblemSet을 DB에 저장
+     * DB에 Problem을 저장하고 ID 값을 가져옴
+     * @param problemEntity
+     * @return Auto Increment된 ID 값
+     */
+    private Long saveProblemAndGetId(ProblemEntity problemEntity) {
+        problemRepository.saveProblem(problemEntity);
+        return problemEntity.getProblemId();
+    }
+
+    /**
+     * certId로 자격증 이름 찾아 반환
      * @param certId
-     * @param userId
-     * @return
+     * @return 자격증 이름
      */
-    private ProblemSet createProblemSet(Integer certId, Integer userId) {
-        ProblemSet problemSet = ProblemSet.builder()
-                .certId(certId)
-                .userId(userId)
-                .build();
-
-        problemRepository.saveProblemSet(problemSet);
-        return problemSet;
-    }
-
-    /**
-     * 인자로 받은 Problem들을 DB에 저장
-     * @param problems
-     * @param problemSetId
-     */
-    private void createProblems(List<SingleProblem> problems, Integer problemSetId) {
-
-        for (var problem : problems) {
-            problem.setProblemSetId(problemSetId);
-            problemRepository.saveProblem(problem);
-
-            // 객관식이면 각 선택지를 추가로 DB에 넣음
-            if (problem.getProblemType() == ProblemType.MULTIPLE) {
-                for (var problemChoice : problem.getProblemChoices()) {
-                    problemChoice.setProblemId(problem.getProblemId());
-                    problemRepository.saveProblemChoice(problemChoice);
-                }
-            }
-        }
+    private String findCertificationNameByCertId(Long certId) {
+        return problemRepository.findCertificationNameByCertId(certId);
     }
 }

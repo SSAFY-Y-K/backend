@@ -3,59 +3,55 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.passit.problem.repository.ProblemRepository">
-    <insert id="saveProblemSet" useGeneratedKeys="true" keyProperty="problemSetId">
-        INSERT INTO problem_sets (cert_id, user_id)
-        VALUES (#{certId}, #{userId});
-    </insert>
-
-    <insert id="saveProblem" useGeneratedKeys="true" keyProperty="problemId">
-        INSERT INTO problems (
-                              problem_set_id,
-                              problem_number,
-                              problem_type,
-                              question,
-                              answer_correct_number,
-                              answer_text
+    <insert id="saveProblem" parameterType="ProblemEntity" useGeneratedKeys="true" keyProperty="problemId">
+        INSERT INTO problems(
+             cert_id,
+             problem_type
         )
         VALUES (
-                #{problemSetId},
-                #{problemNumber},
-                #{problemType},
-                #{question},
-                #{answerCorrectNumber},
-                #{answerText}
-               );
-    </insert>
-
-    <insert id="saveProblemChoice">
-        INSERT INTO problem_choices (problem_id,
-                                     choice_number,
-                                     content
-        )
-        VALUES (
-                 #{problemId},
-                 #{choiceNumber},
-                 #{content}
+            #{certId},
+            #{problemType}
         );
     </insert>
 
-    <select id="findCertificationByCertId" parameterType="Integer" resultType="String">
+    <insert id="saveMultipleChoiceProblem" parameterType="MultipleChoiceProblemEntity">
+        INSERT INTO multiple_choice_problems (
+             problem_id,
+             question,
+             choice_1_content,
+             choice_2_content,
+             choice_3_content,
+             choice_4_content,
+             answer_number
+        )
+        VALUES (
+            #{problemId},
+            #{question},
+            #{choice1Content},
+            #{choice2Content},
+            #{choice3Content},
+            #{choice4Content},
+            #{answerNumber}
+       );
+    </insert>
+
+    <insert id="saveShortAnswerProblem" parameterType="ShortAnswerProblemEntity">
+        INSERT INTO short_answer_problems (
+            problem_id,
+            question,
+            answer
+        )
+        VALUES (
+            #{problemId},
+            #{question},
+            #{answer}
+       );
+    </insert>
+
+    <select id="findCertificationNameByCertId" resultType="String">
         SELECT
             name
         FROM certifications
-        WHERE cert_id = #{certId};
-    </select>
-
-    <select id="findProblemSetByCertId" parameterType="Integer" resultType="ProblemSet">
-        SELECT
-            problem_set_id,
-            cert_id,
-            user_id
-        FROM problem_sets
-        <where>
-            <if test="certId != null">
-                AND cert_id = #{certId}
-            </if>
-        </where>
+        WHERE cert_id = #{certId}
     </select>
 </mapper>

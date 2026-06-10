@@ -1,8 +1,8 @@
 package com.ssafy.passit.problem.repository;
 
-import com.ssafy.passit.problem.dto.ProblemChoice;
-import com.ssafy.passit.problem.dto.ProblemSet;
-import com.ssafy.passit.problem.dto.SingleProblem;
+import com.ssafy.passit.problem.dto.entity.MultipleChoiceProblemEntity;
+import com.ssafy.passit.problem.dto.entity.ProblemEntity;
+import com.ssafy.passit.problem.dto.entity.ShortAnswerProblemEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -10,13 +10,12 @@ import java.util.List;
 
 @Mapper
 public interface ProblemRepository {
-    void saveProblemSet(ProblemSet problemSet);
 
-    void saveProblem(SingleProblem singleProblem);
+    void saveProblem(ProblemEntity problem);
 
-    void saveProblemChoice(ProblemChoice problemChoice);
+    void saveMultipleChoiceProblem(MultipleChoiceProblemEntity multipleChoiceProblem);
 
-    String findCertificationByCertId(Integer certId);
+    void saveShortAnswerProblem(ShortAnswerProblemEntity shortAnswerProblem);
 
-    List<ProblemSet> findProblemSetByCertId(@Param("certId") Integer certId);
+    String findCertificationNameByCertId(Long certId);
 }

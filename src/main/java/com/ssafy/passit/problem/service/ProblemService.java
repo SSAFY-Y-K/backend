@@ -1,25 +1,32 @@
 package com.ssafy.passit.problem.service;
 
-import com.ssafy.passit.problem.dto.ProblemCreateRequest;
-import com.ssafy.passit.problem.dto.ProblemCreateFromAiRequest;
-import com.ssafy.passit.problem.dto.ProblemSet;
-import jakarta.annotation.Nullable;
-
-import java.util.List;
+import com.ssafy.passit.problem.dto.request.MultipleChoiceProblemCreateRequest;
+import com.ssafy.passit.problem.dto.request.ShortAnswerProblemCreateRequest;
 
 public interface ProblemService {
 
     /**
-     * 사용자가 생성한 문제들을 DB에 저장
-     * @param request
+     * 사용자가 만든 객관식 문제를 DB에 저장
+     * @param request 저장하려는 객관식 문제 요청 DTO
      */
-    void saveProblems(ProblemCreateRequest request);
+    void saveMultipleChoiceProblem(MultipleChoiceProblemCreateRequest request);
 
     /**
-     * 외부 AI 서버에 문제 생성 요청
+     * 사용자가 만든 주관식 문제를 DB에 저장
+     * @param request 저장하려는 주관식 문제 요청 DTO
+     */
+    void saveShortChoiceProblem(ShortAnswerProblemCreateRequest request);
+
+    /**
+     * AI에게 객관식 문제 생성 요청하고 저장
+     * @param certId 생성할 문제의 자격증의 ID
+     */
+    void generateAndSaveMultipleChoiceProblemFromAi(Long certId);
+
+    /**
+     * AI에게 주관식 문제 생성 요청하고 저장
+     * @param certId 생성할 문제의 자격증의 ID
      * @return
      */
-    void createFromAi(ProblemCreateFromAiRequest request);
-
-    List<ProblemSet> getProblemSets(@Nullable Integer certId);
+    void generateAndSaveShortAnswerProblemFromAi(Long certId);
 }
