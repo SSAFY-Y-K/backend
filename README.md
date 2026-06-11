@@ -133,3 +133,36 @@ AI 기반 문제 생성, 사용자 직접 출제, 커뮤니티 기능, 웹 기�
 | 타입 분리 | 객관식, 주관식, 코딩 문제를 타입별 상세 테이블로 명확히 분리 |
 | 확장성 | 새로운 문제 유형 추가 시 `problems` 하위 상세 테이블 추가 방식으로 확장 가능 |
 | 조회 구조 | 문제 공통 정보와 상세 정보를 역할별로 분리해 구조 명확성 향상 |
+
+---
+
+## Git 변경 기록 (2026-06-11)
+
+### 오늘 추가된 커밋
+
+| 커밋 | 메시지 |
+|------|--------|
+| `2315a02` | `feat: 자격증 정보 조회 / 자격증별 문제 개수 조회 추가` |
+| `eaefe6c` | `dependency: JWT 사용을 위한 JJWT 의존성 추가` |
+
+### 변경 요약
+
+| 구분 | 변경 내용 |
+|------|-----------|
+| 자격증 도메인 분리 | `certification` 패키지에 Controller, Service, Repository, DTO 추가 |
+| 조회 API 추가 | 전체 자격증 조회 API와 자격증별 문제 수 조회 API 추가 |
+| 문제 서비스 정리 | `BasicProblemService`에서 자격증 이름 조회 책임을 `CertificationService`로 분리 |
+| 매퍼 구조 정리 | 자격증 조회 SQL을 `problem` 매퍼에서 제거하고 `certification` 매퍼로 이동 |
+| 의존성 추가 | JWT 사용을 위한 `jjwt-api`, `jjwt-impl`, `jjwt-jackson` 추가 |
+
+### 파일 단위 변경점
+
+| 영역 | 주요 파일 | 변경 내용 |
+|------|-----------|-----------|
+| 자격증 API | `certification/controller/CertificationController.java` | 자격증 목록 조회, 자격증별 문제 개수 조회 엔드포인트 추가 |
+| 자격증 서비스 | `certification/service/BasicCertificationService.java`, `CertificationService.java` | 자격증 이름 조회 및 목록/통계 조회 로직 분리 |
+| 자격증 저장소 | `certification/repository/CertificationRepository.java`, `mapper/certification/CertificationRepository.xml` | 자격증 이름 조회, 전체 자격증 조회, 문제 수 집계 쿼리 추가 |
+| 문제 서비스 | `problem/service/BasicProblemService.java` | 자격증 이름 조회를 `ProblemRepository` 대신 `CertificationService`에 위임 |
+| 문제 저장소 | `problem/repository/ProblemRepository.java`, `mapper/problem/ProblemRepository.xml` | 자격증 조회 메서드 및 SQL 제거 |
+| 애플리케이션 설정 | `PassitApplication.java` | 불필요한 `@MapperScan` 제거 |
+| 빌드 설정 | `build.gradle` | JJWT 의존성 3종 추가 |
