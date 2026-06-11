@@ -4,7 +4,6 @@ import com.ssafy.passit.problem.dto.entity.MultipleChoiceProblemEntity;
 import com.ssafy.passit.problem.dto.entity.ProblemEntity;
 import com.ssafy.passit.problem.dto.entity.ShortAnswerProblemEntity;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -16,6 +15,4 @@ public interface ProblemRepository {
     void saveMultipleChoiceProblem(MultipleChoiceProblemEntity multipleChoiceProblem);
 
     void saveShortAnswerProblem(ShortAnswerProblemEntity shortAnswerProblem);
-
-    String findCertificationNameByCertId(Long certId);
 }

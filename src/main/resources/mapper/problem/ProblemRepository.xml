@@ -47,11 +47,4 @@
             #{answer}
        );
     </insert>
-
-    <select id="findCertificationNameByCertId" resultType="String">
-        SELECT
-            name
-        FROM certifications
-        WHERE cert_id = #{certId}
-    </select>
 </mapper>

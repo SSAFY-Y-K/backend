@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.passit.certification.repository.CertificationRepository">
+    <select id="findCertificationName" resultType="String">
+        SELECT
+            name
+        FROM certifications
+        WHERE cert_id = #{certId};
+    </select>
+
+    <select id="findAllCertifications" resultType="Certification">
+        SELECT
+            cert_id,
+            name
+        FROM certifications
+        ORDER BY name ASC;
+    </select>
+
+    <select id="findAllCertificationProblemCount" resultType="CertificationProblemCount">
+        SELECT
+            c.cert_id,
+            c.name,
+            COUNT(p.problem_id) AS `problemCount`
+        FROM certifications c
+                 LEFT JOIN problems p
+                      ON c.cert_id = p.cert_id
+        GROUP BY c.cert_id, c.name
+        ORDER BY c.name ASC;
+    </select>
+</mapper>

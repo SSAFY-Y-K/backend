@@ -1,5 +1,6 @@
 package com.ssafy.passit.problem.service;
 
+import com.ssafy.passit.certification.service.CertificationService;
 import com.ssafy.passit.client.ExternalServerClient;
 import com.ssafy.passit.common.type.ProblemType;
 import com.ssafy.passit.problem.dto.entity.MultipleChoiceProblemEntity;
@@ -13,14 +14,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class BasicProblemService implements ProblemService {
 
     private final ExternalServerClient client;
     private final ProblemRepository problemRepository;
+    private final CertificationService certificationService;
 
     @Override
     @Transactional
@@ -89,7 +89,7 @@ public class BasicProblemService implements ProblemService {
             Long certId,
             ProblemType problemType,
             Class<T> responseType) {
-        String certificationName = findCertificationNameByCertId(certId);
+        String certificationName = certificationService.findCertificationName(certId);
 
         return client.generateProblem(
                 certificationName,
@@ -108,12 +108,4 @@ public class BasicProblemService implements ProblemService {
         return problemEntity.getProblemId();
     }
 
-    /**
-     * certId로 자격증 이름 찾아 반환
-     * @param certId
-     * @return 자격증 이름
-     */
-    private String findCertificationNameByCertId(Long certId) {
-        return problemRepository.findCertificationNameByCertId(certId);
-    }
 }
