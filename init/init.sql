@@ -11,11 +11,12 @@ USE passit;
 CREATE TABLE IF NOT EXISTS users (
     user_id    BIGINT       NOT NULL AUTO_INCREMENT,
     username   VARCHAR(50)  NOT NULL,
-    password   VARCHAR(255) NOT NULL,
+    password   VARCHAR(300) NOT NULL,
     nickname   VARCHAR(50)  NOT NULL,
     role       VARCHAR(20)  NOT NULL DEFAULT 'USER',
     created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    refresh_token VARCHAR(500) COMMENT 'JWT 리프레시 토큰',
 
     PRIMARY KEY (user_id),
     UNIQUE KEY uq_username_id (username),
