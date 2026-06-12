@@ -1,4 +1,4 @@
-package com.ssafy.passit.user.dto;
+package com.ssafy.passit.auth.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

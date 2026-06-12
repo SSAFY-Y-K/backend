@@ -1,20 +1,19 @@
-package com.ssafy.passit.user.dto;
+package com.ssafy.passit.auth.dto;
 
 import com.ssafy.passit.common.type.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class RefreshTokenResult {
 
     private Long userId;
     private String username;
-    private String password;
-    private String nickname;
     private Role role;
+    private String refreshToken;
 }

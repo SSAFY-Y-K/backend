@@ -1,4 +1,4 @@
-package com.ssafy.passit.user.dto;
+package com.ssafy.passit.common.type;
 
 public enum Role {
     USER,

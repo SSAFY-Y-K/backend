@@ -1,7 +1,6 @@
-package com.ssafy.passit.auth;
+package com.ssafy.passit.security;
 
-import com.ssafy.passit.user.dto.Role;
-import com.ssafy.passit.user.dto.SessionUser;
+import com.ssafy.passit.common.type.Role;
 import com.ssafy.passit.user.dto.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,22 +29,13 @@ public class CustomUserDetails implements UserDetails {
         return user.getRole();
     }
 
-    public SessionUser toSessionUser() {
-        return SessionUser.builder()
-                .userId(user.getUserId())
-                .username(user.getUsername())
-                .nickname(user.getNickname())
-                .role(user.getRole())
-                .build();
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (user.getRole() == null) {
             return List.of();
         }
 
-        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+        return List.of(new SimpleGrantedAuthority(user.getRole().name()));
     }
 
     @Override

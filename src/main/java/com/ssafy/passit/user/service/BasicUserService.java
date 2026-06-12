@@ -1,19 +1,18 @@
 package com.ssafy.passit.user.service;
 
 import com.ssafy.passit.user.dto.*;
-import com.ssafy.passit.user.exception.LoginFailureException;
 import com.ssafy.passit.user.exception.SignupValidationException;
-import com.ssafy.passit.user.repository.UserRepository;
+import com.ssafy.passit.user.mapper.UserMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class BasicUserService implements UserService {
 
-    private final UserRepository userRepository;
-
-    public BasicUserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void signup(SignupRequest signupRequest) {
@@ -21,24 +20,8 @@ public class BasicUserService implements UserService {
         validateUsernameUnique(signupRequest.getUsername());
         validateNicknameUnique(signupRequest.getNickname());
 
-        userRepository.insert(signupRequest);
-    }
-
-    @Override
-    public SessionUser login(LoginRequest loginRequest) {
-        User user = userRepository.findByUsername(loginRequest.getUsername())
-                .orElseThrow(() -> new LoginFailureException("아이디 또는 비밀번호가 다릅니다."));
-
-        if (!user.getPassword().equals(loginRequest.getPassword())) {
-            throw new LoginFailureException("아이디 또는 비밀번호가 다릅니다.");
-        }
-
-        return SessionUser.builder()
-                .userId(user.getUserId())
-                .username(user.getUsername())
-                .nickname(user.getNickname())
-                .role(user.getRole())
-                .build();
+        signupRequest.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+        userMapper.insert(signupRequest);
     }
 
     /**
@@ -60,7 +43,7 @@ public class BasicUserService implements UserService {
      * @throws SignupValidationException 이미 존재하는 유저네임
      */
     private void validateUsernameUnique(String username) {
-        int count = userRepository.countByUsername(username);
+        int count = userMapper.countByUsername(username);
         if (count > 0) {
             throw new SignupValidationException("이미 존재하는 유저네임입니다.", "username");
         }
@@ -72,7 +55,7 @@ public class BasicUserService implements UserService {
      * @throws SignupValidationException 이미 존재하는 닉네임
      */
     private void validateNicknameUnique(String nickname) {
-        int count = userRepository.countByNickname(nickname);
+        int count = userMapper.countByNickname(nickname);
         if (count > 0) {
             throw new SignupValidationException("이미 존재하는 닉네임입니다.", "nickname");
         }
