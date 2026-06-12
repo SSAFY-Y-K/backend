@@ -43,6 +43,10 @@ public class ProblemController {
     }
 
     @PostMapping("/create/multiple-choice/ai")
+    @Operation(summary = "AI에게 객관식 문제 생성 요청", description = "AI가 객관식 문제 생성하는 엔드포인트")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "객관식 문제 생성 성공")
+    })
     public ResponseEntity<Void> createMultipleChoiceProblemFromAi(
             @RequestBody Long certId) {
 
@@ -50,7 +54,12 @@ public class ProblemController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+
     @PostMapping("/create/short-answer/ai")
+    @Operation(summary = "AI에게 주관식 문제 생성 요청", description = "AI가 주관식 문제 생성하는 엔드포인트")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "주관식 문제 생성 성공")
+    })
     public ResponseEntity<Void> createShortAnswerProblemFromAi(
             @RequestBody Long certId) {
 
