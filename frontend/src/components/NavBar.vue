@@ -1,46 +1,74 @@
 <template>
-	<nav class="border-b border-white/15 bg-blue-600 text-white shadow-md">
-		<div class="mx-auto flex h-14 max-w-full items-center justify-between px-4">
-			<div class="flex min-w-0 items-center gap-3">
-				<RouterLink
-					:to="{ name: 'home' }"
-					class="shrink-0 whitespace-nowrap text-lg font-bold tracking-tight text-white no-underline md:text-xl"
-				>
-					PASSIT
-				</RouterLink>
-
-				<div class="hidden items-center gap-1.5 md:flex">
-					<RouterLink
-						v-for="item in menuItems"
-						:key="item.name"
-						:to="{ name: item.name }"
-						active-class="bg-white/15 text-white"
-						exact-active-class="bg-white/15 text-white"
-						class="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-white/90 no-underline transition hover:bg-white/10 hover:text-white"
-					>
-						<img :src="item.icon" :alt="item.label" class="h-4 w-4 shrink-0" />
-						<span>{{ item.label }}</span>
-					</RouterLink>
-				</div>
-			</div>
-
-			<RouterLink
-				:to="{ name: 'login' }"
-				active-class="bg-white/15 border-white"
-				exact-active-class="bg-white/15 border-white"
-				class="inline-flex h-9 shrink-0 items-center justify-center rounded-sm border border-white/70 px-4 text-sm font-semibold text-white no-underline transition hover:border-white hover:bg-white/10"
+	<nav class="flex h-12 shrink-0 items-center gap-3 bg-[#1d3461] px-4 text-white">
+		<!-- Logo -->
+		<div class="flex items-center gap-2 shrink-0">
+			<div
+				class="flex h-6 w-6 items-center justify-center rounded bg-white/20 text-[10px] font-bold"
 			>
-				로그인
+				P
+			</div>
+			<span class="text-sm font-bold tracking-tight">PASSIT</span>
+		</div>
+
+		<div class="h-4 w-px shrink-0 bg-white/20"></div>
+
+		<!-- Center search -->
+		<div class="flex flex-1 items-center">
+			<input
+				type="search"
+				placeholder="문제 검색..."
+				class="h-7 w-full max-w-sm rounded border border-white/15 bg-white/10 px-3 text-xs text-white outline-none placeholder:text-white/40 focus:border-white/30 focus:bg-white/15"
+			/>
+		</div>
+
+		<!-- Right nav -->
+		<div class="flex items-center gap-4 shrink-0">
+			<RouterLink
+				v-for="item in navItems"
+				:key="item.name"
+				:to="{ name: item.name }"
+				active-class="text-white"
+				class="text-xs font-medium text-white/70 no-underline transition hover:text-white"
+			>
+				{{ item.label }}
 			</RouterLink>
+
+			<div class="h-4 w-px bg-white/20"></div>
+
+			<!-- Notification bell -->
+			<button class="relative text-white/70 transition hover:text-white">
+				<svg
+					class="h-4 w-4"
+					viewBox="0 0 16 16"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.6"
+				>
+					<path d="M8 1.5a5 5 0 0 1 5 5v2.5l1 2H2l1-2V6.5a5 5 0 0 1 5-5z" />
+					<path d="M6.5 13.5a1.5 1.5 0 0 0 3 0" stroke-linecap="round" />
+				</svg>
+				<span
+					class="absolute -right-0.5 -top-0.5 flex h-3 w-3 items-center justify-center rounded-full bg-red-400 text-[8px] font-bold text-white"
+				>
+					1
+				</span>
+			</button>
+
+			<!-- Avatar -->
+			<button
+				class="flex h-7 w-7 items-center justify-center rounded-full bg-orange-400 text-[11px] font-bold text-white shadow-sm"
+			>
+				김
+			</button>
 		</div>
 	</nav>
 </template>
 
 <script setup>
-const menuItems = [
-	{ name: "home", label: "홈", icon: "/home.svg" },
-	{ name: "problem", label: "문제 풀기", icon: "/problem.svg" },
-	{ name: "create", label: "문제 만들기", icon: "/add.svg" },
-	{ name: "community", label: "커뮤니티", icon: "/community.svg" },
+const navItems = [
+	{ name: "home", label: "홈" },
+	{ name: "problem", label: "문제" },
+	{ name: "create", label: "만들기" },
+	{ name: "community", label: "커뮤니티" },
 ];
 </script>

@@ -1,222 +1,151 @@
 <template>
-	<section class="min-h-full bg-slate-50">
-		<div class="mx-auto max-w-[1600px] px-6 py-6">
-			<header class="mb-6">
-				<h1 class="text-3xl font-bold tracking-tight text-slate-900">커뮤니티</h1>
-				<p class="mt-2 text-sm text-slate-500">
-					합격 후기, 공부 팁, 질문을 한곳에서 나누는 공간입니다.
-				</p>
-			</header>
-
-			<div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_260px]">
-				<div class="space-y-4">
-					<div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-						<div class="flex gap-0 overflow-x-auto">
-							<button
-								v-for="tab in tabs"
-								:key="tab.id"
-								type="button"
-								:class="[
-									'border-b-2 px-4 py-3 text-sm font-medium transition',
-									activeTab === tab.id
-										? 'border-blue-600 text-blue-600'
-										: 'border-transparent text-slate-500 hover:text-slate-700',
-								]"
-								@click="activeTab = tab.id"
-							>
-								{{ tab.label }}
-							</button>
-						</div>
+	<section class="min-h-full p-4">
+		<div class="grid gap-4 lg:grid-cols-[1fr_200px]">
+			<!-- Main posts area -->
+			<div>
+				<!-- Tab filter + sort -->
+				<div class="mb-3 flex items-center justify-between">
+					<div class="flex gap-0 overflow-hidden rounded-md border border-slate-200 bg-white">
+						<button
+							v-for="tab in tabs"
+							:key="tab.id"
+							:class="[
+								'px-4 py-1.5 text-xs font-medium transition',
+								activeTab === tab.id
+									? 'bg-blue-600 text-white'
+									: 'text-slate-500 hover:bg-slate-50',
+							]"
+							@click="activeTab = tab.id"
+						>
+							{{ tab.label }}
+						</button>
 					</div>
 
-					<article
-						v-for="post in filteredPosts"
-						:key="post.id"
-						class="rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm md:px-5 md:py-5"
-					>
-						<div class="flex gap-3">
-							<div
-								class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white"
-							>
-								{{ post.avatar }}
-							</div>
-
-							<div class="min-w-0 flex-1">
-								<div class="flex flex-wrap gap-2">
-									<span
-										v-for="tag in post.tags"
-										:key="tag"
-										class="inline-flex items-center rounded-full border border-blue-200 px-2.5 py-0.5 text-xs font-medium text-blue-600"
-									>
-										{{ tag }}
-									</span>
-								</div>
-
-								<h2 class="mt-2 text-lg font-semibold text-slate-900">
-									{{ post.title }}
-								</h2>
-
-								<div
-									class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-500"
-								>
-									<span>{{ post.author }}</span>
-									<span class="inline-flex items-center gap-1">
-										<svg viewBox="0 0 24 24" aria-hidden="true" class="h-4 w-4">
-											<circle
-												cx="12"
-												cy="12"
-												r="9"
-												fill="none"
-												stroke="currentColor"
-												stroke-width="1.8"
-											/>
-											<path
-												d="M12 7v5l3 2"
-												fill="none"
-												stroke="currentColor"
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="1.8"
-											/>
-										</svg>
-										{{ post.time }}
-									</span>
-									<span class="inline-flex items-center gap-1">좋아요 {{ post.likes }}</span>
-									<span class="inline-flex items-center gap-1">댓글 {{ post.comments }}</span>
-									<span class="inline-flex items-center gap-1">조회 {{ post.views }}</span>
-								</div>
-							</div>
-						</div>
-					</article>
-
-					<div class="pt-2 text-center">
-						<button
-							type="button"
-							class="inline-flex items-center rounded-md border border-blue-200 bg-white px-4 py-2 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
+					<div class="flex items-center gap-2">
+						<select
+							class="h-7 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-600 outline-none focus:border-blue-400"
 						>
-							더 보기
-						</button>
+							<option>처리 팔 ▾</option>
+							<option>최신순</option>
+							<option>인기순</option>
+						</select>
 					</div>
 				</div>
 
-				<aside class="space-y-4">
-					<div class="rounded-lg bg-blue-600 px-4 py-4 text-white shadow-sm">
-						<h2 class="text-lg font-bold">새 글 작성</h2>
-						<p class="mt-3 text-sm leading-6 text-blue-50">
-							궁금한 점이나 공부 경험을 남겨서 다른 사람과 공유해보세요.
-						</p>
-						<button
-							type="button"
-							class="mt-4 inline-flex w-full items-center justify-center rounded-md border border-white/80 bg-white px-4 py-2 text-sm font-semibold text-blue-600 transition hover:bg-blue-50"
+				<!-- Posts list -->
+				<div class="space-y-2">
+					<div
+						v-for="post in posts"
+						:key="post.id"
+						class="flex cursor-pointer gap-3 rounded-lg border border-slate-200 bg-white p-3 shadow-sm transition hover:shadow-md"
+					>
+						<!-- Avatar -->
+						<div
+							class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-600"
 						>
-							글쓰기
-						</button>
-					</div>
+							{{ post.avatar }}
+						</div>
 
-					<div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-						<h2 class="text-lg font-semibold text-slate-900">인기 팁</h2>
-
-						<div class="mt-4 space-y-3">
-							<div
-								v-for="tip in popularTips"
-								:key="tip.id"
-								class="rounded-md border border-slate-200 px-3 py-3"
-							>
-								<div class="flex items-center gap-2">
-									<span
-										class="inline-flex items-center rounded-full border border-slate-300 px-2 py-0.5 text-xs font-medium text-slate-600"
-									>
-										{{ tip.tag }}
-									</span>
-								</div>
-								<p class="mt-2 text-sm font-semibold text-slate-900">
-									{{ tip.title }}
-								</p>
-								<p class="mt-2 text-xs text-slate-500">
-									{{ tip.author }} · 좋아요 {{ tip.likes }}
-								</p>
+						<!-- Content -->
+						<div class="min-w-0 flex-1">
+							<p class="text-xs font-semibold leading-snug text-slate-800">{{ post.title }}</p>
+							<div class="mt-1 flex items-center gap-3 text-[10px] text-slate-400">
+								<span class="flex items-center gap-0.5">△ {{ post.likes }}</span>
+								<span>댓글 {{ post.comments }}</span>
+								<span>포인트 {{ post.points }}</span>
 							</div>
 						</div>
+
+						<!-- Date -->
+						<div class="shrink-0 text-[10px] text-slate-400">{{ post.date }}</div>
 					</div>
-				</aside>
+				</div>
 			</div>
+
+			<!-- Right: Popular tips sidebar -->
+			<aside>
+				<div class="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+					<h4 class="mb-3 text-xs font-semibold text-slate-700">인기 팁 사이드바</h4>
+					<ul class="space-y-2.5">
+						<li
+							v-for="tip in popularTips"
+							:key="tip.id"
+							class="flex items-start gap-1.5 cursor-pointer"
+						>
+							<span class="mt-0.5 shrink-0 text-[10px] text-blue-400">•</span>
+							<p class="text-[11px] leading-snug text-slate-600 transition hover:text-blue-600">
+								{{ tip.text }}
+							</p>
+						</li>
+					</ul>
+				</div>
+			</aside>
 		</div>
 	</section>
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
-
-const tabs = [
-	{ id: "all", label: "전체 게시글" },
-	{ id: "review", label: "합격 후기" },
-	{ id: "tip", label: "공부 팁" },
-	{ id: "question", label: "질문" },
-];
+import { ref } from "vue";
 
 const activeTab = ref("all");
+
+const tabs = [
+	{ id: "all", label: "자유" },
+	{ id: "question", label: "질문" },
+];
 
 const posts = [
 	{
 		id: 1,
-		tab: "review",
-		avatar: "김",
-		tags: ["정보처리기사", "합격후기", "실기"],
-		title: "정보처리기사 실기 합격 후기 - 2달 준비",
-		author: "김코딩",
-		time: "2시간 전",
-		likes: 45,
-		comments: 12,
-		views: 234,
+		avatar: "이",
+		title: "이이이저네 이이이2년 문제 팔린이요!",
+		likes: 4.0,
+		comments: 39,
+		points: 50,
+		date: "20여/2 추",
 	},
 	{
 		id: 2,
-		tab: "question",
-		avatar: "이",
-		tags: ["AWS SA", "시험후기", "난이도"],
-		title: "AWS SAA 덤프 vs 실제 시험 난이도 차이",
-		author: "이클라우드",
-		time: "5시간 전",
-		likes: 28,
-		comments: 8,
-		views: 156,
+		avatar: "박",
+		title: "도상동 정치고 팔할때에 대해약 우상한 려요?",
+		likes: 4.6,
+		comments: 38,
+		points: 50,
+		date: "5여/2 추",
 	},
 	{
 		id: 3,
-		tab: "tip",
-		avatar: "박",
-		tags: ["SQLD", "합격후기", "공부법"],
-		title: "SQLD 한 달 준비로 합격한 공부법",
-		author: "빅데이터",
-		time: "1일 전",
-		likes: 89,
-		comments: 23,
-		views: 567,
+		avatar: "김",
+		title: "인상달의 고물재 문자는 것",
+		likes: 4.0,
+		comments: 39,
+		points: 50,
+		date: "20여/2 추",
+	},
+	{
+		id: 4,
+		avatar: "최",
+		title: "어때도 자들이 자들한 태에라•선티",
+		likes: 5.0,
+		comments: 34,
+		points: 48,
+		date: "5여/2 추",
+	},
+	{
+		id: 5,
+		avatar: "정",
+		title: "꼰야오건 자동 정달에 팔한 참계자",
+		likes: 4.2,
+		comments: 28,
+		points: 42,
+		date: "1여/2 추",
 	},
 ];
 
 const popularTips = [
-	{
-		id: 1,
-		tag: "정보처리기사",
-		title: "운영체제 파트 핵심 정리 5가지",
-		author: "최개발",
-		likes: 156,
-	},
-	{
-		id: 2,
-		tag: "SQLD",
-		title: "SQL 문법 헷갈리는 부분 정리",
-		author: "강디비",
-		likes: 134,
-	},
+	{ id: 1, text: "팅틸 달여이달 않 같 하는 아이이이이달이달 이달이달이 팔린이달 빠른이?" },
+	{ id: 2, text: "자달알 지달하고 탈한 이달달달에에에에에에에에에에 달아하이달 물이달이달이다랄이달이다." },
+	{ id: 3, text: "팅킬 달여이달랄이달이달이달이달이달이달이달이달이달이다이달." },
+	{ id: 4, text: "팅킬 달여 손 달아이달이달이달이달이달이달이달이달이달이달이달이달이달이다." },
 ];
-
-const filteredPosts = computed(() => {
-	if (activeTab.value === "all") {
-		return posts;
-	}
-
-	return posts.filter((post) => post.tab === activeTab.value);
-});
 </script>

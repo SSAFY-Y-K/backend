@@ -1,153 +1,160 @@
 <template>
-	<section class="min-h-full bg-slate-50">
-		<div class="mx-auto max-w-4xl px-6 py-6">
-			<header class="mb-6">
-				<h1 class="text-3xl font-bold tracking-tight text-slate-900">문제 만들기</h1>
-				<p class="mt-2 text-sm text-slate-500">
-					AI로 문제 초안을 만들거나 직접 문제를 작성해 등록하세요.
-				</p>
-			</header>
+	<section class="min-h-full p-4">
+		<!-- Header -->
+		<div class="mb-4 flex items-center justify-between">
+			<h3 class="text-sm font-bold text-slate-700">문제</h3>
+			<button
+				class="flex items-center gap-1 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm transition hover:bg-slate-50"
+			>
+				+ 작성 완료
+			</button>
+		</div>
 
-			<div class="mb-6 grid gap-4 md:grid-cols-2">
-				<button
-					v-for="mode in createModes"
-					:key="mode.id"
-					type="button"
-					:class="[
-						'rounded-lg border bg-white p-6 text-center shadow-sm transition hover:border-blue-300 hover:bg-blue-50',
-						selectedMode === mode.id ? 'border-blue-500 ring-2 ring-blue-100' : 'border-slate-200',
-					]"
-					@click="selectedMode = mode.id"
+		<!-- Mode selection -->
+		<div v-if="!selectedMode" class="grid grid-cols-2 gap-4">
+			<button
+				class="group flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-slate-200 bg-white p-8 shadow-sm transition hover:border-blue-300 hover:shadow-md"
+				@click="selectedMode = 'ai'"
+			>
+				<!-- AI icon -->
+				<div
+					class="flex h-20 w-20 items-center justify-center rounded-full bg-blue-50 border-4 border-blue-100 transition group-hover:border-blue-200"
 				>
-					<div
-						:class="[
-							'mx-auto flex h-12 w-12 items-center justify-center rounded-lg text-lg font-bold text-white',
-							mode.color,
-						]"
+					<svg
+						class="h-10 w-10 text-blue-500"
+						viewBox="0 0 40 40"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
 					>
-						{{ mode.icon }}
-					</div>
-					<h2 class="mt-4 text-lg font-bold text-slate-900">{{ mode.title }}</h2>
-					<p class="mt-2 text-sm text-slate-500">{{ mode.description }}</p>
+						<circle cx="20" cy="20" r="12" />
+						<path d="M14 20h12M20 14v12" stroke-linecap="round" />
+						<circle cx="20" cy="20" r="3" fill="currentColor" />
+					</svg>
+				</div>
+				<div class="text-center">
+					<h3 class="text-base font-bold text-slate-800">AI 모드</h3>
+					<p class="mt-1 text-xs text-slate-400">최제 최오 최무한 한자</p>
+				</div>
+			</button>
+
+			<button
+				class="group flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-slate-200 bg-white p-8 shadow-sm transition hover:border-blue-300 hover:shadow-md"
+				@click="selectedMode = 'manual'"
+			>
+				<!-- Document icon -->
+				<div
+					class="flex h-20 w-20 items-center justify-center rounded-full bg-slate-50 border-4 border-slate-100 transition group-hover:border-slate-200"
+				>
+					<svg
+						class="h-10 w-10 text-slate-500"
+						viewBox="0 0 40 40"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+					>
+						<rect x="8" y="6" width="24" height="28" rx="3" />
+						<path d="M14 15h12M14 20h12M14 25h8" stroke-linecap="round" />
+					</svg>
+				</div>
+				<div class="text-center">
+					<h3 class="text-base font-bold text-slate-800">직접 모드</h3>
+					<p class="mt-1 text-xs text-slate-400">직접 모도마서 한 팬오</p>
+				</div>
+			</button>
+		</div>
+
+		<!-- Form (after mode selected) -->
+		<div v-else class="max-w-2xl">
+			<!-- Mode tab + close -->
+			<div class="mb-4 flex items-center gap-0 overflow-hidden rounded-lg border border-slate-200 bg-white">
+				<button
+					:class="[
+						'px-4 py-2 text-xs font-semibold transition',
+						selectedMode === 'ai' ? 'bg-blue-600 text-white' : 'text-slate-500 hover:bg-slate-50',
+					]"
+					@click="selectedMode = 'ai'"
+				>
+					AI 오르되
+				</button>
+				<button
+					:class="[
+						'px-4 py-2 text-xs font-semibold transition',
+						selectedMode === 'manual' ? 'bg-blue-600 text-white' : 'text-slate-500 hover:bg-slate-50',
+					]"
+					@click="selectedMode = 'manual'"
+				>
+					지금 모드
+				</button>
+				<div class="flex-1"></div>
+				<button
+					class="px-3 py-2 text-xs text-slate-400 transition hover:text-slate-600"
+					@click="selectedMode = null"
+				>
+					✕
 				</button>
 			</div>
 
-			<form
-				class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
-				@submit.prevent="handleSubmit"
-			>
-				<div class="mb-6">
-					<h2 class="text-xl font-bold text-slate-900">문제 정보</h2>
-				</div>
+			<!-- Form card -->
+			<div class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+				<h3 class="mb-4 text-sm font-bold text-slate-700">문제 작성 폼</h3>
 
-				<div class="space-y-5">
-					<select
-						v-model="certification"
-						class="h-11 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-					>
-						<option value="">자격증 선택</option>
-						<option v-for="cert in certifications" :key="cert" :value="cert">
-							{{ cert }}
-						</option>
-					</select>
-
-					<select
-						v-model="level"
-						class="h-11 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-					>
-						<option value="">난이도</option>
-						<option value="초급">초급</option>
-						<option value="중급">중급</option>
-						<option value="상급">상급</option>
-					</select>
-
+				<div class="space-y-4">
+					<!-- 문제 작성 -->
 					<div>
-						<p class="mb-3 text-sm font-medium text-slate-700">문제 유형</p>
-						<div class="flex flex-wrap gap-4">
-							<label
-								v-for="type in problemTypes"
-								:key="type"
-								class="flex items-center gap-2 text-sm text-slate-700"
-							>
-								<input
-									v-model="problemType"
-									type="radio"
-									:value="type"
-									class="h-4 w-4 border-slate-300 text-blue-600 focus:ring-blue-500"
-								/>
-								{{ type }}
-							</label>
+						<label class="mb-1 block text-xs font-medium text-slate-500">문제 작성</label>
+						<input
+							type="text"
+							placeholder="글제 제목 제목이라시시시시시."
+							class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-blue-400 focus:bg-white focus:ring-1 focus:ring-blue-100"
+						/>
+					</div>
+
+					<!-- 빌리본 참고 -->
+					<div>
+						<label class="mb-1 block text-xs font-medium text-slate-500">빌리본 참고</label>
+						<input
+							type="text"
+							placeholder="비빌 사단달달달 팡달팡달 달아봅시다."
+							class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-blue-400 focus:bg-white focus:ring-1 focus:ring-blue-100"
+						/>
+					</div>
+
+					<!-- Rich text toolbar -->
+					<div>
+						<div class="mb-1 flex items-center gap-1 rounded-t-md border border-slate-200 bg-slate-50 px-2 py-1.5">
+							<button class="rounded px-1.5 py-0.5 text-xs font-bold text-slate-600 hover:bg-slate-200">B</button>
+							<button class="rounded px-1.5 py-0.5 text-xs italic text-slate-600 hover:bg-slate-200">I</button>
+							<button class="rounded px-1.5 py-0.5 text-xs font-bold underline text-slate-600 hover:bg-slate-200">U</button>
+							<div class="mx-1 h-3 w-px bg-slate-300"></div>
+							<button class="rounded px-1.5 py-0.5 text-xs text-slate-600 hover:bg-slate-200">♀</button>
+							<button class="rounded px-1.5 py-0.5 text-xs text-slate-600 hover:bg-slate-200">☞</button>
+							<div class="mx-1 h-3 w-px bg-slate-300"></div>
+							<button class="rounded px-1.5 py-0.5 text-xs text-slate-600 hover:bg-slate-200">≡</button>
+							<button class="rounded px-1.5 py-0.5 text-xs text-slate-600 hover:bg-slate-200">≡</button>
+							<button class="rounded px-1.5 py-0.5 text-xs text-slate-600 hover:bg-slate-200">≡</button>
 						</div>
-					</div>
-
-					<div class="border-t border-slate-200 pt-5">
-						<input
-							v-model="title"
-							type="text"
-							placeholder="문제 제목"
-							class="h-11 w-full rounded-md border border-slate-300 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-						/>
-					</div>
-
-					<textarea
-						v-model="content"
-						rows="6"
-						placeholder="문제 내용"
-						class="w-full resize-none rounded-md border border-slate-300 px-3 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-					></textarea>
-
-					<div v-if="problemType === '객관식'" class="space-y-3">
-						<p class="text-sm font-medium text-slate-700">보기</p>
-						<input
-							v-for="(choice, index) in choices"
-							:key="index"
-							v-model="choices[index]"
-							type="text"
-							:placeholder="`${index + 1}번 보기`"
-							class="h-10 w-full rounded-md border border-slate-300 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-						/>
-					</div>
-
-					<textarea
-						v-model="answer"
-						rows="4"
-						placeholder="정답 및 해설"
-						class="w-full resize-none rounded-md border border-slate-300 px-3 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-					></textarea>
-
-					<div
-						v-if="selectedMode === 'ai'"
-						class="rounded-md border border-blue-100 bg-blue-50 px-4 py-3"
-					>
-						<label for="sourceText" class="text-sm font-medium text-blue-900">
-							AI 참고 내용
-						</label>
 						<textarea
-							id="sourceText"
-							v-model="sourceText"
-							rows="4"
-							placeholder="문제를 만들 기준 자료나 출제 범위를 입력하세요."
-							class="mt-2 w-full resize-none rounded-md border border-blue-200 bg-white px-3 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+							rows="5"
+							placeholder="작성 참하는 문제 팔랑팔랑이라이라 방법을 달아봅시다."
+							class="w-full resize-none rounded-b-md border border-t-0 border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-100"
 						></textarea>
 					</div>
 
-					<div class="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
-						<button
-							type="button"
-							class="inline-flex h-10 items-center justify-center rounded-md border border-slate-300 bg-white px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-							@click="resetForm"
+					<!-- 작성 참고 -->
+					<div>
+						<label class="mb-1 block text-xs font-medium text-slate-500">작성 참고</label>
+						<select
+							class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-xs text-slate-500 outline-none transition focus:border-blue-400 focus:bg-white"
 						>
-							초기화
-						</button>
-						<button
-							type="submit"
-							class="inline-flex h-10 items-center justify-center rounded-md bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200"
-						>
-							{{ selectedMode === "ai" ? "AI 문제 생성" : "문제 등록" }}
-						</button>
+							<option>자격증 선택...</option>
+							<option>정보처리기사</option>
+							<option>AWS SA</option>
+							<option>SQLD</option>
+						</select>
 					</div>
 				</div>
-			</form>
+			</div>
 		</div>
 	</section>
 </template>
@@ -155,58 +162,5 @@
 <script setup>
 import { ref } from "vue";
 
-const createModes = [
-	{
-		id: "ai",
-		title: "AI로 문제 생성",
-		description: "기출 문제나 학습 자료를 바탕으로 문제 초안을 생성합니다.",
-		icon: "AI",
-		color: "bg-purple-600",
-	},
-	{
-		id: "manual",
-		title: "직접 문제 작성",
-		description: "문제를 직접 작성하고 정답과 해설을 입력합니다.",
-		icon: "DOC",
-		color: "bg-blue-500",
-	},
-];
-
-const certifications = ["정보처리기사", "AWS SA", "SQLD", "정보보안기사"];
-const problemTypes = ["객관식", "주관식", "코딩"];
-
-const selectedMode = ref("ai");
-const certification = ref("");
-const level = ref("");
-const problemType = ref("객관식");
-const title = ref("");
-const content = ref("");
-const choices = ref(["", "", "", ""]);
-const answer = ref("");
-const sourceText = ref("");
-
-const resetForm = () => {
-	certification.value = "";
-	level.value = "";
-	problemType.value = "객관식";
-	title.value = "";
-	content.value = "";
-	choices.value = ["", "", "", ""];
-	answer.value = "";
-	sourceText.value = "";
-};
-
-const handleSubmit = () => {
-	console.log("create problem submit", {
-		mode: selectedMode.value,
-		certification: certification.value,
-		level: level.value,
-		problemType: problemType.value,
-		title: title.value,
-		content: content.value,
-		choices: choices.value,
-		answer: answer.value,
-		sourceText: sourceText.value,
-	});
-};
+const selectedMode = ref(null);
 </script>

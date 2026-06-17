@@ -1,14 +1,19 @@
 <template>
-	<div class="flex h-screen flex-col">
+	<div class="flex h-screen flex-col overflow-hidden">
 		<NavBar />
-		<main class="flex-1">
-			<RouterView />
-		</main>
+		<div class="flex flex-1 overflow-hidden">
+			<SideBar v-if="!route.meta.hideSidebar" />
+			<main class="flex-1 overflow-y-auto bg-gray-50">
+				<RouterView />
+			</main>
+		</div>
 	</div>
 </template>
 
 <script setup>
+import { useRoute } from "vue-router";
 import NavBar from "./components/NavBar.vue";
-</script>
+import SideBar from "./components/SideBar.vue";
 
-<style lang="scss" scoped></style>
+const route = useRoute();
+</script>
