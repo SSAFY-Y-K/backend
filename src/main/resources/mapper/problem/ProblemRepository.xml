@@ -49,4 +49,61 @@
             #{answer}
        );
     </insert>
+
+    <select id="findProblems" resultType="ProblemEntity">
+        SELECT
+            problem_id,
+            cert_id,
+            problem_type,
+            problem_title
+        FROM problems
+        <where>
+            <if test="certId != null">
+                AND cert_id = #{certId}
+            </if>
+            <if test="problemId != null">
+                AND problem_id &lt; #{problemId}
+            </if>
+        </where>
+        ORDER BY problem_id DESC
+        LIMIT #{size};
+    </select>
+
+    <select id="findMultipleChoiceProblem" resultType="MultipleChoiceProblemResponse">
+        SELECT
+            p.problem_id AS `problemId`,
+            p.cert_id AS `certId`,
+            c.name AS `certificationName`,
+            p.problem_type AS `problemType`,
+            p.problem_title AS `problemTitle`,
+            m.question AS `question`,
+            m.choice_1_content AS `choice1Content`,
+            m.choice_2_content AS `choice2Content`,
+            m.choice_3_content AS `choice3Content`,
+            m.choice_4_content AS `choice4Content`,
+            m.answer_number AS `answerNumber`
+        FROM problems p
+        JOIN certifications c
+            ON p.cert_id = c.cert_id
+        JOIN multiple_choice_problems m
+            ON p.problem_id = m.problem_id
+        WHERE p.problem_id = #{problemId};
+    </select>
+
+    <select id="findShortAnswerProblem" resultType="ShortAnswerProblemResponse">
+        SELECT
+            p.problem_id AS `problemId`,
+            p.cert_id AS `certId`,
+            c.name AS `certificationName`,
+            p.problem_type AS `problemType`,
+            p.problem_title AS `problemTitle`,
+            s.question AS `question`,
+            s.answer AS `answer`
+        FROM problems p
+        JOIN certifications c
+            ON p.cert_id = c.cert_id
+        JOIN short_answer_problems s
+            ON p.problem_id = s.problem_id
+        WHERE p.problem_id = #{problemId};
+    </select>
 </mapper>

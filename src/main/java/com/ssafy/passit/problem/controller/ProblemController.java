@@ -2,6 +2,9 @@ package com.ssafy.passit.problem.controller;
 
 import com.ssafy.passit.problem.dto.request.MultipleChoiceProblemCreateRequest;
 import com.ssafy.passit.problem.dto.request.ShortAnswerProblemCreateRequest;
+import com.ssafy.passit.problem.dto.response.MultipleChoiceProblemResponse;
+import com.ssafy.passit.problem.dto.response.ProblemsResponse;
+import com.ssafy.passit.problem.dto.response.ShortAnswerProblemResponse;
 import com.ssafy.passit.problem.service.ProblemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -67,4 +70,51 @@ public class ProblemController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @GetMapping
+    @Operation(summary = "문제 ID, 제목, 타입 조회", description = """
+            cert_id 가 null이면 모든 자격증 조회, 아니면 해당 자격증만 조회
+            problem_id 기반으로 페이징, null이면 첫 페이지 조회
+            problem_id는 현재까지 조회한 문제 중 가장 작은 problemId임
+            """)
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "문제 조회 성공")
+    })
+    public ProblemsResponse findProblems(
+            @RequestParam(value = "cert_id", required = false) Long certId,
+            @RequestParam(value = "problem_id", required = false) Long problemId
+    ) {
+        return problemService.findProblems(certId, problemId);
+    }
+
+    @GetMapping("/multiple-choice/{problemId}")
+    @Operation(summary = "객관식 문제 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "문제 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 문제")
+    })
+    public ResponseEntity<MultipleChoiceProblemResponse> findMultipleChoiceProblem(
+            @PathVariable long problemId
+    ) {
+        var problem = problemService.findMultipleChoiceProblem(problemId);
+        if (problem == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().body(problem);
+    }
+
+    @GetMapping("/short-answer/{problemId}")
+    @Operation(summary = "주관식 문제 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "문제 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 문제")
+    })
+    public ResponseEntity<ShortAnswerProblemResponse> findShortAnswerProblem(
+            @PathVariable long problemId
+    ) {
+        var problem = problemService.findShortAnswerProblem(problemId);
+        if (problem == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().body(problem);
+    }
 }

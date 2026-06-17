@@ -9,14 +9,20 @@ import com.ssafy.passit.problem.dto.entity.ShortAnswerProblemEntity;
 import com.ssafy.passit.problem.dto.request.AiResponse;
 import com.ssafy.passit.problem.dto.request.MultipleChoiceProblemCreateRequest;
 import com.ssafy.passit.problem.dto.request.ShortAnswerProblemCreateRequest;
+import com.ssafy.passit.problem.dto.response.MultipleChoiceProblemResponse;
+import com.ssafy.passit.problem.dto.response.ProblemsResponse;
+import com.ssafy.passit.problem.dto.response.ShortAnswerProblemResponse;
 import com.ssafy.passit.problem.repository.ProblemRepository;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class BasicProblemService implements ProblemService {
+
+    private static final long PAGE_SIZE = 10;
 
     private final ExternalServerClient client;
     private final ProblemRepository problemRepository;
@@ -85,6 +91,27 @@ public class BasicProblemService implements ProblemService {
         createRequest.setCertId(certId);
 
         saveShortChoiceProblem(createRequest);
+    }
+
+    @Override
+    public ProblemsResponse findProblems(@Nullable Long certId, @Nullable Long problemId) {
+        var problems = problemRepository.findProblems(certId, problemId, PAGE_SIZE);
+        boolean isLast = problems.size() < PAGE_SIZE;
+
+        return ProblemsResponse.builder()
+                .problems(problems)
+                .isLast(isLast)
+                .build();
+    }
+
+    @Override
+    public MultipleChoiceProblemResponse findMultipleChoiceProblem(long problemId) {
+        return problemRepository.findMultipleChoiceProblem(problemId);
+    }
+
+    @Override
+    public ShortAnswerProblemResponse findShortAnswerProblem(long problemId) {
+        return problemRepository.findShortAnswerProblem(problemId);
     }
 
     private <T extends AiResponse> T generateProblemFromAi(
