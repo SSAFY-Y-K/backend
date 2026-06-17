@@ -28,7 +28,7 @@ public class UserController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "회원 가입 성공"),
             @ApiResponse(responseCode = "400",
-                    description = "비밀번호 불일치, 혹은 이미 존재하는 유저네임이나 닉네임")
+                    description = "비어있는 필드 혹은 비밀번호 불일치 또는 이미 존재하는 유저네임이나 닉네임")
     })
     public ResponseEntity<Void> signup(@RequestBody SignupRequest signupRequest) {
         userService.signup(signupRequest);
@@ -40,8 +40,9 @@ public class UserController {
             SignupValidationException exception
     ) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setTitle("Invalid Field");
-        problemDetail.setDetail("Signup is failed");
+        problemDetail.setTitle("Signup Failed");
+        problemDetail.setDetail(exception.getMessage());
+        problemDetail.setProperty("errorField", exception.getErrorField());
 
         return problemDetail;
     }
