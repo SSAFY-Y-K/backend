@@ -1,159 +1,156 @@
 <template>
 	<section class="min-h-full p-4">
-		<!-- Search bar -->
-		<div class="mb-3 flex items-center gap-2">
-			<div class="relative flex-1">
-				<svg
-					class="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"
-					viewBox="0 0 14 14"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="1.6"
-				>
-					<circle cx="6" cy="6" r="4" />
-					<path d="M9 9l3 3" stroke-linecap="round" />
-				</svg>
-				<input
-					type="search"
-					placeholder="검색..."
-					class="h-8 w-full rounded-md border border-slate-200 bg-white pl-8 pr-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-1 focus:ring-blue-100"
-				/>
-			</div>
+		<!-- 뒤로가기 -->
+		<div class="mb-4 flex items-center gap-2">
 			<button
-				class="h-8 rounded-md bg-blue-600 px-4 text-xs font-semibold text-white transition hover:bg-blue-700"
+				v-if="category"
+				class="text-xs text-slate-400 transition hover:text-slate-600"
+				@click="category = null"
 			>
-				검색
+				← 뒤로
+			</button>
+			<h3 class="text-sm font-bold text-slate-700">{{ pageTitle }}</h3>
+		</div>
+
+		<!-- Step 1: 자격증 문제 vs 코딩 문제 -->
+		<div v-if="!category" class="grid grid-cols-2 gap-4">
+			<button
+				class="group flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-slate-200 bg-white p-8 shadow-sm transition hover:border-blue-300 hover:shadow-md"
+				@click="category = 'cert'"
+			>
+				<div class="flex h-20 w-20 items-center justify-center rounded-full border-4 border-blue-100 bg-blue-50 transition group-hover:border-blue-200">
+					<svg class="h-10 w-10 text-blue-500" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.8">
+						<rect x="6" y="4" width="28" height="32" rx="3" />
+						<path d="M12 14h16M12 20h16M12 26h10" stroke-linecap="round" />
+						<circle cx="30" cy="30" r="6" fill="white" stroke="currentColor" stroke-width="1.8" />
+						<path d="M27.5 30l2 2 3-3" stroke-linecap="round" stroke-linejoin="round" />
+					</svg>
+				</div>
+				<div class="text-center">
+					<h3 class="text-base font-bold text-slate-800">자격증 문제</h3>
+					<p class="mt-1 text-xs text-slate-400">객관식 · 주관식 문제를 풀어요</p>
+				</div>
+			</button>
+
+			<button
+				class="group flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-slate-200 bg-white p-8 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+				@click="category = 'coding'"
+			>
+				<div class="flex h-20 w-20 items-center justify-center rounded-full border-4 border-purple-100 bg-purple-50 transition group-hover:border-purple-200">
+					<svg class="h-10 w-10 text-purple-500" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.8">
+						<path d="M14 15l-6 5 6 5M26 15l6 5-6 5" stroke-linecap="round" stroke-linejoin="round" />
+						<path d="M22 10l-4 20" stroke-linecap="round" />
+					</svg>
+				</div>
+				<div class="text-center">
+					<h3 class="text-base font-bold text-slate-800">코딩 문제</h3>
+					<p class="mt-1 text-xs text-slate-400">알고리즘 코딩 문제를 풀어요</p>
+				</div>
 			</button>
 		</div>
 
-		<!-- Filter row -->
-		<div class="mb-4 flex items-center justify-between">
-			<div class="flex items-center gap-2">
-				<!-- Cert dropdown -->
-				<select
-					class="h-7 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-600 outline-none focus:border-blue-400"
-				>
-					<option>인증</option>
+		<!-- Step 2a: 자격증 문제 목록 -->
+		<div v-else-if="category === 'cert'">
+			<!-- 자격증 필터 -->
+			<div class="mb-4">
+				<select class="h-7 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-600 outline-none focus:border-blue-400">
+					<option value="">전체 자격증</option>
 					<option>정보처리기사</option>
 					<option>AWS SA</option>
 					<option>SQLD</option>
+					<option>정보보안기사</option>
 				</select>
+			</div>
 
-				<!-- Level dropdown -->
-				<select
-					class="h-7 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-600 outline-none focus:border-blue-400"
+			<!-- 주요 문제 카드 -->
+			<div class="mb-3 grid grid-cols-3 gap-3">
+				<div
+					v-for="card in featuredCards"
+					:key="card.id"
+					class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:shadow-md"
 				>
-					<option>난이도 ▾</option>
-					<option>초급</option>
-					<option>중급</option>
-					<option>상급</option>
-				</select>
-
-				<span class="text-xs text-slate-400">어</span>
-
-				<!-- Toggle -->
-				<div class="flex h-5 w-9 items-center rounded-full bg-slate-200 px-0.5 cursor-pointer">
-					<div class="h-4 w-4 rounded-full bg-white shadow-sm"></div>
-				</div>
-			</div>
-
-			<div class="flex items-center gap-2">
-				<span class="text-xs text-slate-500">난이도</span>
-				<!-- Toggle on -->
-				<div class="flex h-5 w-9 items-center justify-end rounded-full bg-blue-600 px-0.5 cursor-pointer">
-					<div class="h-4 w-4 rounded-full bg-white shadow-sm"></div>
-				</div>
-			</div>
-		</div>
-
-		<!-- Featured cards (top row - larger) -->
-		<div class="mb-3 grid grid-cols-3 gap-3">
-			<div
-				v-for="card in featuredCards"
-				:key="card.id"
-				class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:shadow-md"
-			>
-				<!-- Card top area -->
-				<div class="border-b border-slate-100 p-3">
-					<h3 class="text-xs font-bold text-slate-800">{{ card.title }}</h3>
-					<p class="mt-0.5 text-[10px] text-slate-400">{{ card.provider }}</p>
-				</div>
-				<!-- Footer -->
-				<div class="flex items-center justify-between p-2.5">
-					<div class="flex items-center gap-2 text-[10px] text-slate-500">
-						<span class="flex items-center gap-1">
-							<span :class="['h-1.5 w-1.5 rounded-full', card.dotColor]"></span>체제
+					<div class="border-b border-slate-100 p-3">
+						<h3 class="text-xs font-bold text-slate-800">{{ card.title }}</h3>
+						<p class="mt-0.5 text-[10px] text-slate-400">{{ card.cert }}</p>
+					</div>
+					<div class="flex items-center justify-between p-2.5">
+						<span class="flex items-center gap-1 text-[10px] text-slate-500">
+							<span :class="['h-1.5 w-1.5 rounded-full', card.dotColor]"></span>
+							{{ card.type }}
 						</span>
-						<span>관련 검색</span>
-					</div>
-					<div class="flex gap-1">
-						<button
-							class="rounded border border-slate-200 px-2 py-0.5 text-[10px] text-slate-500 transition hover:bg-slate-50"
+						<RouterLink
+							:to="{ name: 'problem-detail', params: { id: card.id } }"
+							class="rounded border border-blue-200 px-2 py-0.5 text-[10px] text-blue-600 no-underline transition hover:bg-blue-50"
 						>
-							관련 정보
-						</button>
-						<button
-							class="rounded border border-slate-200 px-2 py-0.5 text-[10px] text-slate-500 transition hover:bg-slate-50"
-						>
-							관련 검색
-						</button>
+							풀기
+						</RouterLink>
 					</div>
 				</div>
 			</div>
-		</div>
 
-		<!-- Normal cards (bottom rows) -->
-		<div class="grid grid-cols-3 gap-3">
-			<div
-				v-for="card in normalCards"
-				:key="card.id"
-				class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:shadow-md"
-			>
-				<div class="border-b border-slate-100 p-3">
-					<h3 class="text-xs font-bold text-slate-800">{{ card.title }}</h3>
-					<p class="mt-0.5 text-[10px] text-slate-400">{{ card.provider }}</p>
-					<p class="mt-1 text-[10px] text-slate-500 leading-relaxed line-clamp-2">
-						{{ card.description }}
-					</p>
-				</div>
-				<div class="flex items-center justify-between p-2.5">
-					<div class="flex items-center gap-1 text-[10px] text-slate-400">
-						<span
-							:class="['rounded px-1.5 py-0.5 font-bold text-white', levelColor[card.level]]"
-						>
+			<!-- 일반 문제 카드 -->
+			<div class="grid grid-cols-3 gap-3">
+				<div
+					v-for="card in normalCards"
+					:key="card.id"
+					class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:shadow-md"
+				>
+					<div class="border-b border-slate-100 p-3">
+						<h3 class="text-xs font-bold text-slate-800">{{ card.title }}</h3>
+						<p class="mt-0.5 text-[10px] text-slate-400">{{ card.cert }}</p>
+						<p class="mt-1 text-[10px] leading-relaxed text-slate-500 line-clamp-2">{{ card.description }}</p>
+					</div>
+					<div class="flex items-center justify-between p-2.5">
+						<span :class="['rounded px-1.5 py-0.5 text-[10px] font-bold text-white', levelColor[card.level]]">
 							{{ card.level }}
 						</span>
-						<span>관련 정보</span>
-					</div>
-					<div class="flex gap-1">
-						<button
-							class="rounded border border-slate-200 px-2 py-0.5 text-[10px] text-slate-500 transition hover:bg-slate-50"
+						<RouterLink
+							:to="{ name: 'problem-detail', params: { id: card.id } }"
+							class="rounded border border-blue-200 px-2 py-0.5 text-[10px] text-blue-600 no-underline transition hover:bg-blue-50"
 						>
-							관련 정보
-						</button>
-						<button
-							class="rounded border border-slate-200 px-2 py-0.5 text-[10px] text-slate-500 transition hover:bg-slate-50"
-						>
-							관련 검색
-						</button>
+							풀기
+						</RouterLink>
 					</div>
 				</div>
 			</div>
+		</div>
+
+		<!-- Step 2b: 코딩 문제 목록 (API 미구현) -->
+		<div v-else-if="category === 'coding'" class="flex flex-col items-center justify-center py-20">
+			<div class="flex h-16 w-16 items-center justify-center rounded-full bg-purple-50">
+				<svg class="h-8 w-8 text-purple-300" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6">
+					<path d="M10 12l-4 4 4 4M22 12l4 4-4 4" stroke-linecap="round" stroke-linejoin="round" />
+					<path d="M18 8l-4 16" stroke-linecap="round" />
+				</svg>
+			</div>
+			<p class="mt-4 text-sm font-semibold text-slate-600">코딩 문제 목록</p>
+			<p class="mt-1 text-xs text-slate-400">백엔드 API 구현 후 연동 예정입니다.</p>
 		</div>
 	</section>
 </template>
 
 <script setup>
+import { computed, ref } from "vue";
+
+const category = ref(null);
+
+const pageTitle = computed(() => {
+	if (!category.value) return "문제 풀기";
+	if (category.value === "cert") return "자격증 문제";
+	if (category.value === "coding") return "코딩 문제";
+	return "문제 풀기";
+});
+
 const featuredCards = [
-	{ id: 1, title: "문제 카드 문제 카드 1", provider: "ProdExam R8", dotColor: "bg-blue-400" },
-	{ id: 2, title: "문제 카드 문제 카드 2", provider: "ProdExam R8", dotColor: "bg-green-400" },
-	{ id: 3, title: "문제 카드 문제 카드 3", provider: "ProdExam R8", dotColor: "bg-orange-400" },
+	{ id: 1, title: "데이터베이스 정규화 개념", cert: "정보처리기사", type: "객관식", dotColor: "bg-blue-400" },
+	{ id: 2, title: "AWS VPC 구성 설계", cert: "AWS SA", type: "객관식", dotColor: "bg-green-400" },
+	{ id: 3, title: "SQL 집계 함수 활용", cert: "SQLD", type: "주관식", dotColor: "bg-orange-400" },
 ];
 
 const normalCards = [
-	{ id: 4, title: "문제 카드 4", provider: "ProdExam R8", level: "초급", description: "데이터베이스 기본 개념과 정규화에 대한 문제입니다." },
-	{ id: 5, title: "문제 카드 5", provider: "ProdExam R8", level: "중급", description: "AWS 클라우드 서비스 설계 관련 문제입니다." },
-	{ id: 6, title: "문제 카드 6", provider: "ShapExam R8", level: "상급", description: "네트워크 보안 및 프로토콜 분석 문제입니다." },
+	{ id: 4, title: "운영체제 프로세스 관리", cert: "정보처리기사", level: "초급", description: "프로세스 스케줄링 및 동기화 관련 문제입니다." },
+	{ id: 5, title: "EC2 인스턴스 유형 선택", cert: "AWS SA", level: "중급", description: "워크로드별 EC2 인스턴스 유형 선택 기준을 묻는 문제입니다." },
+	{ id: 6, title: "네트워크 보안 프로토콜", cert: "정보보안기사", level: "상급", description: "TLS/SSL 핸드셰이크 과정과 보안 취약점 관련 문제입니다." },
 ];
 
 const levelColor = {

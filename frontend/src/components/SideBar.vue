@@ -96,7 +96,7 @@
 					<circle cx="7" cy="4.5" r="2.5" />
 					<path d="M2 12c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke-linecap="round" />
 				</svg>
-				<span>자짜 문분 문자리</span>
+				<span>마이페이지</span>
 			</RouterLink>
 		</div>
 	</aside>

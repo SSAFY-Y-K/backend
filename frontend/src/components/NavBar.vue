@@ -1,10 +1,8 @@
 <template>
 	<nav class="flex h-12 shrink-0 items-center gap-3 bg-[#1d3461] px-4 text-white">
 		<!-- Logo -->
-		<div class="flex items-center gap-2 shrink-0">
-			<div
-				class="flex h-6 w-6 items-center justify-center rounded bg-white/20 text-[10px] font-bold"
-			>
+		<div class="flex shrink-0 items-center gap-2">
+			<div class="flex h-6 w-6 items-center justify-center rounded bg-white/20 text-[10px] font-bold">
 				P
 			</div>
 			<span class="text-sm font-bold tracking-tight">PASSIT</span>
@@ -12,17 +10,11 @@
 
 		<div class="h-4 w-px shrink-0 bg-white/20"></div>
 
-		<!-- Center search -->
-		<div class="flex flex-1 items-center">
-			<input
-				type="search"
-				placeholder="문제 검색..."
-				class="h-7 w-full max-w-sm rounded border border-white/15 bg-white/10 px-3 text-xs text-white outline-none placeholder:text-white/40 focus:border-white/30 focus:bg-white/15"
-			/>
-		</div>
+		<!-- Spacer -->
+		<div class="flex-1"></div>
 
 		<!-- Right nav -->
-		<div class="flex items-center gap-4 shrink-0">
+		<div class="flex shrink-0 items-center gap-4">
 			<RouterLink
 				v-for="item in navItems"
 				:key="item.name"
@@ -35,31 +27,16 @@
 
 			<div class="h-4 w-px bg-white/20"></div>
 
-			<!-- Notification bell -->
-			<button class="relative text-white/70 transition hover:text-white">
-				<svg
-					class="h-4 w-4"
-					viewBox="0 0 16 16"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="1.6"
-				>
-					<path d="M8 1.5a5 5 0 0 1 5 5v2.5l1 2H2l1-2V6.5a5 5 0 0 1 5-5z" />
-					<path d="M6.5 13.5a1.5 1.5 0 0 0 3 0" stroke-linecap="round" />
-				</svg>
-				<span
-					class="absolute -right-0.5 -top-0.5 flex h-3 w-3 items-center justify-center rounded-full bg-red-400 text-[8px] font-bold text-white"
-				>
-					1
-				</span>
-			</button>
-
-			<!-- Avatar -->
-			<button
-				class="flex h-7 w-7 items-center justify-center rounded-full bg-orange-400 text-[11px] font-bold text-white shadow-sm"
+			<!-- Avatar (마이페이지 링크) -->
+			<RouterLink
+				:to="{ name: 'mypage' }"
+				class="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 no-underline transition hover:bg-white/30"
 			>
-				김
-			</button>
+				<svg class="h-4 w-4 text-white" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+					<circle cx="8" cy="5" r="3" />
+					<path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke-linecap="round" />
+				</svg>
+			</RouterLink>
 		</div>
 	</nav>
 </template>
