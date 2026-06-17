@@ -29,6 +29,7 @@ public class BasicProblemService implements ProblemService {
         Long problemId = saveProblemAndGetId(ProblemEntity.builder()
                 .certId(request.getCertId())
                 .problemType(ProblemType.MULTIPLE_CHOICE)
+                .problemTitle(request.getTitle())
                 .build());
 
         problemRepository.saveMultipleChoiceProblem(
@@ -49,6 +50,7 @@ public class BasicProblemService implements ProblemService {
         Long problemId = saveProblemAndGetId(ProblemEntity.builder()
                 .certId(request.getCertId())
                 .problemType(ProblemType.SHORT_ANSWER)
+                .problemTitle(request.getTitle())
                 .build());
 
         problemRepository.saveShortAnswerProblem(

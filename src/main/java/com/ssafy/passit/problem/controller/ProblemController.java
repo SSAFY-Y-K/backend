@@ -66,4 +66,5 @@ public class ProblemController {
         problemService.generateAndSaveShortAnswerProblemFromAi(certId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
 }

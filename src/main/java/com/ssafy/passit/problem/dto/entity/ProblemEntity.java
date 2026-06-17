@@ -12,4 +12,5 @@ public class ProblemEntity {
     private Long problemId;
     private Long certId;
     private ProblemType problemType;
+    private String problemTitle;
 }

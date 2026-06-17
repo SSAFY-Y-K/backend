@@ -6,11 +6,13 @@
     <insert id="saveProblem" parameterType="ProblemEntity" useGeneratedKeys="true" keyProperty="problemId">
         INSERT INTO problems(
              cert_id,
-             problem_type
+             problem_type,
+             problem_title
         )
         VALUES (
             #{certId},
-            #{problemType}
+            #{problemType},
+            #{problemTitle}
         );
     </insert>
 

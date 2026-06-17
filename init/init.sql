@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS problems (
     problem_id BIGINT NOT NULL AUTO_INCREMENT,
     cert_id BIGINT NOT NULL,
     problem_type VARCHAR(20) NOT NULL COMMENT 'MULTIPLE_CHOICE, SHORT_ANSWER, CODING',
+    problem_title VARCHAR(255) NOT NULL COMMENT '문제 제목',
 
     PRIMARY KEY (problem_id),
     CONSTRAINT fk_problems_cert_id

@@ -1,7 +1,10 @@
 package com.ssafy.passit.problem.service;
 
+import com.ssafy.passit.problem.dto.entity.ProblemEntity;
 import com.ssafy.passit.problem.dto.request.MultipleChoiceProblemCreateRequest;
 import com.ssafy.passit.problem.dto.request.ShortAnswerProblemCreateRequest;
+
+import java.util.List;
 
 public interface ProblemService {
 
@@ -29,4 +32,5 @@ public interface ProblemService {
      * @return
      */
     void generateAndSaveShortAnswerProblemFromAi(Long certId);
+
 }
