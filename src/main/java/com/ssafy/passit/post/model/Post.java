@@ -16,6 +16,7 @@ public class Post {
 
     private Long postId;
     private Long userId;
+    private String nickname;
     private Long certId;
     private String category;
     private String title;

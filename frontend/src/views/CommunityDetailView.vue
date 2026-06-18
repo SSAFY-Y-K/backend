@@ -26,6 +26,7 @@
 
 				<!-- 메타 -->
 				<div class="mb-4 flex items-center gap-3 border-b border-slate-100 pb-3 text-[10px] text-slate-400">
+					<span class="font-medium text-slate-500">{{ post.nickname ?? '알 수 없음' }}</span>
 					<span>조회 {{ post.viewCount }}</span>
 					<span>{{ formatDate(post.createdAt) }}</span>
 				</div>
@@ -34,8 +35,8 @@
 				<p class="whitespace-pre-wrap text-xs leading-relaxed text-slate-700">{{ post.content }}</p>
 			</div>
 
-			<!-- 수정/삭제 버튼 -->
-			<div class="flex justify-end gap-2">
+			<!-- 수정/삭제 버튼: 내 글일 때만 표시 -->
+			<div v-if="post.userId === CURRENT_USER_ID" class="flex justify-end gap-2">
 				<button
 					class="h-8 rounded-md border border-slate-200 px-4 text-xs text-slate-600 hover:bg-slate-50"
 					@click="startEdit"
@@ -101,6 +102,8 @@
 import { onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { getPostDetail, updatePost, deletePost } from "@/api/index.js";
+
+const CURRENT_USER_ID = 1; // 인증 구현 전 임시
 
 const route = useRoute();
 const router = useRouter();

@@ -47,6 +47,7 @@
 				<div class="min-w-0 flex-1">
 					<p class="text-xs font-semibold leading-snug text-slate-800">{{ post.title }}</p>
 					<div class="mt-1 flex items-center gap-3 text-[10px] text-slate-400">
+						<span class="font-medium text-slate-500">{{ post.nickname ?? '알 수 없음' }}</span>
 						<span>{{ categoryLabel(post.category) }}</span>
 						<span>조회 {{ post.viewCount }}</span>
 						<span>{{ formatDate(post.createdAt) }}</span>

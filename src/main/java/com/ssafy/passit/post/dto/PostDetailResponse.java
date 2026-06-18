@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 public record PostDetailResponse(
     Long postId,
     Long userId,
+    String nickname,
     Long certId,
     String category,
     String title,
@@ -18,6 +19,7 @@ public record PostDetailResponse(
         return new PostDetailResponse(
             post.getPostId(),
             post.getUserId(),
+            post.getNickname(),
             post.getCertId(),
             post.getCategory(),
             post.getTitle(),

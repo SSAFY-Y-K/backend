@@ -7,6 +7,7 @@
     <resultMap id="postResultMap" type="com.ssafy.passit.post.model.Post">
         <id property="postId" column="post_id"/>
         <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
         <result property="certId" column="cert_id"/>
         <result property="category" column="category"/>
         <result property="title" column="title"/>
@@ -27,15 +28,19 @@
     <select id="findById"
             parameterType="long"
             resultMap="postResultMap">
-        SELECT post_id, user_id, cert_id, category, title, content, view_count, created_at, updated_at
-        FROM posts
-        WHERE post_id = #{postId}
+        SELECT p.post_id, p.user_id, u.nickname, p.cert_id, p.category,
+               p.title, p.content, p.view_count, p.created_at, p.updated_at
+        FROM posts p
+        LEFT JOIN users u ON p.user_id = u.user_id
+        WHERE p.post_id = #{postId}
     </select>
 
     <select id="findAll" resultMap="postResultMap">
-        SELECT post_id, user_id, cert_id, category, title, view_count, created_at
-        FROM posts
-        ORDER BY created_at DESC
+        SELECT p.post_id, p.user_id, u.nickname, p.cert_id, p.category,
+               p.title, p.view_count, p.created_at
+        FROM posts p
+        LEFT JOIN users u ON p.user_id = u.user_id
+        ORDER BY p.created_at DESC
     </select>
 
     <update id="updatePost" parameterType="com.ssafy.passit.post.model.Post">
