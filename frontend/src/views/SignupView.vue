@@ -16,12 +16,15 @@
 							>
 							<input
 								v-model="form.username"
+								ref="username-input"
 								id="username"
 								type="text"
 								placeholder="아이디를 입력해주세요."
-								class="h-9 w-full rounded-md border bg-white px-3 text-xs text-slate-800 outline-none transition focus:border-blue-400 focus:ring-1 focus:ring-blue-100"
+								class="h-9 w-full rounded-md border bg-white px-3 text-xs text-slate-800 outline-none transition focus:ring-1 focus:ring-blue-100"
 								:class="
-									errorField.username ? 'border-red-500' : 'border-slate-200'
+									errorField.username
+										? 'border-red-500'
+										: ['border-slate-200', 'focus:border-blue-400']
 								"
 								required
 							/>
@@ -43,12 +46,15 @@
 							<div class="relative">
 								<input
 									v-model="form.password"
+									ref="password-input"
 									id="password"
 									type="password"
 									placeholder="비밀번호"
-									class="h-9 w-full rounded-md border bg-white px-3 pr-8 text-xs text-slate-800 outline-none transition focus:border-blue-400 focus:ring-1 focus:ring-blue-100"
+									class="h-9 w-full rounded-md border bg-white px-3 pr-8 text-xs text-slate-800 outline-none transition focus:ring-1 focus:ring-blue-100"
 									:class="
-										errorField.password ? 'border-red-500' : 'border-slate-200'
+										errorField.password
+											? 'border-red-500'
+											: ['border-slate-200', 'focus:border-blue-400']
 									"
 									required
 								/>
@@ -70,14 +76,15 @@
 							>
 							<input
 								v-model="form.confirmPassword"
+								ref="confirmPassword-input"
 								id="confirmPassword"
 								type="password"
 								placeholder="비밀번호를 다시 입력해주세요."
-								class="h-9 w-full rounded-md border bg-white px-3 text-xs text-slate-800 outline-none transition focus:border-blue-400 focus:ring-1 focus:ring-blue-100"
+								class="h-9 w-full rounded-md border bg-white px-3 text-xs text-slate-800 outline-none transition focus:ring-1 focus:ring-blue-100"
 								:class="
 									errorField.confirmPassword
 										? 'border-red-500'
-										: 'border-slate-200'
+										: ['border-slate-200', 'focus:border-blue-400']
 								"
 								required
 							/>
@@ -97,12 +104,15 @@
 							>
 							<input
 								v-model="form.nickname"
+								ref="nickname-input"
 								type="text"
 								id="nickname"
 								placeholder="닉네임"
 								class="h-9 w-full rounded-md border bg-white px-3 text-xs text-slate-800 outline-none transition focus:border-blue-400 focus:ring-1 focus:ring-blue-100"
 								:class="
-									errorField.nickname ? 'border-red-500' : 'border-slate-200'
+									errorField.nickname
+										? 'border-red-500'
+										: ['border-slate-200', 'focus:border-blue-400']
 								"
 								required
 							/>
@@ -116,9 +126,10 @@
 
 						<button
 							type="submit"
-							class="h-9 w-full rounded-md bg-blue-600 text-xs font-semibold text-white transition hover:bg-blue-700"
+							class="h-9 w-full rounded-md bg-blue-600 text-xs font-semibold text-white transition hover:bg-blue-700 disabled:bg-gray-400"
+							:disabled="isLoading"
 						>
-							회원가입
+							<p>{{ isLoading ? "진행중..." : "회원가입" }}</p>
 						</button>
 					</form>
 
@@ -159,11 +170,17 @@
 
 <script setup>
 import axios from "axios";
-import { ref } from "vue";
+import { ref, useTemplateRef } from "vue";
 import router from "@/router";
 
+const isLoading = ref(false);
 const successMessage = ref("");
 const showSuccessModal = ref(false);
+
+const usernameRef = useTemplateRef("username-input");
+const passwordRef = useTemplateRef("password-input");
+const confirmPasswordRef = useTemplateRef("confirmPassword-input");
+const nicknameRef = useTemplateRef("nickname-input");
 
 const form = ref({
 	username: "",
@@ -218,22 +235,27 @@ const onSubmit = async () => {
 	resetErrorField();
 	if (isUsernameEmpty()) {
 		errorField.value.username = "아이디를 입력해주세요.";
+		usernameRef?.value.focus();
 		return;
 	} else if (isPasswordEmpty()) {
 		errorField.value.password = "비밀번호를 입력해주세요.";
+		passwordRef?.value.focus();
 		return;
 	} else if (isConfirmPasswordEmpty()) {
 		errorField.value.confirmPassword = "비밀번호 확인을 입력해주세요.";
+		confirmPasswordRef?.value.focus();
 		return;
 	} else if (!isPasswordSame()) {
 		errorField.value.confirmPassword = "비밀번호가 일치하지 않습니다.";
 		return;
 	} else if (isNicknameEmpty()) {
 		errorField.value.nickname = "닉네임을 입력해주세요.";
+		nicknameRef?.value.focus();
 		return;
 	}
 
 	try {
+		isLoading.value = true;
 		await axios.post("/api/users/signup", form.value);
 
 		successMessage.value = "회원가입이 완료되었습니다.";
@@ -242,9 +264,10 @@ const onSubmit = async () => {
 		if (!error.response) {
 			return;
 		}
-
 		const field = error.response.data?.errorField;
 		errorField.value[field] = error.response?.data?.detail ?? "";
+	} finally {
+		isLoading.value = false;
 	}
 };
 </script>
