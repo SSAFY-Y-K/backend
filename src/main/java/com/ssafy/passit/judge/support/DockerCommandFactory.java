@@ -12,10 +12,14 @@ public class DockerCommandFactory {
     private static final String WORKSPACE_DIR = "/workspace";
 
     public List<String> buildPythonCommand(ExecutionRequest request, Path workspace) {
-        return buildBaseCommand(request, workspace, "python:3.11-alpine", List.of("python3", "main.py"));
+        int timeLimitSec = toSeconds(request.timeLimitMs());
+        return buildBaseCommand(request, workspace, "python:3.11-alpine",
+            List.of("sh", "-c", "timeout " + timeLimitSec + "s python3 main.py; ec=$?; if [ $ec -eq 124 ]; then exit 124; fi; exit $ec")
+        );
     }
 
     public List<String> buildJavaCommand(ExecutionRequest request, Path workspace) {
+        int timeLimitSec = toSeconds(request.timeLimitMs());
         return buildBaseCommand(
             request,
             workspace,
@@ -23,12 +27,13 @@ public class DockerCommandFactory {
             List.of(
                 "sh",
                 "-c",
-                "javac Main.java; status=$?; if [ $status -ne 0 ]; then echo '__PASSIT_COMPILE_ERROR__' >&2; exit 101; fi; java Main"
+                "javac Main.java; status=$?; if [ $status -ne 0 ]; then echo '__PASSIT_COMPILE_ERROR__' >&2; exit 101; fi; timeout " + timeLimitSec + "s java Main; ec=$?; if [ $ec -eq 124 ]; then exit 124; fi; exit $ec"
             )
         );
     }
 
     public List<String> buildCppCommand(ExecutionRequest request, Path workspace) {
+        int timeLimitSec = toSeconds(request.timeLimitMs());
         return buildBaseCommand(
             request,
             workspace,
@@ -36,9 +41,14 @@ public class DockerCommandFactory {
             List.of(
                 "sh",
                 "-c",
-                "g++ -O2 -std=c++17 main.cpp -o main; status=$?; if [ $status -ne 0 ]; then echo '__PASSIT_COMPILE_ERROR__' >&2; exit 101; fi; ./main"
+                "g++ -O2 -std=c++17 main.cpp -o main; status=$?; if [ $status -ne 0 ]; then echo '__PASSIT_COMPILE_ERROR__' >&2; exit 101; fi; timeout " + timeLimitSec + "s ./main; ec=$?; if [ $ec -eq 124 ]; then exit 124; fi; exit $ec"
             )
         );
+    }
+
+    private int toSeconds(Integer timeLimitMs) {
+        if (timeLimitMs == null || timeLimitMs <= 0) return 5;
+        return Math.max(1, (int) Math.ceil(timeLimitMs / 1000.0));
     }
 
     private List<String> buildBaseCommand(

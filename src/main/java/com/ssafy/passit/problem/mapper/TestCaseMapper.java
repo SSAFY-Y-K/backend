@@ -10,5 +10,7 @@ public interface TestCaseMapper {
 
     List<TestCase> findHiddenTestCasesByProblemId(@Param("problemId") Long problemId);
 
+    List<TestCase> findSampleTestCasesByProblemId(@Param("problemId") Long problemId);
+
     void insertTestCases(@Param("list") List<TestCase> testCases);
 }

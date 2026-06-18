@@ -1,6 +1,7 @@
 package com.ssafy.passit.problem.mapper;
 
 import com.ssafy.passit.problem.model.CodingProblem;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -10,4 +11,6 @@ public interface CodingProblemMapper {
     void insertCodingProblem(CodingProblem problem);
 
     CodingProblem findById(@Param("problemId") Long problemId);
+
+    List<CodingProblem> findAll();
 }

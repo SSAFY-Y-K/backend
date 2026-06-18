@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS short_answer_problems (
 -- CODING_PROBLEMS (AI 생성 알고리즘 코딩 문제)
 -- -------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS coding_problems (
-    problem_id         BIGINT       NOT NULL,
+    problem_id         BIGINT       NOT NULL AUTO_INCREMENT,
     title              VARCHAR(255) NOT NULL,
     description        TEXT         NOT NULL,
     input_description  TEXT         NULL,
@@ -110,9 +110,6 @@ CREATE TABLE IF NOT EXISTS coding_problems (
     updated_at         DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (problem_id),
-    CONSTRAINT fk_coding_problems_problem_id
-        FOREIGN KEY (problem_id)
-        REFERENCES problems (problem_id) ON DELETE CASCADE,
     CONSTRAINT chk_coding_problems_difficulty
         CHECK (difficulty IS NULL OR difficulty IN ('EASY', 'MEDIUM', 'HARD'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -182,7 +179,7 @@ CREATE TABLE IF NOT EXISTS submissions (
 CREATE TABLE IF NOT EXISTS posts (
     post_id      BIGINT       NOT NULL AUTO_INCREMENT,
     user_id      BIGINT       NOT NULL,
-    cert_id      BIGINT       NOT NULL,
+    cert_id      BIGINT       NULL,
     category     VARCHAR(20)  NOT NULL COMMENT 'REVIEW / TIP / QNA',
     title        VARCHAR(255) NOT NULL,
     content      TEXT         NOT NULL,

@@ -39,7 +39,7 @@ public class PythonCodeRunner implements CodeRunner {
             workspaceManager.writeSourceFile(workspace, request.sourceCode(), LanguageType.PYTHON);
 
             List<String> command = dockerCommandFactory.buildPythonCommand(request, workspace);
-            long timeoutMs = request.timeLimitMs() + 1000L;
+            long timeoutMs = request.timeLimitMs() + 30_000L;
 
             ProcessExecutionResult processResult =
                 processExecutor.execute(command, request.stdin(), timeoutMs);
@@ -79,7 +79,7 @@ public class PythonCodeRunner implements CodeRunner {
     }
 
     private ExecutionResult toExecutionResult(ProcessExecutionResult processResult) {
-        if (processResult.timedOut()) {
+        if (processResult.timedOut() || processResult.exitCode() == 124) {
             return new ExecutionResult(
                 VerdictType.TLE,
                 processResult.execTimeMs(),

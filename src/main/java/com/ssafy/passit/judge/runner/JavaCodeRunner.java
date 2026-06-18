@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 public class JavaCodeRunner implements CodeRunner {
 
     private static final String COMPILE_ERROR_MARKER = "__PASSIT_COMPILE_ERROR__";
-    private static final long COMPILE_TIMEOUT_BUFFER_MS = 5_000L;
+    private static final long COMPILE_TIMEOUT_BUFFER_MS = 15_000L;
 
     private final WorkspaceManager workspaceManager;
     private final DockerCommandFactory dockerCommandFactory;
@@ -82,7 +82,7 @@ public class JavaCodeRunner implements CodeRunner {
     }
 
     private ExecutionResult toExecutionResult(ProcessExecutionResult processResult) {
-        if (processResult.timedOut()) {
+        if (processResult.timedOut() || processResult.exitCode() == 124) {
             return new ExecutionResult(
                 VerdictType.TLE,
                 processResult.execTimeMs(),

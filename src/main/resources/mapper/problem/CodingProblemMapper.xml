@@ -66,4 +66,17 @@
         WHERE problem_id = #{problemId}
     </select>
 
+
+    <select id="findAll" resultMap="codingProblemResultMap">
+        SELECT
+            problem_id,
+            title,
+            difficulty,
+            category,
+            created_at,
+            updated_at
+        FROM coding_problems
+        ORDER BY created_at DESC
+    </select>
+
 </mapper>

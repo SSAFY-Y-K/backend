@@ -51,7 +51,6 @@
 
 		<!-- Step 2a: 자격증 문제 목록 -->
 		<div v-else-if="category === 'cert'">
-			<!-- 자격증 필터 -->
 			<div class="mb-4">
 				<select class="h-7 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-600 outline-none focus:border-blue-400">
 					<option value="">전체 자격증</option>
@@ -62,7 +61,6 @@
 				</select>
 			</div>
 
-			<!-- 주요 문제 카드 -->
 			<div class="mb-3 grid grid-cols-3 gap-3">
 				<div
 					v-for="card in featuredCards"
@@ -88,7 +86,6 @@
 				</div>
 			</div>
 
-			<!-- 일반 문제 카드 -->
 			<div class="grid grid-cols-3 gap-3">
 				<div
 					v-for="card in normalCards"
@@ -115,24 +112,51 @@
 			</div>
 		</div>
 
-		<!-- Step 2b: 코딩 문제 목록 (API 미구현) -->
-		<div v-else-if="category === 'coding'" class="flex flex-col items-center justify-center py-20">
-			<div class="flex h-16 w-16 items-center justify-center rounded-full bg-purple-50">
-				<svg class="h-8 w-8 text-purple-300" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6">
-					<path d="M10 12l-4 4 4 4M22 12l4 4-4 4" stroke-linecap="round" stroke-linejoin="round" />
-					<path d="M18 8l-4 16" stroke-linecap="round" />
-				</svg>
+		<!-- Step 2b: 코딩 문제 목록 -->
+		<div v-else-if="category === 'coding'">
+			<div v-if="codingLoading" class="py-10 text-center text-xs text-slate-400">불러오는 중...</div>
+
+			<div v-else-if="codingError" class="py-10 text-center text-xs text-red-400">{{ codingError }}</div>
+
+			<div v-else-if="codingProblems.length === 0" class="flex flex-col items-center justify-center py-16">
+				<div class="flex h-14 w-14 items-center justify-center rounded-full bg-purple-50">
+					<svg class="h-7 w-7 text-purple-300" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6">
+						<path d="M8 10l-4 4 4 4M20 10l4 4-4 4" stroke-linecap="round" stroke-linejoin="round" />
+						<path d="M16 6l-4 16" stroke-linecap="round" />
+					</svg>
+				</div>
+				<p class="mt-3 text-sm font-semibold text-slate-600">등록된 코딩 문제가 없습니다</p>
+				<p class="mt-1 text-xs text-slate-400">만들기 탭에서 AI로 문제를 생성해보세요</p>
 			</div>
-			<p class="mt-4 text-sm font-semibold text-slate-600">코딩 문제 목록</p>
-			<p class="mt-1 text-xs text-slate-400">백엔드 API 구현 후 연동 예정입니다.</p>
+
+			<div v-else class="space-y-2">
+				<div
+					v-for="problem in codingProblems"
+					:key="problem.problemId"
+					class="flex cursor-pointer items-center justify-between rounded-lg border border-slate-200 bg-white p-3 shadow-sm transition hover:shadow-md"
+					@click="$router.push({ name: 'coding-problem-detail', params: { id: problem.problemId } })"
+				>
+					<div class="min-w-0">
+						<p class="text-xs font-semibold text-slate-800">{{ problem.title }}</p>
+						<p class="mt-0.5 text-[10px] text-slate-400">{{ problem.category }}</p>
+					</div>
+					<span :class="['ml-3 shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold text-white', difficultyColor[problem.difficulty]]">
+						{{ difficultyLabel[problem.difficulty] ?? problem.difficulty }}
+					</span>
+				</div>
+			</div>
 		</div>
 	</section>
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
+import { getCodingProblems } from "@/api/index.js";
 
 const category = ref(null);
+const codingProblems = ref([]);
+const codingLoading = ref(false);
+const codingError = ref(null);
 
 const pageTitle = computed(() => {
 	if (!category.value) return "문제 풀기";
@@ -140,6 +164,25 @@ const pageTitle = computed(() => {
 	if (category.value === "coding") return "코딩 문제";
 	return "문제 풀기";
 });
+
+watch(category, async (val) => {
+	if (val !== "coding") return;
+	codingLoading.value = true;
+	codingError.value = null;
+	try {
+		const res = await getCodingProblems();
+		codingProblems.value = res.data ?? res;
+	} catch {
+		codingError.value = "문제를 불러오지 못했습니다.";
+	} finally {
+		codingLoading.value = false;
+	}
+});
+
+const difficultyColor = { EASY: "bg-emerald-500", MEDIUM: "bg-orange-500", HARD: "bg-red-500" };
+const difficultyLabel = { EASY: "초급", MEDIUM: "중급", HARD: "상급" };
+
+const levelColor = { 초급: "bg-emerald-500", 중급: "bg-orange-500", 상급: "bg-red-500" };
 
 const featuredCards = [
 	{ id: 1, title: "데이터베이스 정규화 개념", cert: "정보처리기사", type: "객관식", dotColor: "bg-blue-400" },
@@ -152,10 +195,4 @@ const normalCards = [
 	{ id: 5, title: "EC2 인스턴스 유형 선택", cert: "AWS SA", level: "중급", description: "워크로드별 EC2 인스턴스 유형 선택 기준을 묻는 문제입니다." },
 	{ id: 6, title: "네트워크 보안 프로토콜", cert: "정보보안기사", level: "상급", description: "TLS/SSL 핸드셰이크 과정과 보안 취약점 관련 문제입니다." },
 ];
-
-const levelColor = {
-	초급: "bg-emerald-500",
-	중급: "bg-orange-500",
-	상급: "bg-red-500",
-};
 </script>

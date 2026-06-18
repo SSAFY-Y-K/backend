@@ -2,6 +2,8 @@ package com.ssafy.passit.problem.service;
 
 import com.ssafy.passit.common.exception.ApiException;
 import com.ssafy.passit.common.exception.ErrorCode;
+import com.ssafy.passit.problem.dto.response.CodingProblemDetailResponse;
+import com.ssafy.passit.problem.dto.response.CodingProblemListItemResponse;
 import com.ssafy.passit.problem.mapper.CodingProblemMapper;
 import com.ssafy.passit.problem.mapper.TestCaseMapper;
 import com.ssafy.passit.problem.model.CodingProblem;
@@ -16,6 +18,18 @@ public class ProblemQueryService {
 
     private final CodingProblemMapper codingProblemMapper;
     private final TestCaseMapper testCaseMapper;
+
+    public List<CodingProblemListItemResponse> findAllCodingProblems() {
+        return codingProblemMapper.findAll().stream()
+                .map(CodingProblemListItemResponse::from)
+                .toList();
+    }
+
+    public CodingProblemDetailResponse findCodingProblemDetail(Long problemId) {
+        CodingProblem problem = getCodingProblem(problemId);
+        List<TestCase> sampleTestCases = testCaseMapper.findSampleTestCasesByProblemId(problemId);
+        return CodingProblemDetailResponse.from(problem, sampleTestCases);
+    }
 
     public CodingProblem getCodingProblem(Long problemId) {
         CodingProblem problem = codingProblemMapper.findById(problemId);

@@ -2,10 +2,12 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import ProblemView from "@/views/ProblemView.vue";
 import ProblemDetailView from "@/views/ProblemDetailView.vue";
+import CodingProblemDetailView from "@/views/CodingProblemDetailView.vue";
 import CreateView from "@/views/CreateView.vue";
 import LoginView from "@/views/LoginView.vue";
 import SignupView from "@/views/SignupView.vue";
 import CommunityView from "@/views/CommunityView.vue";
+import CommunityDetailView from "@/views/CommunityDetailView.vue";
 import MypageView from "@/views/MypageView.vue";
 
 const router = createRouter({
@@ -22,9 +24,14 @@ const router = createRouter({
 			component: ProblemView,
 		},
 		{
-			path: "/problem/:id",
+			path: "/problem/cert/:id",
 			name: "problem-detail",
 			component: ProblemDetailView,
+		},
+		{
+			path: "/problem/coding/:id",
+			name: "coding-problem-detail",
+			component: CodingProblemDetailView,
 		},
 		{
 			path: "/create",
@@ -35,6 +42,11 @@ const router = createRouter({
 			path: "/community",
 			name: "community",
 			component: CommunityView,
+		},
+		{
+			path: "/community/:id",
+			name: "community-detail",
+			component: CommunityDetailView,
 		},
 		{
 			path: "/mypage",

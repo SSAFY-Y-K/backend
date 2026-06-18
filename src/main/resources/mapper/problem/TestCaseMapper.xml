@@ -23,6 +23,24 @@
         </foreach>
     </insert>
 
+    <select id="findSampleTestCasesByProblemId"
+            parameterType="long"
+            resultMap="testCaseResultMap">
+        SELECT
+            test_case_id,
+            problem_id,
+            input_data,
+            expected_output,
+            is_sample,
+            case_order,
+            created_at,
+            updated_at
+        FROM test_cases
+        WHERE problem_id = #{problemId}
+          AND is_sample = TRUE
+        ORDER BY case_order ASC
+    </select>
+
     <select id="findHiddenTestCasesByProblemId"
             parameterType="long"
             resultMap="testCaseResultMap">
