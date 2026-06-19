@@ -253,7 +253,7 @@ const loadProblem = async () => {
 	error.value = null;
 	try {
 		const res = await getCodingProblemDetail(route.params.id);
-		problem.value = res.data ?? res;
+		problem.value = res.data.data;
 	} catch {
 		error.value = "문제를 불러오지 못했습니다.";
 	} finally {
@@ -281,7 +281,7 @@ const handleSubmit = async () => {
 			language: language.value,
 			sourceCode: code.value,
 		});
-		result.value = res.data ?? res;
+		result.value = res.data.data;
 		// 이력에 추가 (최신순, 최대 10개)
 		const now = new Date();
 		const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;

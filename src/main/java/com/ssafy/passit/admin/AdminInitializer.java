@@ -29,18 +29,22 @@ public class AdminInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        if (userMapper.countByUsername(adminUsername) > 0) {
-            return;
+        try {
+            if (userMapper.countByUsername(adminUsername) > 0) {
+                return;
+            }
+
+            SignupRequest request = new SignupRequest();
+            request.setUsername(adminUsername);
+            request.setPassword(passwordEncoder.encode(adminPassword));
+            request.setNickname(adminNickname);
+
+            userMapper.insert(request);
+            userMapper.updateRoleToAdmin(adminUsername);
+
+            log.info("관리자 계정이 생성되었습니다. username={}", adminUsername);
+        } catch (Exception e) {
+            log.warn("관리자 계정 초기화 실패 (DB 연결 확인 필요): {}", e.getMessage());
         }
-
-        SignupRequest request = new SignupRequest();
-        request.setUsername(adminUsername);
-        request.setPassword(passwordEncoder.encode(adminPassword));
-        request.setNickname(adminNickname);
-
-        userMapper.insert(request);
-        userMapper.updateRoleToAdmin(adminUsername);
-
-        log.info("관리자 계정이 생성되었습니다. username={}", adminUsername);
     }
 }

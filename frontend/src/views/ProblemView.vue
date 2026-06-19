@@ -171,7 +171,7 @@ watch(category, async (val) => {
 	codingError.value = null;
 	try {
 		const res = await getCodingProblems();
-		codingProblems.value = res.data ?? res;
+		codingProblems.value = res.data.data ?? [];
 	} catch {
 		codingError.value = "문제를 불러오지 못했습니다.";
 	} finally {

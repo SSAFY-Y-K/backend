@@ -53,7 +53,9 @@ public class AlgorithmProblemService {
                         .build())
                 .toList();
 
-        testCaseMapper.insertTestCases(testCases);
+        if (!testCases.isEmpty()) {
+            testCaseMapper.insertTestCases(testCases);
+        }
         log.info("Test cases saved. problemId={}, testCaseCount={}", problem.getProblemId(), testCases.size());
 
         return new GenerateAlgorithmResponse(

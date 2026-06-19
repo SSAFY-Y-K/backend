@@ -37,6 +37,7 @@ const router = createRouter({
 			path: "/create",
 			name: "create",
 			component: CreateView,
+			meta: { requiresAuth: true },
 		},
 		{
 			path: "/community",
@@ -52,7 +53,7 @@ const router = createRouter({
 			path: "/mypage",
 			name: "mypage",
 			component: MypageView,
-			meta: { hideSidebar: true },
+			meta: { hideSidebar: true, requiresAuth: true },
 		},
 		{
 			path: "/login",
@@ -67,6 +68,17 @@ const router = createRouter({
 			meta: { hideSidebar: true },
 		},
 	],
+});
+
+import { useAuthStore } from "@/stores/auth";
+
+router.beforeEach((to) => {
+	if (to.meta.requiresAuth) {
+		const authStore = useAuthStore();
+		if (!authStore.hasAccessToken) {
+			return { name: "login", query: { redirect: to.fullPath } };
+		}
+	}
 });
 
 export default router;

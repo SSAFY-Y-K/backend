@@ -304,7 +304,7 @@ const handleGenerateCoding = async () => {
 	generateResult.value = null;
 	try {
 		const res = await generateCodingProblem({ difficulty: codingLevel.value, category: codingCategory.value });
-		generateResult.value = res.data ?? res;
+		generateResult.value = res.data.data;
 	} catch {
 		alert("문제 생성에 실패했습니다. AI 서버가 실행 중인지 확인하세요.");
 	} finally {

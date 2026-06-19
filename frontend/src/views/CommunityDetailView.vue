@@ -126,7 +126,7 @@ const loadPost = async () => {
 	error.value = null;
 	try {
 		const res = await getPostDetail(route.params.id);
-		post.value = res.data ?? res;
+		post.value = res.data.data;
 	} catch {
 		error.value = "게시글을 불러오지 못했습니다.";
 	} finally {

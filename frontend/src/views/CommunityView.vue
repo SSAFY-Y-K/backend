@@ -18,7 +18,7 @@
 
 			<button
 				class="h-7 rounded-md bg-blue-600 px-3 text-xs font-semibold text-white transition hover:bg-blue-700"
-				@click="showForm = true"
+				@click="handleWriteClick"
 			>
 				+ 글쓰기
 			</button>
@@ -108,10 +108,20 @@
 
 <script setup>
 import { computed, onMounted, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
 import { getPosts, createPost } from "@/api/index.js";
 import { useAuthStore } from "@/stores/auth";
 
 const authStore = useAuthStore();
+const router = useRouter();
+
+const handleWriteClick = () => {
+	if (!authStore.hasAccessToken) {
+		router.push({ name: "login", query: { redirect: "/community" } });
+		return;
+	}
+	showForm.value = true;
+};
 
 const tabs = [
 	{ id: "all", label: "전체" },
@@ -146,7 +156,7 @@ const loadPosts = async () => {
 	error.value = null;
 	try {
 		const res = await getPosts();
-		posts.value = res.data ?? res;
+		posts.value = res.data.data ?? [];
 	} catch (e) {
 		error.value = "게시글을 불러오지 못했습니다.";
 	} finally {

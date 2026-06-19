@@ -47,7 +47,6 @@ authApi.interceptors.response.use(
 				originalRequest.headers.Authorization = `Bearer ${authStore.getAccessToken()}`;
 
 				return authApi(originalRequest);
-				// refresh도 실패하면 access token 삭제
 			} catch (error) {
 				authStore.clearAccessToken();
 				return Promise.reject(error);

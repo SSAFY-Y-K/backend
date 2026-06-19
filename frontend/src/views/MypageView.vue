@@ -132,9 +132,9 @@ onMounted(async () => {
 		getMySubmissions(),
 	]);
 
-	if (profileRes.status === "fulfilled") profile.value = profileRes.value.data;
-	if (postsRes.status === "fulfilled") myPosts.value = postsRes.value.data ?? [];
-	if (submissionsRes.status === "fulfilled") mySubmissions.value = submissionsRes.value.data ?? [];
+	if (profileRes.status === "fulfilled") profile.value = profileRes.value?.data?.data ?? null;
+	if (postsRes.status === "fulfilled") myPosts.value = postsRes.value?.data?.data ?? [];
+	if (submissionsRes.status === "fulfilled") mySubmissions.value = submissionsRes.value?.data?.data ?? [];
 
 	profileLoading.value = false;
 	postsLoading.value = false;

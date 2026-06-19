@@ -23,7 +23,8 @@ public class AiServerClient {
             .version(HttpClient.Version.HTTP_1_1)
             .build();
     private final ObjectMapper snakeMapper = new ObjectMapper()
-            .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+            .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+            .configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     @Value("${ai.server.url}")
     private String aiServerUrl;
