@@ -1,12 +1,15 @@
 <template>
 	<nav class="flex h-12 shrink-0 items-center gap-3 bg-[#1d3461] px-4 text-white">
 		<!-- Logo -->
-		<div class="flex shrink-0 items-center gap-2">
+		<RouterLink
+			:to="{ name: 'home' }"
+			class="flex shrink-0 items-center gap-2 text-white no-underline"
+		>
 			<div class="flex h-6 w-6 items-center justify-center rounded bg-white/20 text-[10px] font-bold">
 				P
 			</div>
 			<span class="text-sm font-bold tracking-tight">PASSIT</span>
-		</div>
+		</RouterLink>
 
 		<div class="h-4 w-px shrink-0 bg-white/20"></div>
 
@@ -29,6 +32,7 @@
 
 			<!-- Avatar (마이페이지 링크) -->
 			<RouterLink
+				v-if="authStore.hasAccessToken"
 				:to="{ name: 'mypage' }"
 				class="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 no-underline transition hover:bg-white/30"
 			>
@@ -37,11 +41,22 @@
 					<path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke-linecap="round" />
 				</svg>
 			</RouterLink>
+			<RouterLink
+				v-else
+				:to="{ name: 'login' }"
+				class="rounded border border-white/30 px-3 py-1 text-xs font-semibold text-white no-underline transition hover:border-white/50 hover:bg-white/10"
+			>
+				로그인
+			</RouterLink>
 		</div>
 	</nav>
 </template>
 
 <script setup>
+import { useAuthStore } from "@/stores/auth";
+
+const authStore = useAuthStore();
+
 const navItems = [
 	{ name: "home", label: "홈" },
 	{ name: "problem", label: "문제" },

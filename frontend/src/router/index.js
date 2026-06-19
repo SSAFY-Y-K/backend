@@ -9,7 +9,6 @@ import SignupView from "@/views/SignupView.vue";
 import CommunityView from "@/views/CommunityView.vue";
 import CommunityDetailView from "@/views/CommunityDetailView.vue";
 import MypageView from "@/views/MypageView.vue";
-import { initializeAuth } from "@/api/client.js";
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
