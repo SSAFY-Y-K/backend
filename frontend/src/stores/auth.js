@@ -1,3 +1,4 @@
+import { publicApi } from "@/api/client";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
@@ -34,10 +35,23 @@ export const useAuthStore = defineStore("auth", () => {
 		accessToken.value = null;
 	};
 
+	/**
+	 * 앱 진입/새로고침 시 access token 재발급
+	 */
+	const initializeAccessToken = async () => {
+		try {
+			const response = await publicApi.post("/auth/refresh");
+			accessToken.value = response.data.accessToken;
+		} catch (error) {
+			accessToken.value = null;
+		}
+	};
+
 	return {
 		setAccessToken,
 		getAccessToken,
 		hasAccessToken,
 		clearAccessToken,
+		initializeAccessToken,
 	};
 });

@@ -73,6 +73,10 @@ public class AuthController {
     public ResponseEntity<RefreshResponse> refresh(
             @CookieValue(value = "refreshToken", required = false) String refreshToken
     ) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+          throw new BadCredentialsException("empty refresh token");
+        }
+
         return ResponseEntity.ok().body(authService.refresh(refreshToken));
     }
 
