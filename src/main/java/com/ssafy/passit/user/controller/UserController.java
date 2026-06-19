@@ -9,7 +9,6 @@ import com.ssafy.passit.user.dto.UserProfileResponse;
 import com.ssafy.passit.user.exception.SignupValidationException;
 import com.ssafy.passit.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -31,11 +30,6 @@ public class UserController {
 
     @PostMapping("signup")
     @Operation(summary = "회원 가입", description = "회원 가입 엔드포인트")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "회원 가입 성공"),
-            @ApiResponse(responseCode = "400",
-                    description = "비어있는 필드 혹은 비밀번호 불일치 또는 이미 존재하는 유저네임이나 닉네임")
-    })
     public ResponseEntity<Void> signup(@RequestBody SignupRequest signupRequest) {
         userService.signup(signupRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
