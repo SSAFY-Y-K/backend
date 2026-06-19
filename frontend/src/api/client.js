@@ -57,3 +57,32 @@ authApi.interceptors.response.use(
 		return Promise.reject(error);
 	},
 );
+
+let refreshPromise = null;
+
+export const initializeAuth = async () => {
+	const authStore = useAuthStore();
+
+	if (authStore.initialized) {
+		return authStore.hasAccessToken;
+	}
+
+	if (!refreshPromise) {
+		refreshPromise = publicApi
+			.post("/auth/refresh")
+			.then((response) => {
+				authStore.setAccessToken(response.data.accessToken);
+				return true;
+			})
+			.catch(() => {
+				authStore.clearAccessToken();
+				return false;
+			})
+			.finally(() => {
+				authStore.setInitialized(true);
+				refreshPromise = null;
+			});
+	}
+
+	return refreshPromise;
+};
