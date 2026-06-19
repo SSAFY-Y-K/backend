@@ -1,6 +1,8 @@
 package com.ssafy.passit.submission.mapper;
 
+import com.ssafy.passit.submission.dto.MySubmissionResponse;
 import com.ssafy.passit.submission.model.Submission;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,4 +21,6 @@ public interface SubmissionMapper {
         @Param("submissionId") Long submissionId,
         @Param("errorMessage") String errorMessage
     );
+
+    List<MySubmissionResponse> findByUserId(@Param("userId") Long userId);
 }

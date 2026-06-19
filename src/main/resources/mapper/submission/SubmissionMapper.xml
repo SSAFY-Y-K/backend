@@ -78,6 +78,26 @@
         WHERE submission_id = #{submissionId}
     </update>
 
+    <resultMap id="mySubmissionResultMap" type="com.ssafy.passit.submission.dto.MySubmissionResponse">
+        <id property="submissionId" column="submission_id"/>
+        <result property="problemId" column="problem_id"/>
+        <result property="problemTitle" column="problem_title"/>
+        <result property="language" column="language"/>
+        <result property="verdict" column="verdict"/>
+        <result property="execTimeMs" column="exec_time_ms"/>
+        <result property="submittedAt" column="submitted_at"/>
+    </resultMap>
+
+    <select id="findByUserId" resultMap="mySubmissionResultMap">
+        SELECT s.submission_id, s.problem_id, cp.title AS problem_title,
+               s.language, s.verdict, s.exec_time_ms, s.submitted_at
+        FROM submissions s
+        LEFT JOIN coding_problems cp ON s.problem_id = cp.problem_id
+        WHERE s.user_id = #{userId}
+        ORDER BY s.submitted_at DESC
+        LIMIT 20
+    </select>
+
     <update id="updateJudgeFailure">
         UPDATE submissions
         SET status = 'FAILED',

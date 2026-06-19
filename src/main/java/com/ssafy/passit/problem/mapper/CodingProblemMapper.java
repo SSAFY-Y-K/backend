@@ -13,4 +13,6 @@ public interface CodingProblemMapper {
     CodingProblem findById(@Param("problemId") Long problemId);
 
     List<CodingProblem> findAll();
+
+    int deleteCodingProblem(@Param("problemId") Long problemId);
 }

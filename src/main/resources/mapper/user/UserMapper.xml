@@ -48,6 +48,16 @@
         WHERE user_id = #{userId};
     </update>
 
+    <update id="updateRoleToAdmin" parameterType="String">
+        UPDATE users SET role = 'ADMIN' WHERE username = #{username}
+    </update>
+
+    <select id="findUserById" parameterType="long" resultType="User">
+        SELECT user_id, username, nickname, role
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+
     <select id="findByUserId" resultType="RefreshTokenResult">
         SELECT
             user_id,

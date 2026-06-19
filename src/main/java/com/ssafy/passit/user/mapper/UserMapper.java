@@ -24,4 +24,8 @@ public interface UserMapper {
     void clearRefreshToken(Long userId);
 
     RefreshTokenResult findByUserId(Long UserId);
+
+    User findUserById(Long userId);
+
+    void updateRoleToAdmin(String username);
 }

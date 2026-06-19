@@ -31,6 +31,11 @@ public class ProblemQueryService {
         return CodingProblemDetailResponse.from(problem, sampleTestCases);
     }
 
+    public void deleteCodingProblem(Long problemId) {
+        getCodingProblem(problemId);
+        codingProblemMapper.deleteCodingProblem(problemId);
+    }
+
     public CodingProblem getCodingProblem(Long problemId) {
         CodingProblem problem = codingProblemMapper.findById(problemId);
 

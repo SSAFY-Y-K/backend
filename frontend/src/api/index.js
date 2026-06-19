@@ -1,33 +1,22 @@
-const BASE = "/api";
-
-async function request(method, path, body) {
-	const res = await fetch(BASE + path, {
-		method,
-		headers: { "Content-Type": "application/json" },
-		body: body ? JSON.stringify(body) : undefined,
-	});
-	if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-	if (res.status === 204) return null;
-	return res.json();
-}
-
-export const api = {
-	get: (path) => request("GET", path),
-	post: (path, body) => request("POST", path, body),
-	put: (path, body) => request("PUT", path, body),
-	delete: (path) => request("DELETE", path),
-};
+import { authApi, publicApi } from "@/api/client";
 
 // Posts
-export const getPosts = () => api.get("/posts");
-export const getPostDetail = (id) => api.get(`/posts/${id}`);
-export const createPost = (body) => api.post("/posts", body);
-export const updatePost = (id, body) => api.put(`/posts/${id}`, body);
-export const deletePost = (id) => api.delete(`/posts/${id}`);
+export const getPosts = () => publicApi.get("/posts");
+export const getPostDetail = (id) => publicApi.get(`/posts/${id}`);
+export const createPost = (body) => authApi.post("/posts", body);
+export const updatePost = (id, body) => authApi.put(`/posts/${id}`, body);
+export const deletePost = (id) => authApi.delete(`/posts/${id}`);
 
 // Coding problems
-export const getCodingProblems = () => api.get("/problems/algorithm");
-export const getCodingProblemDetail = (id) => api.get(`/problems/algorithm/${id}`);
-export const generateCodingProblem = (body) => api.post("/problems/algorithm/generate", body);
-export const submitCode = (problemId, body) => api.post(`/problems/${problemId}/submissions`, body);
-export const getSubmission = (id) => api.get(`/submissions/${id}`);
+export const getCodingProblems = () => publicApi.get("/problems/algorithm");
+export const getCodingProblemDetail = (id) => publicApi.get(`/problems/algorithm/${id}`);
+export const generateCodingProblem = (body) => authApi.post("/problems/algorithm/generate", body);
+export const deleteCodingProblem = (id) => authApi.delete(`/problems/algorithm/${id}`);
+export const submitCode = (problemId, body) => authApi.post(`/problems/${problemId}/submissions`, body);
+export const getSubmission = (id) => authApi.get(`/submissions/${id}`);
+
+// My page
+export const getMyProfile = () => authApi.get("/users/me");
+export const getMyPosts = () => authApi.get("/users/me/posts");
+export const getMySubmissions = () => authApi.get("/users/me/submissions");
+export const logout = () => publicApi.post("/auth/logout");

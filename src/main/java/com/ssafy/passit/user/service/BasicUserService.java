@@ -1,8 +1,15 @@
 package com.ssafy.passit.user.service;
 
+import com.ssafy.passit.common.exception.ApiException;
+import com.ssafy.passit.common.exception.ErrorCode;
+import com.ssafy.passit.post.mapper.PostMapper;
+import com.ssafy.passit.post.model.Post;
+import com.ssafy.passit.submission.dto.MySubmissionResponse;
+import com.ssafy.passit.submission.mapper.SubmissionMapper;
 import com.ssafy.passit.user.dto.*;
 import com.ssafy.passit.user.exception.SignupValidationException;
 import com.ssafy.passit.user.mapper.UserMapper;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,7 +21,26 @@ import org.springframework.stereotype.Service;
 public class BasicUserService implements UserService {
 
     private final UserMapper userMapper;
+    private final PostMapper postMapper;
+    private final SubmissionMapper submissionMapper;
     private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public UserProfileResponse getProfile(Long userId) {
+        User user = userMapper.findUserById(userId);
+        if (user == null) throw new ApiException(ErrorCode.INTERNAL_ERROR, "사용자를 찾을 수 없습니다.");
+        return UserProfileResponse.from(user);
+    }
+
+    @Override
+    public List<Post> getMyPosts(Long userId) {
+        return postMapper.findByUserId(userId);
+    }
+
+    @Override
+    public List<MySubmissionResponse> getMySubmissions(Long userId) {
+        return submissionMapper.findByUserId(userId);
+    }
 
     @Override
     public void signup(SignupRequest request) {

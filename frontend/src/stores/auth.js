@@ -2,15 +2,35 @@ import { publicApi } from "@/api/client";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
+const decodeJwtPayload = (token) => {
+	try {
+		return JSON.parse(atob(token.split(".")[1]));
+	} catch {
+		return null;
+	}
+};
+
 export const useAuthStore = defineStore("auth", () => {
 	const accessToken = ref(null);
 
-	/**
-	 * access token을 가지고 있으면 true, 없으면 false 반환
-	 */
-	const hasAccessToken = computed(() => {
-		return !!accessToken.value;
+	const hasAccessToken = computed(() => !!accessToken.value);
+
+	const userId = computed(() => {
+		const payload = decodeJwtPayload(accessToken.value);
+		return payload?.userId ?? null;
 	});
+
+	const username = computed(() => {
+		const payload = decodeJwtPayload(accessToken.value);
+		return payload?.sub ?? null;
+	});
+
+	const role = computed(() => {
+		const payload = decodeJwtPayload(accessToken.value);
+		return payload?.role ?? null;
+	});
+
+	const isAdmin = computed(() => role.value === "ADMIN");
 
 	/**
 	 * access token 설정
@@ -53,5 +73,9 @@ export const useAuthStore = defineStore("auth", () => {
 		hasAccessToken,
 		clearAccessToken,
 		initializeAccessToken,
+		userId,
+		username,
+		role,
+		isAdmin,
 	};
 });

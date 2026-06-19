@@ -30,6 +30,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
         httpSecurity.authorizeHttpRequests(
                 registry -> registry
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/problems/algorithm/**").hasAuthority("ADMIN")
                         .anyRequest().permitAll()
         );
 

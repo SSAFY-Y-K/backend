@@ -67,6 +67,10 @@
     </select>
 
 
+    <delete id="deleteCodingProblem" parameterType="long">
+        DELETE FROM coding_problems WHERE problem_id = #{problemId}
+    </delete>
+
     <select id="findAll" resultMap="codingProblemResultMap">
         SELECT
             problem_id,

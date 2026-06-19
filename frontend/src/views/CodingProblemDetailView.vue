@@ -12,12 +12,21 @@
 			<div v-else-if="problem" class="space-y-0">
 				<!-- 헤더 -->
 				<div class="border-b border-slate-100 px-6 py-4">
-					<button
-						class="mb-3 text-xs text-slate-400 transition hover:text-slate-600"
-						@click="$router.push({ name: 'problem' })"
-					>
-						← 목록으로
-					</button>
+					<div class="mb-3 flex items-center justify-between">
+						<button
+							class="text-xs text-slate-400 transition hover:text-slate-600"
+							@click="$router.push({ name: 'problem' })"
+						>
+							← 목록으로
+						</button>
+						<button
+							v-if="authStore.isAdmin"
+							class="text-xs text-red-400 transition hover:text-red-600"
+							@click="handleDelete"
+						>
+							문제 삭제
+						</button>
+					</div>
 					<div class="mb-1.5 flex items-center gap-2">
 						<span :class="['rounded px-2 py-0.5 text-[10px] font-bold text-white', difficultyColor[problem.difficulty]]">
 							{{ difficultyLabel[problem.difficulty] ?? problem.difficulty }}
@@ -184,9 +193,14 @@
 <script setup>
 import { onMounted, ref, computed } from "vue";
 import { useRoute } from "vue-router";
-import { getCodingProblemDetail, submitCode } from "@/api/index.js";
+import { getCodingProblemDetail, submitCode, deleteCodingProblem } from "@/api/index.js";
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
+
+const authStore = useAuthStore();
 
 const route = useRoute();
+const router = useRouter();
 
 const problem = ref(null);
 const loading = ref(true);
@@ -247,13 +261,23 @@ const loadProblem = async () => {
 	}
 };
 
+const handleDelete = async () => {
+	if (!confirm("이 문제를 삭제할까요?")) return;
+	try {
+		await deleteCodingProblem(route.params.id);
+		router.push({ name: "problem" });
+	} catch {
+		alert("삭제에 실패했습니다.");
+	}
+};
+
 const handleSubmit = async () => {
 	if (!code.value.trim()) return;
 	submitting.value = true;
 	result.value = null;
 	try {
 		const res = await submitCode(route.params.id, {
-			userId: 1,
+			userId: authStore.userId,
 			language: language.value,
 			sourceCode: code.value,
 		});

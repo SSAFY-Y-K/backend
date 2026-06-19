@@ -19,4 +19,6 @@ public interface PostMapper {
     int incrementViewCount(@Param("postId") Long postId);
 
     int deletePost(@Param("postId") Long postId);
+
+    List<Post> findByUserId(@Param("userId") Long userId);
 }

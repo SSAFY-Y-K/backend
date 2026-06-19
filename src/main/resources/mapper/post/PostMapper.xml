@@ -62,4 +62,13 @@
         WHERE post_id = #{postId}
     </delete>
 
+    <select id="findByUserId" resultMap="postResultMap">
+        SELECT p.post_id, p.user_id, u.nickname, p.cert_id, p.category,
+               p.title, p.view_count, p.created_at
+        FROM posts p
+        LEFT JOIN users u ON p.user_id = u.user_id
+        WHERE p.user_id = #{userId}
+        ORDER BY p.created_at DESC
+    </select>
+
 </mapper>

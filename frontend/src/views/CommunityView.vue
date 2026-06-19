@@ -109,6 +109,9 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from "vue";
 import { getPosts, createPost } from "@/api/index.js";
+import { useAuthStore } from "@/stores/auth";
+
+const authStore = useAuthStore();
 
 const tabs = [
 	{ id: "all", label: "전체" },
@@ -162,7 +165,7 @@ const submitPost = async () => {
 	if (!form.category || !form.title.trim() || !form.content.trim()) return;
 	submitting.value = true;
 	try {
-		await createPost({ userId: 1, certId: null, ...form });
+		await createPost({ userId: authStore.userId, certId: null, ...form });
 		closeForm();
 		await loadPosts();
 	} catch {

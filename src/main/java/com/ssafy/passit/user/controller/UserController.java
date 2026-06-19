@@ -1,15 +1,21 @@
 package com.ssafy.passit.user.controller;
 
+import com.ssafy.passit.common.response.ApiResponse;
+import com.ssafy.passit.post.dto.PostResponse;
+import com.ssafy.passit.security.UserPrincipal;
+import com.ssafy.passit.submission.dto.MySubmissionResponse;
 import com.ssafy.passit.user.dto.SignupRequest;
+import com.ssafy.passit.user.dto.UserProfileResponse;
 import com.ssafy.passit.user.exception.SignupValidationException;
 import com.ssafy.passit.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,6 +39,31 @@ public class UserController {
     public ResponseEntity<Void> signup(@RequestBody SignupRequest signupRequest) {
         userService.signup(signupRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/me")
+    @Operation(summary = "내 프로필 조회")
+    public ApiResponse<UserProfileResponse> getMyProfile(
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.success(userService.getProfile(principal.getUserId()));
+    }
+
+    @GetMapping("/me/posts")
+    @Operation(summary = "내 게시글 목록 조회")
+    public ApiResponse<List<PostResponse>> getMyPosts(
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.success(
+            userService.getMyPosts(principal.getUserId()).stream()
+                .map(PostResponse::from)
+                .toList()
+        );
+    }
+
+    @GetMapping("/me/submissions")
+    @Operation(summary = "내 제출 이력 조회")
+    public ApiResponse<List<MySubmissionResponse>> getMySubmissions(
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.success(userService.getMySubmissions(principal.getUserId()));
     }
 
     @ExceptionHandler(SignupValidationException.class)

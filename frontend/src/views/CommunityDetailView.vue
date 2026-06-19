@@ -35,8 +35,8 @@
 				<p class="whitespace-pre-wrap text-xs leading-relaxed text-slate-700">{{ post.content }}</p>
 			</div>
 
-			<!-- 수정/삭제 버튼: 내 글일 때만 표시 -->
-			<div v-if="post.userId === CURRENT_USER_ID" class="flex justify-end gap-2">
+			<!-- 수정/삭제 버튼: 내 글이거나 관리자일 때 표시 -->
+			<div v-if="post.userId === authStore.userId || authStore.isAdmin" class="flex justify-end gap-2">
 				<button
 					class="h-8 rounded-md border border-slate-200 px-4 text-xs text-slate-600 hover:bg-slate-50"
 					@click="startEdit"
@@ -102,9 +102,9 @@
 import { onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { getPostDetail, updatePost, deletePost } from "@/api/index.js";
+import { useAuthStore } from "@/stores/auth";
 
-const CURRENT_USER_ID = 1; // 인증 구현 전 임시
-
+const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
 
