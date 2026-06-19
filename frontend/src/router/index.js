@@ -70,8 +70,4 @@ const router = createRouter({
 	],
 });
 
-router.beforeEach(async () => {
-	const result = await initializeAuth();
-});
-
 export default router;
