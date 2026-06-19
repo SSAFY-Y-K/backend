@@ -10,11 +10,13 @@ import com.ssafy.passit.problem.model.CodingProblem;
 import com.ssafy.passit.problem.model.TestCase;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AlgorithmProblemService {
 
     private final AiServerClient aiServerClient;
@@ -23,6 +25,7 @@ public class AlgorithmProblemService {
 
     @Transactional
     public GenerateAlgorithmResponse generate(GenerateAlgorithmRequest request) {
+        log.info("Algorithm problem generation requested. difficulty={}", request.getDifficulty());
         AiProblemResponse aiResponse = aiServerClient.generateAlgorithmProblem(request);
 
         CodingProblem problem = CodingProblem.builder()
@@ -38,6 +41,7 @@ public class AlgorithmProblemService {
                 .build();
 
         codingProblemMapper.insertCodingProblem(problem);
+        log.info("Coding problem saved. problemId={}, title={}", problem.getProblemId(), problem.getTitle());
 
         List<TestCase> testCases = aiResponse.getTestCases().stream()
                 .map(tc -> TestCase.builder()
@@ -50,6 +54,7 @@ public class AlgorithmProblemService {
                 .toList();
 
         testCaseMapper.insertTestCases(testCases);
+        log.info("Test cases saved. problemId={}, testCaseCount={}", problem.getProblemId(), testCases.size());
 
         return new GenerateAlgorithmResponse(
                 problem.getProblemId(),

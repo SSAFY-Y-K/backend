@@ -13,11 +13,13 @@ import com.ssafy.passit.submission.mapper.SubmissionMapper;
 import com.ssafy.passit.submission.model.Submission;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SubmissionService {
 
     private final ProblemQueryService problemQueryService;
@@ -27,16 +29,21 @@ public class SubmissionService {
     @Transactional
     public SubmissionResultResponse submit(Long problemId, CreateSubmissionRequest request) {
         validateSubmissionRequest(problemId, request);
+        LanguageType language = parseLanguage(request.language());
+        log.info("Submission requested. problemId={}, userId={}, language={}",
+            problemId, request.userId(), language);
 
         Submission submission = Submission.builder()
             .problemId(problemId)
             .userId(request.userId())
-            .language(parseLanguage(request.language()))
+            .language(language)
             .sourceCode(request.sourceCode())
             .status(SubmissionStatus.PENDING)
             .build();
 
         submissionMapper.insertSubmission(submission);
+        log.info("Submission saved. submissionId={}, problemId={}, userId={}",
+            submission.getSubmissionId(), problemId, request.userId());
         judgeService.judge(submission.getSubmissionId());
 
         return SubmissionResultResponse.from(findById(submission.getSubmissionId()));
@@ -50,6 +57,7 @@ public class SubmissionService {
         Submission submission = submissionMapper.findById(submissionId);
 
         if (submission == null) {
+            log.warn("Submission not found. submissionId={}", submissionId);
             throw new ApiException(ErrorCode.SUBMISSION_NOT_FOUND);
         }
 
@@ -61,8 +69,10 @@ public class SubmissionService {
         int updatedCount = submissionMapper.updateStatusRunning(submissionId);
 
         if (updatedCount == 0) {
+            log.warn("Failed to mark submission running. submissionId={}", submissionId);
             throw new ApiException(ErrorCode.SUBMISSION_NOT_FOUND);
         }
+        log.info("Submission marked running. submissionId={}", submissionId);
     }
 
     @Transactional
@@ -80,8 +90,11 @@ public class SubmissionService {
         int updatedCount = submissionMapper.updateJudgeSuccess(submission);
 
         if (updatedCount == 0) {
+            log.warn("Failed to mark submission done. submissionId={}", result.submissionId());
             throw new ApiException(ErrorCode.SUBMISSION_NOT_FOUND);
         }
+        log.info("Submission marked done. submissionId={}, verdict={}, execTimeMs={}, memoryKb={}",
+            result.submissionId(), result.verdict(), result.execTimeMs(), result.memoryKb());
     }
 
     @Transactional
@@ -89,8 +102,10 @@ public class SubmissionService {
         int updatedCount = submissionMapper.updateJudgeFailure(submissionId, errorMessage);
 
         if (updatedCount == 0) {
+            log.warn("Failed to mark submission failed. submissionId={}", submissionId);
             throw new ApiException(ErrorCode.SUBMISSION_NOT_FOUND);
         }
+        log.warn("Submission marked failed. submissionId={}, message={}", submissionId, errorMessage);
     }
 
     private void validateSubmissionRequest(Long problemId, CreateSubmissionRequest request) {

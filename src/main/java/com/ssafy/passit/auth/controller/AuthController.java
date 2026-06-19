@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ import java.time.Duration;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Tag(name = "Auth API", description = "인증/인가 관련 API")
+@Slf4j
 public class AuthController {
 
     private final AuthService authService;
@@ -33,6 +35,7 @@ public class AuthController {
     })
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        log.info("Login request received. username={}", request.getUsername());
 
         LoginResult result = authService.login(request);
 
@@ -59,6 +62,7 @@ public class AuthController {
     public ResponseEntity<Void> logout(
             @CookieValue(value = "refreshToken", required = false) String refreshToken
     ) {
+        log.info("Logout request received. hasRefreshToken={}", refreshToken != null && !refreshToken.isBlank());
         authService.logout(refreshToken);
 
         return ResponseEntity.noContent().build();
@@ -74,7 +78,8 @@ public class AuthController {
             @CookieValue(value = "refreshToken", required = false) String refreshToken
     ) {
         if (refreshToken == null || refreshToken.isBlank()) {
-          throw new BadCredentialsException("empty refresh token");
+            log.warn("Refresh request rejected. reason=empty_refresh_token");
+            throw new BadCredentialsException("empty refresh token");
         }
 
         return ResponseEntity.ok().body(authService.refresh(refreshToken));
@@ -84,6 +89,7 @@ public class AuthController {
     public ProblemDetail handleBadCredentialException(
             BadCredentialsException exception
     ) {
+        log.warn("Authentication request failed. message={}", exception.getMessage());
 
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
         problemDetail.setTitle(exception.getMessage());

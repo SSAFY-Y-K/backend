@@ -14,12 +14,14 @@ import com.ssafy.passit.problem.dto.response.ProblemsResponse;
 import com.ssafy.passit.problem.dto.response.ShortAnswerProblemResponse;
 import com.ssafy.passit.problem.repository.ProblemRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BasicProblemService implements ProblemService {
 
     private static final long PAGE_SIZE = 10;
@@ -32,6 +34,8 @@ public class BasicProblemService implements ProblemService {
     @Transactional
     public void saveMultipleChoiceProblem(
             MultipleChoiceProblemCreateRequest request) {
+        log.info("Saving multiple choice problem. certId={}, title={}",
+                request.getCertId(), request.getTitle());
         Long problemId = saveProblemAndGetId(ProblemEntity.builder()
                 .certId(request.getCertId())
                 .problemType(ProblemType.MULTIPLE_CHOICE)
@@ -48,11 +52,15 @@ public class BasicProblemService implements ProblemService {
                         .choice4Content(request.getChoice4Content())
                         .answerNumber(request.getAnswerNumber())
                         .build());
+        log.info("Multiple choice problem saved. problemId={}, certId={}",
+                problemId, request.getCertId());
     }
 
     @Override
     @Transactional
     public void saveShortChoiceProblem(ShortAnswerProblemCreateRequest request) {
+        log.info("Saving short answer problem. certId={}, title={}",
+                request.getCertId(), request.getTitle());
         Long problemId = saveProblemAndGetId(ProblemEntity.builder()
                 .certId(request.getCertId())
                 .problemType(ProblemType.SHORT_ANSWER)
@@ -65,11 +73,14 @@ public class BasicProblemService implements ProblemService {
                         .question(request.getQuestion())
                         .answer(request.getAnswer())
                         .build());
+        log.info("Short answer problem saved. problemId={}, certId={}",
+                problemId, request.getCertId());
     }
 
     @Override
     @Transactional
     public void generateAndSaveMultipleChoiceProblemFromAi(Long certId) {
+        log.info("AI multiple choice problem generation requested. certId={}", certId);
         var createRequest = generateProblemFromAi(
                 certId,
                 ProblemType.MULTIPLE_CHOICE,
@@ -83,6 +94,7 @@ public class BasicProblemService implements ProblemService {
     @Override
     @Transactional
     public void generateAndSaveShortAnswerProblemFromAi(Long certId) {
+        log.info("AI short answer problem generation requested. certId={}", certId);
         var createRequest = generateProblemFromAi(
                 certId,
                 ProblemType.SHORT_ANSWER,
@@ -119,6 +131,8 @@ public class BasicProblemService implements ProblemService {
             ProblemType problemType,
             Class<T> responseType) {
         String certificationName = certificationService.findCertificationName(certId);
+        log.info("Requesting AI problem. certId={}, certificationName={}, problemType={}",
+                certId, certificationName, problemType);
 
         return client.generateProblem(
                 certificationName,

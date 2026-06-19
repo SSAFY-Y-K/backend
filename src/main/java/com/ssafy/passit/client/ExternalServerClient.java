@@ -2,7 +2,7 @@ package com.ssafy.passit.client;
 
 import com.ssafy.passit.common.type.ProblemType;
 import com.ssafy.passit.problem.dto.request.AiResponse;
-import com.ssafy.passit.problem.dto.request.MultipleChoiceProblemCreateRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -11,6 +11,7 @@ import org.springframework.web.client.RestClient;
 import java.util.Map;
 
 @Component
+@Slf4j
 public class ExternalServerClient {
 
     private final RestClient restClient;
@@ -38,11 +39,17 @@ public class ExternalServerClient {
                 "problemType", problemType
                 );
 
-        return restClient.post()
+        log.info("Requesting AI problem generation. certificationName={}, problemType={}",
+                certificationName, problemType);
+
+        T response = restClient.post()
                 .uri("/questions/generate")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(request)
                 .retrieve()
                 .body(responseType);
+        log.info("AI problem generation completed. certificationName={}, problemType={}",
+                certificationName, problemType);
+        return response;
     }
 }

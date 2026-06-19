@@ -9,6 +9,7 @@ import com.ssafy.passit.security.CustomUserDetails;
 import com.ssafy.passit.user.mapper.UserMapper;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BasicAuthService implements AuthService {
 
     private final UserMapper userMapper;
@@ -40,6 +42,7 @@ public class BasicAuthService implements AuthService {
         String refreshToken = jwtProvider.createRefreshToken(principal.getUserId(), principal.getUsername());
 
         userMapper.updateRefreshToken(principal.getUserId(), refreshToken);
+        log.info("Login succeeded. userId={}, username={}", principal.getUserId(), principal.getUsername());
 
         return LoginResult.builder()
                 .accessToken(accessToken)
@@ -53,6 +56,7 @@ public class BasicAuthService implements AuthService {
         Long userId = claims.get("userId", Long.class);
 
         userMapper.clearRefreshToken(userId);
+        log.info("Logout completed. userId={}", userId);
     }
 
     @Override
@@ -64,6 +68,7 @@ public class BasicAuthService implements AuthService {
         RefreshTokenResult result = userMapper.findByUserId(userId);
 
         if (result == null || !refreshToken.equals(result.getRefreshToken())) {
+            log.warn("Refresh token mismatch. userId={}", userId);
             throw new BadCredentialsException("Invalid Refresh Token");
         }
 
@@ -73,6 +78,7 @@ public class BasicAuthService implements AuthService {
                 result.getRole()
         );
 
+        log.info("Access token refreshed. userId={}", userId);
         return new RefreshResponse(newAccessToken);
     }
 }

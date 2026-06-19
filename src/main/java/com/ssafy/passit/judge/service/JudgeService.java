@@ -18,11 +18,13 @@ import com.ssafy.passit.submission.mapper.SubmissionMapper;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JudgeService {
 
     private final SubmissionMapper submissionMapper;
@@ -33,6 +35,8 @@ public class JudgeService {
     @Transactional
     public JudgeResult judge(Long submissionId) {
         Submission submission = findSubmission(submissionId);
+        log.info("Judge started. submissionId={}, problemId={}, language={}",
+            submissionId, submission.getProblemId(), submission.getLanguage());
 
         try {
             updateStatusRunning(submissionId);
@@ -43,8 +47,12 @@ public class JudgeService {
 
             JudgeResult judgeResult = executeTestCases(submission, problem, hiddenTestCases, codeRunner);
             saveJudgeSuccess(judgeResult);
+            log.info("Judge completed. submissionId={}, verdict={}, execTimeMs={}, memoryKb={}",
+                submissionId, judgeResult.verdict(), judgeResult.execTimeMs(), judgeResult.memoryKb());
             return judgeResult;
         } catch (ApiException exception) {
+            log.warn("Judge failed by API exception. submissionId={}, message={}",
+                submissionId, exception.getMessage());
             markFailed(submissionId, exception.getMessage());
             return new JudgeResult(
                 submissionId,
@@ -55,6 +63,7 @@ public class JudgeService {
                 exception.getMessage()
             );
         } catch (Exception exception) {
+            log.error("Judge failed by unexpected exception. submissionId={}", submissionId, exception);
             markFailed(submissionId, "채점 중 알 수 없는 오류가 발생했습니다.");
             return new JudgeResult(
                 submissionId,
@@ -102,6 +111,8 @@ public class JudgeService {
         Integer maxMemoryKb = null;
 
         for (TestCase testCase : hiddenTestCases) {
+            log.debug("Executing test case. submissionId={}, problemId={}, caseOrder={}",
+                submission.getSubmissionId(), problem.getProblemId(), testCase.getCaseOrder());
             ExecutionRequest executionRequest = new ExecutionRequest(
                 submission.getSubmissionId(),
                 problem.getProblemId(),
@@ -119,6 +130,8 @@ public class JudgeService {
             if (executionResult.verdict() == VerdictType.AC) {
                 boolean matched = outputComparator.isMatch(testCase.getExpectedOutput(), executionResult.stdout());
                 if (!matched) {
+                    log.info("Judge test case mismatch. submissionId={}, caseOrder={}",
+                        submission.getSubmissionId(), testCase.getCaseOrder());
                     return new JudgeResult(
                         submission.getSubmissionId(),
                         SubmissionStatus.DONE,
@@ -132,6 +145,8 @@ public class JudgeService {
                 continue;
             }
 
+            log.info("Judge stopped on non-AC verdict. submissionId={}, caseOrder={}, verdict={}",
+                submission.getSubmissionId(), testCase.getCaseOrder(), executionResult.verdict());
             return new JudgeResult(
                 submission.getSubmissionId(),
                 SubmissionStatus.DONE,

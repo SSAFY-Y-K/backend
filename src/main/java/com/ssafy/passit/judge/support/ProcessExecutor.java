@@ -12,9 +12,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class ProcessExecutor {
 
     public ProcessExecutionResult execute(List<String> command, String stdin, long timeoutMs) {
@@ -25,6 +27,7 @@ public class ProcessExecutor {
         try {
             process = new ProcessBuilder(command).start();
         } catch (IOException exception) {
+            log.error("Failed to start external process. command={}", command, exception);
             throw new ApiException(ErrorCode.INTERNAL_ERROR, "외부 프로세스를 시작하지 못했습니다.");
         }
 
@@ -38,6 +41,8 @@ public class ProcessExecutor {
             if (!finished) {
                 process.destroyForcibly();
                 process.waitFor(5, TimeUnit.SECONDS);
+                log.warn("External process timed out. command={}, timeoutMs={}, elapsedMs={}",
+                    command, timeoutMs, elapsedMillis(startedAt));
 
                 String stdout = "";
                 String stderr = "";
@@ -51,15 +56,19 @@ public class ProcessExecutor {
                 return new ProcessExecutionResult(-1, true, elapsedMillis(startedAt), stdout, stderr);
             }
 
-            return new ProcessExecutionResult(
+            ProcessExecutionResult result = new ProcessExecutionResult(
                 process.exitValue(),
                 false,
                 elapsedMillis(startedAt),
                 getFutureValue(stdoutFuture),
                 getFutureValue(stderrFuture)
             );
+            log.debug("External process finished. command={}, exitCode={}, elapsedMs={}",
+                command, result.exitCode(), result.execTimeMs());
+            return result;
         } catch (InterruptedException exception) {
             Thread.currentThread().interrupt();
+            log.warn("External process interrupted. command={}", command);
             throw new ApiException(ErrorCode.INTERNAL_ERROR, "프로세스 실행이 중단되었습니다.");
         }
     }
