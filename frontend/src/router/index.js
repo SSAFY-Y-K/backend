@@ -4,6 +4,8 @@ import ProblemView from "@/views/ProblemView.vue";
 import ProblemDetailView from "@/views/ProblemDetailView.vue";
 import CodingProblemDetailView from "@/views/CodingProblemDetailView.vue";
 import CreateView from "@/views/CreateView.vue";
+import CreateCodingView from "@/views/CreateCodingView.vue";
+import CreateCertificationView from "@/views/CreateCertificationView.vue";
 import LoginView from "@/views/LoginView.vue";
 import SignupView from "@/views/SignupView.vue";
 import CommunityView from "@/views/CommunityView.vue";
@@ -40,6 +42,20 @@ const router = createRouter({
 			name: "create",
 			component: CreateView,
 			meta: { requiresAuth: true },
+			children: [
+				{
+					path: "coding",
+					name: "create-coding",
+					component: CreateCodingView,
+					meta: { requiresAuth: true },
+				},
+				{
+					path: "certification",
+					name: "create-certification",
+					component: CreateCertificationView,
+					meta: { requiresAuth: true },
+				},
+			],
 		},
 		{
 			path: "/community",
