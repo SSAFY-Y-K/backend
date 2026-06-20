@@ -41,6 +41,22 @@
         ORDER BY case_order ASC
     </select>
 
+    <select id="findAllByProblemId"
+            parameterType="long"
+            resultMap="testCaseResultMap">
+        SELECT test_case_id, problem_id, input_data, expected_output, is_sample, case_order, created_at, updated_at
+        FROM test_cases
+        WHERE problem_id = #{problemId}
+        ORDER BY case_order ASC
+    </select>
+
+    <update id="update">
+        UPDATE test_cases
+        SET input_data = #{inputData},
+            expected_output = #{expectedOutput}
+        WHERE test_case_id = #{testCaseId}
+    </update>
+
     <select id="findHiddenTestCasesByProblemId"
             parameterType="long"
             resultMap="testCaseResultMap">

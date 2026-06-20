@@ -43,6 +43,19 @@ public class BasicUserService implements UserService {
     }
 
     @Override
+    public UserStatsResponse getStats(Long userId) {
+        UserStatsResponse stats = submissionMapper.getUserStats(userId);
+        if (stats == null) return new UserStatsResponse(0, 0, 0, 0);
+        return stats;
+    }
+
+    @Override
+    public void updateProfile(Long userId, UpdateProfileRequest request) {
+        validateNicknameUnique(request.nickname());
+        userMapper.updateNickname(userId, request.nickname());
+    }
+
+    @Override
     public void signup(SignupRequest request) {
         log.info("Signup requested. username={}, nickname={}", request.getUsername(), request.getNickname());
         validatePassword(request.getPassword(), request.getConfirmPassword());

@@ -10,45 +10,49 @@ import org.springframework.stereotype.Component;
 public class DockerCommandFactory {
 
     private static final String WORKSPACE_DIR = "/workspace";
+    public static final String EXEC_TIME_MARKER = "__PASSIT_EXEC_MS__";
 
     public List<String> buildPythonCommand(ExecutionRequest request, Path workspace) {
-        int timeLimitSec = toSeconds(request.timeLimitMs());
-        return buildBaseCommand(request, workspace, "python:3.11-alpine",
-            List.of("sh", "-c", "timeout " + timeLimitSec + "s python3 main.py; ec=$?; if [ $ec -eq 124 ]; then exit 124; fi; exit $ec")
-        );
+        String timeArg = toTimeoutArg(request.timeLimitMs());
+        // python:3.11-slim(Debian) 사용 — Alpine BusyBox는 date +%s%N 미지원
+        String script =
+            "START=$(date +%s%N); " +
+            "timeout " + timeArg + " python3 main.py; ec=$?; " +
+            "END=$(date +%s%N); " +
+            "echo '" + EXEC_TIME_MARKER + "'$(( (END-START)/1000000 )) >&2; " +
+            "if [ $ec -eq 124 ]; then exit 124; fi; exit $ec";
+        return buildBaseCommand(request, workspace, "python:3.11-slim", List.of("sh", "-c", script));
     }
 
     public List<String> buildJavaCommand(ExecutionRequest request, Path workspace) {
-        int timeLimitSec = toSeconds(request.timeLimitMs());
-        return buildBaseCommand(
-            request,
-            workspace,
-            "eclipse-temurin:21",
-            List.of(
-                "sh",
-                "-c",
-                "javac Main.java; status=$?; if [ $status -ne 0 ]; then echo '__PASSIT_COMPILE_ERROR__' >&2; exit 101; fi; timeout " + timeLimitSec + "s java Main; ec=$?; if [ $ec -eq 124 ]; then exit 124; fi; exit $ec"
-            )
-        );
+        String timeArg = toTimeoutArg(request.timeLimitMs());
+        String script =
+            "javac Main.java 2>/tmp/ce; s=$?; " +
+            "if [ $s -ne 0 ]; then cat /tmp/ce >&2; echo '__PASSIT_COMPILE_ERROR__' >&2; exit 101; fi; " +
+            "START=$(date +%s%N); " +
+            "timeout " + timeArg + " java Main; ec=$?; " +
+            "END=$(date +%s%N); " +
+            "echo '" + EXEC_TIME_MARKER + "'$(( (END-START)/1000000 )) >&2; " +
+            "if [ $ec -eq 124 ]; then exit 124; fi; exit $ec";
+        return buildBaseCommand(request, workspace, "eclipse-temurin:21", List.of("sh", "-c", script));
     }
 
     public List<String> buildCppCommand(ExecutionRequest request, Path workspace) {
-        int timeLimitSec = toSeconds(request.timeLimitMs());
-        return buildBaseCommand(
-            request,
-            workspace,
-            "gcc:13",
-            List.of(
-                "sh",
-                "-c",
-                "g++ -O2 -std=c++17 main.cpp -o main; status=$?; if [ $status -ne 0 ]; then echo '__PASSIT_COMPILE_ERROR__' >&2; exit 101; fi; timeout " + timeLimitSec + "s ./main; ec=$?; if [ $ec -eq 124 ]; then exit 124; fi; exit $ec"
-            )
-        );
+        String timeArg = toTimeoutArg(request.timeLimitMs());
+        String script =
+            "g++ -O2 -std=c++17 main.cpp -o main 2>/tmp/ce; s=$?; " +
+            "if [ $s -ne 0 ]; then cat /tmp/ce >&2; echo '__PASSIT_COMPILE_ERROR__' >&2; exit 101; fi; " +
+            "START=$(date +%s%N); " +
+            "timeout " + timeArg + " ./main; ec=$?; " +
+            "END=$(date +%s%N); " +
+            "echo '" + EXEC_TIME_MARKER + "'$(( (END-START)/1000000 )) >&2; " +
+            "if [ $ec -eq 124 ]; then exit 124; fi; exit $ec";
+        return buildBaseCommand(request, workspace, "gcc:13", List.of("sh", "-c", script));
     }
 
-    private int toSeconds(Integer timeLimitMs) {
-        if (timeLimitMs == null || timeLimitMs <= 0) return 5;
-        return Math.max(1, (int) Math.ceil(timeLimitMs / 1000.0));
+    private String toTimeoutArg(Integer timeLimitMs) {
+        if (timeLimitMs == null || timeLimitMs <= 0) return "5s";
+        return (timeLimitMs / 1000.0) + "s";
     }
 
     private List<String> buildBaseCommand(

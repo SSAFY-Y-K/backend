@@ -4,6 +4,7 @@ import com.ssafy.passit.common.exception.ApiException;
 import com.ssafy.passit.common.exception.ErrorCode;
 import com.ssafy.passit.post.dto.CreatePostRequest;
 import com.ssafy.passit.post.dto.PostDetailResponse;
+import com.ssafy.passit.post.dto.PostListResponse;
 import com.ssafy.passit.post.dto.PostResponse;
 import com.ssafy.passit.post.dto.UpdatePostRequest;
 import com.ssafy.passit.post.mapper.PostMapper;
@@ -39,10 +40,13 @@ public class PostService {
         return PostDetailResponse.from(findById(post.getPostId()));
     }
 
-    public List<PostResponse> getPosts() {
-        return postMapper.findAll().stream()
+    public PostListResponse getPosts(String keyword, int page, int size) {
+        int offset = page * size;
+        List<PostResponse> posts = postMapper.findAll(keyword, offset, size).stream()
             .map(PostResponse::from)
             .toList();
+        int total = postMapper.countAll(keyword);
+        return new PostListResponse(posts, total, page, size);
     }
 
     @Transactional

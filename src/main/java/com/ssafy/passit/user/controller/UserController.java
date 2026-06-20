@@ -5,7 +5,9 @@ import com.ssafy.passit.post.dto.PostResponse;
 import com.ssafy.passit.security.UserPrincipal;
 import com.ssafy.passit.submission.dto.MySubmissionResponse;
 import com.ssafy.passit.user.dto.SignupRequest;
+import com.ssafy.passit.user.dto.UpdateProfileRequest;
 import com.ssafy.passit.user.dto.UserProfileResponse;
+import com.ssafy.passit.user.dto.UserStatsResponse;
 import com.ssafy.passit.user.exception.SignupValidationException;
 import com.ssafy.passit.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,6 +60,22 @@ public class UserController {
     public ApiResponse<List<MySubmissionResponse>> getMySubmissions(
             @AuthenticationPrincipal UserPrincipal principal) {
         return ApiResponse.success(userService.getMySubmissions(principal.getUserId()));
+    }
+
+    @GetMapping("/me/stats")
+    @Operation(summary = "내 통계 조회")
+    public ApiResponse<UserStatsResponse> getMyStats(
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.success(userService.getStats(principal.getUserId()));
+    }
+
+    @PutMapping("/me")
+    @Operation(summary = "프로필 수정 (닉네임)")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateProfile(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestBody UpdateProfileRequest request) {
+        userService.updateProfile(principal.getUserId(), request);
     }
 
     @ExceptionHandler(SignupValidationException.class)

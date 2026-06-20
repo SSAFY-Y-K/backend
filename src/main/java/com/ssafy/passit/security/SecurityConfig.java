@@ -33,13 +33,19 @@ public class SecurityConfig {
                 registry -> registry
                         // 관리자 전용
                         .requestMatchers(HttpMethod.DELETE, "/api/problems/algorithm/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                         // 로그인 필요
                         .requestMatchers(HttpMethod.POST, "/api/posts").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/posts/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/posts/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/posts/*/comments").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/posts/*/comments/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/problems/algorithm/generate").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/problems/*/submissions").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/problems/*/run").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/problems/*/reports").authenticated()
                         .requestMatchers("/api/users/me/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/users/me").authenticated()
                         .anyRequest().permitAll()
         );
 

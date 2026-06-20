@@ -8,7 +8,9 @@ public record CodingProblemListItemResponse(
         String title,
         String difficulty,
         String category,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        int totalSubmissions,
+        int acCount
 ) {
     public static CodingProblemListItemResponse from(CodingProblem problem) {
         return new CodingProblemListItemResponse(
@@ -16,7 +18,9 @@ public record CodingProblemListItemResponse(
                 problem.getTitle(),
                 problem.getDifficulty(),
                 problem.getCategory(),
-                problem.getCreatedAt()
+                problem.getCreatedAt(),
+                problem.getTotalSubmissions() != null ? problem.getTotalSubmissions() : 0,
+                problem.getAcCount() != null ? problem.getAcCount() : 0
         );
     }
 }

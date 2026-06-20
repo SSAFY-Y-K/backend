@@ -12,5 +12,11 @@ public interface TestCaseMapper {
 
     List<TestCase> findSampleTestCasesByProblemId(@Param("problemId") Long problemId);
 
+    List<TestCase> findAllByProblemId(@Param("problemId") Long problemId);
+
     void insertTestCases(@Param("list") List<TestCase> testCases);
+
+    int update(@Param("testCaseId") Long testCaseId,
+               @Param("inputData") String inputData,
+               @Param("expectedOutput") String expectedOutput);
 }

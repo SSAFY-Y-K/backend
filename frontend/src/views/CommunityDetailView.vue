@@ -50,6 +50,62 @@
 					삭제
 				</button>
 			</div>
+
+			<!-- 댓글 섹션 -->
+			<div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+				<h3 class="mb-3 text-xs font-bold text-slate-700">댓글 {{ comments.length }}</h3>
+
+				<!-- 댓글 목록 -->
+				<div class="space-y-3">
+					<div v-if="comments.length === 0" class="py-4 text-center text-xs text-slate-400">
+						첫 번째 댓글을 남겨보세요
+					</div>
+					<div
+						v-for="c in comments"
+						:key="c.commentId"
+						class="flex items-start gap-2"
+					>
+						<div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-500">
+							{{ (c.nickname ?? '?').charAt(0) }}
+						</div>
+						<div class="flex-1">
+							<div class="flex items-center gap-2">
+								<span class="text-[11px] font-semibold text-slate-700">{{ c.nickname ?? '알 수 없음' }}</span>
+								<span class="text-[10px] text-slate-400">{{ formatDate(c.createdAt) }}</span>
+								<button
+									v-if="c.userId === authStore.userId || authStore.isAdmin"
+									class="ml-auto text-[10px] text-slate-400 hover:text-red-400"
+									@click="handleDeleteComment(c.commentId)"
+								>
+									삭제
+								</button>
+							</div>
+							<p class="mt-0.5 text-xs text-slate-600">{{ c.content }}</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- 댓글 입력 -->
+				<div v-if="authStore.hasAccessToken" class="mt-3 flex gap-2 border-t border-slate-100 pt-3">
+					<input
+						v-model="commentInput"
+						type="text"
+						placeholder="댓글을 입력하세요"
+						class="h-8 flex-1 rounded-md border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 outline-none focus:border-blue-400"
+						@keydown.enter="submitComment"
+					/>
+					<button
+						class="h-8 rounded-md bg-blue-600 px-3 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+						:disabled="commentSubmitting"
+						@click="submitComment"
+					>
+						등록
+					</button>
+				</div>
+				<p v-else class="mt-3 border-t border-slate-100 pt-3 text-center text-[10px] text-slate-400">
+					댓글을 작성하려면 <RouterLink to="/login" class="text-blue-500">로그인</RouterLink>이 필요합니다.
+				</p>
+			</div>
 		</div>
 
 		<!-- 수정 모달 -->
@@ -101,7 +157,7 @@
 <script setup>
 import { onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { getPostDetail, updatePost, deletePost } from "@/api/index.js";
+import { getPostDetail, updatePost, deletePost, getComments, createComment, deleteComment } from "@/api/index.js";
 import { useAuthStore } from "@/stores/auth";
 
 const authStore = useAuthStore();
@@ -113,6 +169,41 @@ const loading = ref(true);
 const error = ref(null);
 const showEditForm = ref(false);
 const editForm = reactive({ category: "", title: "", content: "" });
+
+const comments = ref([]);
+const commentInput = ref("");
+const commentSubmitting = ref(false);
+
+const loadComments = async () => {
+	try {
+		const res = await getComments(route.params.id);
+		comments.value = res.data.data ?? [];
+	} catch {}
+};
+
+const submitComment = async () => {
+	if (!commentInput.value.trim() || commentSubmitting.value) return;
+	commentSubmitting.value = true;
+	try {
+		await createComment(route.params.id, { userId: authStore.userId, content: commentInput.value.trim() });
+		commentInput.value = "";
+		await loadComments();
+	} catch {
+		alert("댓글 등록에 실패했습니다.");
+	} finally {
+		commentSubmitting.value = false;
+	}
+};
+
+const handleDeleteComment = async (commentId) => {
+	if (!confirm("댓글을 삭제할까요?")) return;
+	try {
+		await deleteComment(route.params.id, commentId);
+		await loadComments();
+	} catch {
+		alert("댓글 삭제에 실패했습니다.");
+	}
+};
 
 const categoryLabel = (cat) => ({ REVIEW: "합격후기", TIP: "공부팁", QNA: "질문" }[cat] ?? cat);
 
@@ -161,5 +252,8 @@ const handleDelete = async () => {
 	}
 };
 
-onMounted(loadPost);
+onMounted(async () => {
+	await loadPost();
+	await loadComments();
+});
 </script>

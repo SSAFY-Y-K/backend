@@ -9,6 +9,7 @@ import SignupView from "@/views/SignupView.vue";
 import CommunityView from "@/views/CommunityView.vue";
 import CommunityDetailView from "@/views/CommunityDetailView.vue";
 import MypageView from "@/views/MypageView.vue";
+import AdminReportView from "@/views/AdminReportView.vue";
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,7 @@ const router = createRouter({
 			path: "/problem/coding/:id",
 			name: "coding-problem-detail",
 			component: CodingProblemDetailView,
+			meta: { requiresAuth: true },
 		},
 		{
 			path: "/create",
@@ -54,6 +56,12 @@ const router = createRouter({
 			name: "mypage",
 			component: MypageView,
 			meta: { hideSidebar: true, requiresAuth: true },
+		},
+		{
+			path: "/admin/reports",
+			name: "admin-reports",
+			component: AdminReportView,
+			meta: { requiresAuth: true, hideSidebar: true },
 		},
 		{
 			path: "/login",

@@ -13,6 +13,8 @@ import com.ssafy.passit.judge.support.WorkspaceManager;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +40,8 @@ public class CppCodeRunner implements CodeRunner {
 
         Path workspace = null;
         try {
-            workspace = workspaceManager.createWorkspace(request.submissionId(), LanguageType.CPP);
+            String wsKey = request.submissionId() != null ? "sub-" + request.submissionId() : "run-" + UUID.randomUUID();
+            workspace = workspaceManager.createWorkspace(wsKey, LanguageType.CPP);
             workspaceManager.writeSourceFile(workspace, request.sourceCode(), LanguageType.CPP);
 
             List<String> command = dockerCommandFactory.buildCppCommand(request, workspace);
@@ -47,7 +50,7 @@ public class CppCodeRunner implements CodeRunner {
             ProcessExecutionResult processResult =
                 processExecutor.execute(command, request.stdin(), timeoutMs);
 
-            return toExecutionResult(processResult);
+            return toExecutionResult(processResult, request.timeLimitMs());
         } catch (IOException exception) {
             throw new ApiException(ErrorCode.INTERNAL_ERROR, "C++ 실행용 임시 작업 디렉터리를 준비하지 못했습니다.");
         } finally {
@@ -59,83 +62,73 @@ public class CppCodeRunner implements CodeRunner {
         if (request == null) {
             throw new ApiException(ErrorCode.INVALID_REQUEST, "실행 요청이 비어 있습니다.");
         }
-
         if (request.language() != LanguageType.CPP) {
             throw new ApiException(ErrorCode.UNSUPPORTED_LANGUAGE, "C++ Runner는 CPP 언어만 실행할 수 있습니다.");
         }
-
-        if (request.submissionId() == null || request.problemId() == null) {
-            throw new ApiException(ErrorCode.INVALID_REQUEST, "submissionId와 problemId는 필수입니다.");
+        if (request.problemId() == null) {
+            throw new ApiException(ErrorCode.INVALID_REQUEST, "problemId는 필수입니다.");
         }
-
         if (request.sourceCode() == null || request.sourceCode().isBlank()) {
             throw new ApiException(ErrorCode.INVALID_REQUEST, "실행할 C++ 코드가 비어 있습니다.");
         }
-
         if (request.timeLimitMs() == null || request.timeLimitMs() <= 0) {
             throw new ApiException(ErrorCode.INVALID_REQUEST, "timeLimitMs는 0보다 커야 합니다.");
         }
-
         if (request.memoryLimitMb() == null || request.memoryLimitMb() <= 0) {
             throw new ApiException(ErrorCode.INVALID_REQUEST, "memoryLimitMb는 0보다 커야 합니다.");
         }
     }
 
-    private ExecutionResult toExecutionResult(ProcessExecutionResult processResult) {
-        if (processResult.timedOut() || processResult.exitCode() == 124) {
-            return new ExecutionResult(
-                VerdictType.TLE,
-                processResult.execTimeMs(),
-                null,
-                processResult.stdout(),
-                processResult.stderr(),
-                "실행 시간이 제한을 초과했습니다."
-            );
-        }
-
-        String cleanedStderr = cleanCompileMarker(processResult.stderr());
+    private ExecutionResult toExecutionResult(ProcessExecutionResult processResult, Integer timeLimitMs) {
+        Integer execTimeMs = parseExecTimeMs(processResult.stderr());
+        String cleanedStderr = cleanMarkers(processResult.stderr());
+        int displayTime = execTimeMs != null ? execTimeMs : processResult.execTimeMs();
 
         if (isCompileError(processResult)) {
-            return new ExecutionResult(
-                VerdictType.CE,
-                processResult.execTimeMs(),
-                null,
-                processResult.stdout(),
-                cleanedStderr,
-                extractCompileErrorMessage(cleanedStderr)
-            );
+            return new ExecutionResult(VerdictType.CE, displayTime, null,
+                processResult.stdout(), cleanedStderr, extractCompileErrorMessage(cleanedStderr));
         }
 
         if (processResult.exitCode() == 137) {
-            return new ExecutionResult(
-                VerdictType.MLE,
-                processResult.execTimeMs(),
-                null,
-                processResult.stdout(),
-                cleanedStderr,
-                "메모리 제한을 초과했습니다."
-            );
+            return new ExecutionResult(VerdictType.MLE, displayTime, null,
+                processResult.stdout(), cleanedStderr, "메모리 제한을 초과했습니다.");
+        }
+
+        if (processResult.timedOut() || processResult.exitCode() == 124
+                || (execTimeMs != null && execTimeMs > timeLimitMs)) {
+            return new ExecutionResult(VerdictType.TLE, displayTime, null,
+                processResult.stdout(), cleanedStderr, "실행 시간이 제한을 초과했습니다.");
         }
 
         if (processResult.exitCode() != 0) {
-            return new ExecutionResult(
-                VerdictType.RE,
-                processResult.execTimeMs(),
-                null,
-                processResult.stdout(),
-                cleanedStderr,
-                extractRuntimeErrorMessage(cleanedStderr)
-            );
+            return new ExecutionResult(VerdictType.RE, displayTime, null,
+                processResult.stdout(), cleanedStderr, extractRuntimeErrorMessage(cleanedStderr));
         }
 
-        return new ExecutionResult(
-            VerdictType.AC,
-            processResult.execTimeMs(),
-            null,
-            processResult.stdout(),
-            cleanedStderr,
-            null
-        );
+        return new ExecutionResult(VerdictType.AC, displayTime, null,
+            processResult.stdout(), cleanedStderr, null);
+    }
+
+    private Integer parseExecTimeMs(String stderr) {
+        if (stderr == null) return null;
+        for (String line : stderr.split("\n")) {
+            String t = line.trim();
+            if (t.startsWith(DockerCommandFactory.EXEC_TIME_MARKER)) {
+                try {
+                    return Integer.parseInt(t.substring(DockerCommandFactory.EXEC_TIME_MARKER.length()).trim());
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+        return null;
+    }
+
+    private String cleanMarkers(String stderr) {
+        if (stderr == null) return null;
+        return stderr.lines()
+            .filter(l -> !l.trim().startsWith(COMPILE_ERROR_MARKER)
+                      && !l.trim().startsWith(DockerCommandFactory.EXEC_TIME_MARKER))
+            .collect(Collectors.joining("\n"))
+            .strip();
     }
 
     private boolean isCompileError(ProcessExecutionResult processResult) {
@@ -143,34 +136,17 @@ public class CppCodeRunner implements CodeRunner {
             || (processResult.stderr() != null && processResult.stderr().contains(COMPILE_ERROR_MARKER));
     }
 
-    private String cleanCompileMarker(String stderr) {
-        if (stderr == null) {
-            return null;
-        }
-
-        return stderr.replace(COMPILE_ERROR_MARKER, "").strip();
-    }
-
     private String extractCompileErrorMessage(String stderr) {
-        if (stderr != null && !stderr.isBlank()) {
-            return stderr;
-        }
-
-        return "C++ 컴파일 중 오류가 발생했습니다.";
+        return (stderr != null && !stderr.isBlank()) ? stderr : "C++ 컴파일 중 오류가 발생했습니다.";
     }
 
     private String extractRuntimeErrorMessage(String stderr) {
-        if (stderr != null && !stderr.isBlank()) {
-            return stderr;
-        }
-
-        return "C++ 실행 중 오류가 발생했습니다.";
+        return (stderr != null && !stderr.isBlank()) ? stderr : "C++ 실행 중 오류가 발생했습니다.";
     }
 
     private void cleanup(Path workspace) {
         try {
             workspaceManager.deleteWorkspace(workspace);
-        } catch (IOException ignored) {
-        }
+        } catch (IOException ignored) {}
     }
 }

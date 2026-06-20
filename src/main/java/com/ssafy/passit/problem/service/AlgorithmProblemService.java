@@ -1,5 +1,7 @@
 package com.ssafy.passit.problem.service;
 
+import com.ssafy.passit.common.exception.ApiException;
+import com.ssafy.passit.common.exception.ErrorCode;
 import com.ssafy.passit.problem.client.AiServerClient;
 import com.ssafy.passit.problem.dto.AiProblemResponse;
 import com.ssafy.passit.problem.dto.GenerateAlgorithmRequest;
@@ -53,9 +55,10 @@ public class AlgorithmProblemService {
                         .build())
                 .toList();
 
-        if (!testCases.isEmpty()) {
-            testCaseMapper.insertTestCases(testCases);
+        if (testCases.isEmpty()) {
+            throw new ApiException(ErrorCode.AI_SERVER_ERROR, "AI 서버가 테스트케이스를 반환하지 않았습니다.");
         }
+        testCaseMapper.insertTestCases(testCases);
         log.info("Test cases saved. problemId={}, testCaseCount={}", problem.getProblemId(), testCases.size());
 
         return new GenerateAlgorithmResponse(

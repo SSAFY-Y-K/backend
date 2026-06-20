@@ -26,4 +26,6 @@ public class CodingProblem {
     private String category;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Integer totalSubmissions;
+    private Integer acCount;
 }

@@ -17,6 +17,8 @@
         <result property="category" column="category"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
+        <result property="totalSubmissions" column="total_submissions"/>
+        <result property="acCount" column="ac_count"/>
     </resultMap>
 
     <insert id="insertCodingProblem"
@@ -72,15 +74,16 @@
     </delete>
 
     <select id="findAll" resultMap="codingProblemResultMap">
-        SELECT
-            problem_id,
-            title,
-            difficulty,
-            category,
-            created_at,
-            updated_at
-        FROM coding_problems
-        ORDER BY created_at DESC
+        SELECT cp.problem_id, cp.title, cp.difficulty, cp.category, cp.created_at, cp.updated_at,
+               COALESCE(s.total, 0) AS total_submissions,
+               COALESCE(s.ac_count, 0) AS ac_count
+        FROM coding_problems cp
+        LEFT JOIN (
+            SELECT problem_id, COUNT(*) AS total, SUM(verdict = 'AC') AS ac_count
+            FROM submissions
+            GROUP BY problem_id
+        ) s ON cp.problem_id = s.problem_id
+        ORDER BY cp.created_at DESC
     </select>
 
 </mapper>

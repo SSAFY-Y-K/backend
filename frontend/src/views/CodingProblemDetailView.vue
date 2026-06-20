@@ -79,7 +79,7 @@
 				</div>
 
 				<!-- 샘플 테스트케이스 -->
-				<div v-if="problem.sampleTestCases?.length" class="px-6 py-4">
+				<div v-if="problem.sampleTestCases?.length" class="border-b border-slate-100 px-6 py-4">
 					<h4 class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">샘플 테스트케이스</h4>
 					<div class="space-y-3">
 						<div v-for="(tc, i) in problem.sampleTestCases" :key="i" class="grid grid-cols-2 gap-2">
@@ -90,6 +90,132 @@
 							<div>
 								<p class="mb-1 text-[10px] font-medium text-slate-400">출력 {{ i + 1 }}</p>
 								<pre class="rounded-md bg-slate-900 p-3 text-xs text-green-300">{{ tc.expectedOutput }}</pre>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 오류 신고 (로그인한 사용자) -->
+				<div v-if="authStore.userId" class="border-b border-slate-100 px-6 py-4">
+					<button
+						class="text-xs text-slate-400 transition hover:text-red-500"
+						@click="showReportForm = !showReportForm"
+					>
+						{{ showReportForm ? '취소' : '오류 신고' }}
+					</button>
+					<div v-if="showReportForm" class="mt-3 space-y-2">
+						<textarea
+							v-model="reportContent"
+							placeholder="문제나 테스트케이스의 오류 내용을 입력해주세요."
+							rows="3"
+							class="w-full resize-none rounded-md border border-slate-200 px-3 py-2 text-xs text-slate-700 outline-none focus:border-blue-400"
+						></textarea>
+						<button
+							class="h-7 rounded-md bg-red-500 px-4 text-xs font-semibold text-white transition hover:bg-red-600 disabled:opacity-50"
+							:disabled="reporting || !reportContent.trim()"
+							@click="handleReport"
+						>
+							{{ reporting ? '제출 중...' : '신고 제출' }}
+						</button>
+					</div>
+				</div>
+
+				<!-- 관리자 패널 -->
+				<div v-if="authStore.isAdmin" class="px-6 py-4">
+					<button
+						class="mb-3 text-xs font-semibold text-orange-500 transition hover:text-orange-600"
+						@click="loadAdminPanel"
+					>
+						{{ showAdminPanel ? '▲ 관리 패널 닫기' : '▼ 관리 패널 열기' }}
+					</button>
+
+					<div v-if="showAdminPanel" class="space-y-5">
+						<!-- 신고 목록 -->
+						<div>
+							<h4 class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">신고 목록</h4>
+							<div v-if="reports.length === 0" class="text-xs text-slate-400">신고 없음</div>
+							<div v-for="r in reports" :key="r.reportId" class="mb-2 rounded-md border border-slate-200 p-3">
+								<div class="mb-1 flex items-center justify-between">
+									<span class="text-[10px] font-semibold text-slate-500">{{ r.nickname }}</span>
+									<div class="flex items-center gap-2">
+										<span :class="['text-[10px] font-bold', r.status === 'RESOLVED' ? 'text-emerald-500' : 'text-orange-500']">
+											{{ r.status === 'RESOLVED' ? '해결됨' : '대기중' }}
+										</span>
+										<button
+											v-if="r.status === 'PENDING'"
+											class="text-[10px] text-blue-500 hover:underline"
+											@click="handleResolve(r.reportId)"
+										>
+											해결 처리
+										</button>
+									</div>
+								</div>
+								<p class="whitespace-pre-wrap text-xs text-slate-700">{{ r.content }}</p>
+							</div>
+						</div>
+
+						<!-- 테스트케이스 수정 -->
+						<div>
+							<h4 class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">테스트케이스 수정</h4>
+							<div v-for="tc in testCases" :key="tc.testCaseId" class="mb-3 rounded-md border border-slate-200 p-3">
+								<div class="mb-2 flex items-center justify-between">
+									<span class="text-[10px] font-semibold text-slate-500">
+										케이스 {{ tc.caseOrder }} — {{ tc.isSample ? '샘플' : '히든' }}
+									</span>
+									<button
+										v-if="editingTc?.testCaseId !== tc.testCaseId"
+										class="text-[10px] text-blue-500 hover:underline"
+										@click="startEdit(tc)"
+									>
+										수정
+									</button>
+									<div v-else class="flex gap-2">
+										<button class="text-[10px] text-slate-400 hover:underline" @click="editingTc = null">취소</button>
+										<button
+											class="text-[10px] font-semibold text-emerald-600 hover:underline disabled:opacity-50"
+											:disabled="savingTc"
+											@click="saveEdit"
+										>
+											{{ savingTc ? '저장 중...' : '저장' }}
+										</button>
+									</div>
+								</div>
+
+								<!-- 보기 모드 -->
+								<template v-if="editingTc?.testCaseId !== tc.testCaseId">
+									<div class="grid grid-cols-2 gap-2 text-[10px]">
+										<div>
+											<p class="mb-0.5 text-slate-400">입력</p>
+											<pre class="whitespace-pre-wrap rounded bg-slate-900 p-2 text-green-300">{{ tc.inputData }}</pre>
+										</div>
+										<div>
+											<p class="mb-0.5 text-slate-400">기댓값</p>
+											<pre class="whitespace-pre-wrap rounded bg-slate-900 p-2 text-green-300">{{ tc.expectedOutput }}</pre>
+										</div>
+									</div>
+								</template>
+
+								<!-- 수정 모드 -->
+								<template v-else>
+									<div class="grid grid-cols-2 gap-2">
+										<div>
+											<p class="mb-0.5 text-[10px] text-slate-400">입력</p>
+											<textarea
+												v-model="editingTc.inputData"
+												rows="3"
+												class="w-full resize-none rounded border border-slate-300 bg-slate-50 px-2 py-1 font-mono text-xs outline-none focus:border-blue-400"
+											></textarea>
+										</div>
+										<div>
+											<p class="mb-0.5 text-[10px] text-slate-400">기댓값</p>
+											<textarea
+												v-model="editingTc.expectedOutput"
+												rows="3"
+												class="w-full resize-none rounded border border-slate-300 bg-slate-50 px-2 py-1 font-mono text-xs outline-none focus:border-blue-400"
+											></textarea>
+										</div>
+									</div>
+								</template>
 							</div>
 						</div>
 					</div>
@@ -163,6 +289,37 @@
 					</div>
 				</div>
 
+				<!-- 실행 결과 -->
+				<div v-if="runResults" class="mb-3 space-y-2">
+					<p class="text-[10px] font-semibold uppercase tracking-wide text-slate-400">실행 결과</p>
+					<div
+						v-for="r in runResults"
+						:key="r.caseOrder"
+						:class="['rounded-lg border p-2.5', r.correct ? 'border-emerald-700 bg-emerald-900/30' : 'border-slate-600 bg-slate-800']"
+					>
+						<div class="mb-1.5 flex items-center justify-between">
+							<span class="text-[10px] font-semibold text-slate-300">케이스 {{ r.caseOrder }}</span>
+							<div class="flex items-center gap-2">
+								<span v-if="r.execTimeMs" class="text-[10px] text-slate-500">{{ r.execTimeMs }}ms</span>
+								<span :class="['text-[10px] font-bold', r.correct ? 'text-emerald-400' : (r.verdict === 'CE' || r.verdict === 'RE' ? 'text-red-400' : 'text-orange-400')]">
+									{{ verdictLabel[r.verdict] ?? r.verdict }}
+								</span>
+							</div>
+						</div>
+						<div v-if="r.errorMessage" class="mt-1 whitespace-pre-wrap text-[10px] text-red-400">{{ r.errorMessage }}</div>
+						<div v-else class="grid grid-cols-2 gap-2 text-[10px]">
+							<div>
+								<p class="mb-0.5 text-slate-500">출력</p>
+								<pre class="whitespace-pre-wrap break-all rounded bg-slate-900 p-1.5 text-green-300">{{ r.actualOutput || '(없음)' }}</pre>
+							</div>
+							<div>
+								<p class="mb-0.5 text-slate-500">기댓값</p>
+								<pre class="whitespace-pre-wrap break-all rounded bg-slate-900 p-1.5 text-slate-400">{{ r.expectedOutput }}</pre>
+							</div>
+						</div>
+					</div>
+				</div>
+
 				<!-- 최근 채점 결과 -->
 				<div v-if="result" :class="['mb-3 rounded-lg border p-3', resultStyle.border]">
 					<p :class="['text-xs font-bold', resultStyle.text]">{{ verdictLabel[result.verdict] ?? result.verdict }}</p>
@@ -173,18 +330,31 @@
 					<p v-if="result.errorMessage" class="mt-1.5 whitespace-pre-wrap text-[11px] text-red-400">{{ result.errorMessage }}</p>
 				</div>
 
-				<!-- 제출 버튼 -->
-				<button
-					class="flex h-9 w-full items-center justify-center gap-2 rounded-md bg-blue-600 text-xs font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
-					:disabled="submitting || !code.trim()"
-					@click="handleSubmit"
-				>
-					<svg v-if="submitting" class="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
-						<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-						<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
-					</svg>
-					{{ submitting ? '채점 중...' : '제출하기' }}
-				</button>
+				<!-- 버튼 영역 -->
+				<div class="flex gap-2">
+					<button
+						class="flex h-9 flex-1 items-center justify-center gap-2 rounded-md bg-slate-700 text-xs font-semibold text-white transition hover:bg-slate-600 disabled:opacity-50"
+						:disabled="running || submitting || !code.trim()"
+						@click="handleRun"
+					>
+						<svg v-if="running" class="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+							<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+							<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+						</svg>
+						{{ running ? '실행 중...' : '실행' }}
+					</button>
+					<button
+						class="flex h-9 flex-1 items-center justify-center gap-2 rounded-md bg-blue-600 text-xs font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
+						:disabled="submitting || running || !code.trim()"
+						@click="handleSubmit"
+					>
+						<svg v-if="submitting" class="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+							<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+							<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+						</svg>
+						{{ submitting ? '채점 중...' : '제출하기' }}
+					</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -193,7 +363,7 @@
 <script setup>
 import { onMounted, ref, computed } from "vue";
 import { useRoute } from "vue-router";
-import { getCodingProblemDetail, submitCode, deleteCodingProblem } from "@/api/index.js";
+import { getCodingProblemDetail, submitCode, runCode, deleteCodingProblem, submitReport, getReports, resolveReport, getAllTestCases, updateTestCase } from "@/api/index.js";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 
@@ -208,10 +378,24 @@ const error = ref(null);
 const language = ref("PYTHON");
 const code = ref("");
 const submitting = ref(false);
+const running = ref(false);
 const result = ref(null);
+const runResults = ref(null);
 const history = ref([]);
 const showHistory = ref(false);
 const editorRef = ref(null);
+
+// 오류 신고
+const showReportForm = ref(false);
+const reportContent = ref("");
+const reporting = ref(false);
+
+// 관리자 패널
+const reports = ref([]);
+const testCases = ref([]);
+const showAdminPanel = ref(false);
+const editingTc = ref(null); // { testCaseId, inputData, expectedOutput }
+const savingTc = ref(false);
 
 const difficultyColor = { EASY: "bg-emerald-500", MEDIUM: "bg-orange-500", HARD: "bg-red-500" };
 const difficultyLabel = { EASY: "초급", MEDIUM: "중급", HARD: "상급" };
@@ -268,6 +452,77 @@ const handleDelete = async () => {
 		router.push({ name: "problem" });
 	} catch {
 		alert("삭제에 실패했습니다.");
+	}
+};
+
+const handleReport = async () => {
+	if (!reportContent.value.trim()) return;
+	reporting.value = true;
+	try {
+		await submitReport(route.params.id, { userId: authStore.userId, content: reportContent.value });
+		reportContent.value = "";
+		showReportForm.value = false;
+		alert("신고가 접수되었습니다.");
+	} catch {
+		alert("신고 제출에 실패했습니다.");
+	} finally {
+		reporting.value = false;
+	}
+};
+
+const loadAdminPanel = async () => {
+	showAdminPanel.value = !showAdminPanel.value;
+	if (!showAdminPanel.value) return;
+	const [r, tc] = await Promise.all([
+		getReports(route.params.id),
+		getAllTestCases(route.params.id),
+	]);
+	reports.value = r.data.data;
+	testCases.value = tc.data.data;
+};
+
+const handleResolve = async (reportId) => {
+	await resolveReport(reportId);
+	reports.value = reports.value.map(r => r.reportId === reportId ? { ...r, status: "RESOLVED" } : r);
+};
+
+const startEdit = (tc) => {
+	editingTc.value = { testCaseId: tc.testCaseId, inputData: tc.inputData, expectedOutput: tc.expectedOutput };
+};
+
+const saveEdit = async () => {
+	if (!editingTc.value) return;
+	savingTc.value = true;
+	try {
+		await updateTestCase(editingTc.value.testCaseId, {
+			inputData: editingTc.value.inputData,
+			expectedOutput: editingTc.value.expectedOutput,
+		});
+		testCases.value = testCases.value.map(tc =>
+			tc.testCaseId === editingTc.value.testCaseId ? { ...tc, ...editingTc.value } : tc
+		);
+		editingTc.value = null;
+	} catch {
+		alert("저장에 실패했습니다.");
+	} finally {
+		savingTc.value = false;
+	}
+};
+
+const handleRun = async () => {
+	if (!code.value.trim()) return;
+	running.value = true;
+	runResults.value = null;
+	try {
+		const res = await runCode(route.params.id, {
+			language: language.value,
+			sourceCode: code.value,
+		});
+		runResults.value = res.data.data;
+	} catch {
+		alert("실행에 실패했습니다.");
+	} finally {
+		running.value = false;
 	}
 };
 

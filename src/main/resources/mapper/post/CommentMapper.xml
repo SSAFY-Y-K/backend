@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.passit.post.mapper.CommentMapper">
+
+    <resultMap id="commentResultMap" type="com.ssafy.passit.post.model.Comment">
+        <id property="commentId" column="comment_id"/>
+        <result property="postId" column="post_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="content" column="content"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <insert id="insertComment" parameterType="com.ssafy.passit.post.model.Comment"
+            useGeneratedKeys="true" keyProperty="commentId">
+        INSERT INTO comments (post_id, user_id, content)
+        VALUES (#{postId}, #{userId}, #{content})
+    </insert>
+
+    <select id="findByPostId" resultMap="commentResultMap">
+        SELECT c.comment_id, c.post_id, c.user_id, u.nickname, c.content, c.created_at, c.updated_at
+        FROM comments c
+        LEFT JOIN users u ON c.user_id = u.user_id
+        WHERE c.post_id = #{postId}
+        ORDER BY c.created_at ASC
+    </select>
+
+    <select id="findById" resultMap="commentResultMap">
+        SELECT comment_id, post_id, user_id, content, created_at, updated_at
+        FROM comments WHERE comment_id = #{commentId}
+    </select>
+
+    <delete id="deleteComment">
+        DELETE FROM comments WHERE comment_id = #{commentId}
+    </delete>
+
+</mapper>

@@ -28,6 +28,15 @@
 				{{ item.label }}
 			</RouterLink>
 
+			<!-- 관리자 전용 링크 -->
+			<RouterLink
+				v-if="authStore.isAdmin"
+				:to="{ name: 'admin-reports' }"
+				class="rounded bg-orange-500/80 px-2 py-0.5 text-[11px] font-semibold text-white no-underline transition hover:bg-orange-500"
+			>
+				신고 관리
+			</RouterLink>
+
 			<div class="h-4 w-px bg-white/20"></div>
 
 			<!-- Avatar (마이페이지 링크) -->

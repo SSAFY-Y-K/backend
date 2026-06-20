@@ -13,13 +13,16 @@ public class WorkspaceManager {
 
     private static final String ROOT_DIR = "passit-judge";
 
-    public Path createWorkspace(Long submissionId, LanguageType language) throws IOException {
+    public Path createWorkspace(String key, LanguageType language) throws IOException {
         Path root = Path.of(System.getProperty("java.io.tmpdir"), ROOT_DIR);
         Files.createDirectories(root);
-
-        Path workspace = root.resolve("submission-" + submissionId + "-" + language.name().toLowerCase());
+        Path workspace = root.resolve(key + "-" + language.name().toLowerCase());
         deleteWorkspace(workspace);
         return Files.createDirectories(workspace);
+    }
+
+    public Path createWorkspace(Long submissionId, LanguageType language) throws IOException {
+        return createWorkspace("sub-" + submissionId, language);
     }
 
     public Path writeSourceFile(Path workspace, String sourceCode, LanguageType language) throws IOException {

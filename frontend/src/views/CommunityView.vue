@@ -24,6 +24,23 @@
 			</button>
 		</div>
 
+		<!-- 검색 -->
+		<div class="mb-3 flex gap-2">
+			<input
+				v-model="searchInput"
+				type="text"
+				placeholder="제목 또는 내용 검색"
+				class="h-8 flex-1 rounded-md border border-slate-200 bg-white px-3 text-xs text-slate-700 outline-none focus:border-blue-400"
+				@keydown.enter="handleSearch"
+			/>
+			<button
+				class="h-8 rounded-md bg-slate-100 px-3 text-xs text-slate-600 hover:bg-slate-200"
+				@click="handleSearch"
+			>
+				검색
+			</button>
+		</div>
+
 		<!-- 로딩 -->
 		<div v-if="loading" class="py-10 text-center text-xs text-slate-400">불러오는 중...</div>
 
@@ -54,6 +71,32 @@
 					</div>
 				</div>
 			</div>
+		</div>
+
+		<!-- 페이지네이션 -->
+		<div v-if="totalCount > pageSize" class="mt-4 flex items-center justify-center gap-1">
+			<button
+				:disabled="currentPage === 0"
+				class="h-7 rounded px-2 text-xs text-slate-500 hover:bg-slate-100 disabled:opacity-30"
+				@click="goPage(currentPage - 1)"
+			>
+				‹
+			</button>
+			<button
+				v-for="p in totalPages"
+				:key="p"
+				:class="['h-7 w-7 rounded text-xs', currentPage === p - 1 ? 'bg-blue-600 text-white' : 'text-slate-500 hover:bg-slate-100']"
+				@click="goPage(p - 1)"
+			>
+				{{ p }}
+			</button>
+			<button
+				:disabled="currentPage === totalPages - 1"
+				class="h-7 rounded px-2 text-xs text-slate-500 hover:bg-slate-100 disabled:opacity-30"
+				@click="goPage(currentPage + 1)"
+			>
+				›
+			</button>
 		</div>
 
 		<!-- 글쓰기 모달 -->
@@ -107,7 +150,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { getPosts, createPost } from "@/api/index.js";
 import { useAuthStore } from "@/stores/auth";
@@ -132,16 +175,28 @@ const tabs = [
 
 const activeTab = ref("all");
 const posts = ref([]);
+const totalCount = ref(0);
+const currentPage = ref(0);
+const pageSize = 10;
 const loading = ref(true);
 const error = ref(null);
 const showForm = ref(false);
 const submitting = ref(false);
+const searchInput = ref("");
+const keyword = ref("");
 
 const form = reactive({ category: "", title: "", content: "" });
+
+const totalPages = computed(() => Math.max(1, Math.ceil(totalCount.value / pageSize)));
 
 const filteredPosts = computed(() => {
 	if (activeTab.value === "all") return posts.value;
 	return posts.value.filter((p) => p.category === activeTab.value);
+});
+
+watch(activeTab, () => {
+	currentPage.value = 0;
+	loadPosts();
 });
 
 const categoryLabel = (cat) => ({ REVIEW: "합격후기", TIP: "공부팁", QNA: "질문" }[cat] ?? cat);
@@ -155,13 +210,26 @@ const loadPosts = async () => {
 	loading.value = true;
 	error.value = null;
 	try {
-		const res = await getPosts();
-		posts.value = res.data.data ?? [];
-	} catch (e) {
+		const res = await getPosts({ keyword: keyword.value || undefined, page: currentPage.value, size: pageSize });
+		const data = res.data.data;
+		posts.value = data.posts ?? [];
+		totalCount.value = data.totalCount ?? 0;
+	} catch {
 		error.value = "게시글을 불러오지 못했습니다.";
 	} finally {
 		loading.value = false;
 	}
+};
+
+const handleSearch = () => {
+	keyword.value = searchInput.value.trim();
+	currentPage.value = 0;
+	loadPosts();
+};
+
+const goPage = (page) => {
+	currentPage.value = page;
+	loadPosts();
 };
 
 const closeForm = () => {

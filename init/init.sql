@@ -199,6 +199,29 @@ CREATE TABLE IF NOT EXISTS posts (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -------------------------------------------------------------
+-- PROBLEM_REPORTS (문제 오류 신고)
+-- -------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS problem_reports (
+    report_id  BIGINT   NOT NULL AUTO_INCREMENT,
+    problem_id BIGINT   NOT NULL,
+    user_id    BIGINT   NOT NULL,
+    content    TEXT     NOT NULL,
+    status     VARCHAR(20) NOT NULL DEFAULT 'PENDING' COMMENT 'PENDING / RESOLVED',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (report_id),
+    KEY idx_problem_reports_problem (problem_id),
+    CONSTRAINT fk_problem_reports_problem
+        FOREIGN KEY (problem_id)
+        REFERENCES coding_problems (problem_id) ON DELETE CASCADE,
+    CONSTRAINT fk_problem_reports_user
+        FOREIGN KEY (user_id)
+        REFERENCES users (user_id) ON DELETE CASCADE,
+    CONSTRAINT chk_problem_reports_status
+        CHECK (status IN ('PENDING', 'RESOLVED'))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- -------------------------------------------------------------
 -- COMMENTS (댓글)
 -- -------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS comments (

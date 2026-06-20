@@ -28,4 +28,6 @@ public interface UserMapper {
     User findUserById(Long userId);
 
     void updateRoleToAdmin(String username);
+
+    void updateNickname(@Param("userId") Long userId, @Param("nickname") String nickname);
 }

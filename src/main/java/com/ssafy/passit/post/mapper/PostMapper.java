@@ -12,7 +12,11 @@ public interface PostMapper {
 
     Post findById(@Param("postId") Long postId);
 
-    List<Post> findAll();
+    List<Post> findAll(@Param("keyword") String keyword,
+                      @Param("offset") int offset,
+                      @Param("size") int size);
+
+    int countAll(@Param("keyword") String keyword);
 
     int updatePost(Post post);
 

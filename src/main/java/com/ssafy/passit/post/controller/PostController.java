@@ -3,14 +3,13 @@ package com.ssafy.passit.post.controller;
 import com.ssafy.passit.common.response.ApiResponse;
 import com.ssafy.passit.post.dto.CreatePostRequest;
 import com.ssafy.passit.post.dto.PostDetailResponse;
-import com.ssafy.passit.post.dto.PostResponse;
+import com.ssafy.passit.post.dto.PostListResponse;
 import com.ssafy.passit.post.dto.UpdatePostRequest;
 import com.ssafy.passit.post.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,8 +46,11 @@ public class PostController {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공")
     })
     @GetMapping
-    public ApiResponse<List<PostResponse>> getPosts() {
-        return ApiResponse.success(postService.getPosts());
+    public ApiResponse<PostListResponse> getPosts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ApiResponse.success(postService.getPosts(keyword, page, size));
     }
 
     @Operation(summary = "게시글 상세 조회", description = "특정 게시글의 상세 내용을 조회합니다.")

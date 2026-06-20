@@ -46,6 +46,10 @@ public class ProblemQueryService {
         return problem;
     }
 
+    public List<TestCase> getSampleTestCases(Long problemId) {
+        return testCaseMapper.findSampleTestCasesByProblemId(problemId);
+    }
+
     public List<TestCase> getHiddenTestCases(Long problemId) {
         List<TestCase> testCases = testCaseMapper.findHiddenTestCasesByProblemId(problemId);
 
