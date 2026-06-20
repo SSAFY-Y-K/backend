@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import ProblemView from "@/views/ProblemView.vue";
+import ProblemCertificationView from "@/views/ProblemCertificationView.vue";
+import ProblemCodingView from "@/views/ProblemCodingView.vue";
 import ProblemDetailView from "@/views/ProblemDetailView.vue";
 import CodingProblemDetailView from "@/views/CodingProblemDetailView.vue";
 import CreateView from "@/views/CreateView.vue";
@@ -25,6 +27,18 @@ const router = createRouter({
 			path: "/problem",
 			name: "problem",
 			component: ProblemView,
+			children: [
+				{
+					path: "certification",
+					name: "problem-certification",
+					component: ProblemCertificationView,
+				},
+				{
+					path: "coding",
+					name: "problem-coding",
+					component: ProblemCodingView,
+				},
+			],
 		},
 		{
 			path: "/problem/cert/:id",
