@@ -14,7 +14,7 @@ export const useCertificationStore = defineStore("certification", () => {
 			const response = await publicApi.get("/certification");
 			certifications.value = response.data;
 		} catch (error) {
-			certifications = [];
+			certifications.value = [];
 		}
 	};
 

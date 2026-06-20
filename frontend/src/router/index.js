@@ -8,6 +8,7 @@ import CodingProblemDetailView from "@/views/CodingProblemDetailView.vue";
 import CreateView from "@/views/CreateView.vue";
 import CreateCodingView from "@/views/CreateCodingView.vue";
 import CreateCertificationView from "@/views/CreateCertificationView.vue";
+import CreateCertificationWriteView from "@/views/CreateCertificationWriteView.vue";
 import LoginView from "@/views/LoginView.vue";
 import SignupView from "@/views/SignupView.vue";
 import CommunityView from "@/views/CommunityView.vue";
@@ -68,6 +69,14 @@ const router = createRouter({
 					name: "create-certification",
 					component: CreateCertificationView,
 					meta: { requiresAuth: true },
+					children: [
+						{
+							path: "write",
+							name: "create-certification-write",
+							component: CreateCertificationWriteView,
+							meta: { requiresAuth: true },
+						},
+					],
 				},
 			],
 		},

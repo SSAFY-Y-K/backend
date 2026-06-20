@@ -63,7 +63,7 @@ const router = useRouter();
 const isChildRoute = computed(() => route.name !== "create");
 
 const pageTitle = computed(() => {
-	if (route.name === "create-certification") return "자격증 문제";
+	if (route.name === "create-certification" || route.name === "create-certification-write") return "자격증 문제";
 	if (route.name === "create-coding") return "코딩 문제";
 	return "문제 만들기";
 });
