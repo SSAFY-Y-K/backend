@@ -3,6 +3,7 @@ package com.ssafy.passit.problem.service;
 import com.ssafy.passit.problem.dto.entity.MultipleChoiceProblemEntity;
 import com.ssafy.passit.problem.dto.entity.ProblemEntity;
 import com.ssafy.passit.problem.dto.entity.ShortAnswerProblemEntity;
+import com.ssafy.passit.problem.dto.request.AiCreateRequest;
 import com.ssafy.passit.problem.dto.request.MultipleChoiceProblemCreateRequest;
 import com.ssafy.passit.problem.dto.request.ShortAnswerProblemCreateRequest;
 import com.ssafy.passit.problem.dto.response.MultipleChoiceProblemResponse;
@@ -28,16 +29,16 @@ public interface ProblemService {
 
     /**
      * AI에게 객관식 문제 생성 요청하고 저장
-     * @param certId 생성할 문제의 자격증의 ID
+     * @param request 문제 생성 DTO
      */
-    void generateAndSaveMultipleChoiceProblemFromAi(Long certId);
+    void generateAndSaveMultipleChoiceProblemFromAi(AiCreateRequest request);
 
     /**
      * AI에게 주관식 문제 생성 요청하고 저장
-     * @param certId 생성할 문제의 자격증의 ID
+     * @param request 문제 생성 DTO
      * @return
      */
-    void generateAndSaveShortAnswerProblemFromAi(Long certId);
+    void generateAndSaveShortAnswerProblemFromAi(AiCreateRequest request);
 
     /**
      * 문제를 페이지 단위로 조회

@@ -6,6 +6,7 @@ import com.ssafy.passit.common.type.ProblemType;
 import com.ssafy.passit.problem.dto.entity.MultipleChoiceProblemEntity;
 import com.ssafy.passit.problem.dto.entity.ProblemEntity;
 import com.ssafy.passit.problem.dto.entity.ShortAnswerProblemEntity;
+import com.ssafy.passit.problem.dto.request.AiCreateRequest;
 import com.ssafy.passit.problem.dto.request.AiResponse;
 import com.ssafy.passit.problem.dto.request.MultipleChoiceProblemCreateRequest;
 import com.ssafy.passit.problem.dto.request.ShortAnswerProblemCreateRequest;
@@ -79,28 +80,30 @@ public class BasicProblemService implements ProblemService {
 
     @Override
     @Transactional
-    public void generateAndSaveMultipleChoiceProblemFromAi(Long certId) {
-        log.info("AI multiple choice problem generation requested. certId={}", certId);
+    public void generateAndSaveMultipleChoiceProblemFromAi(AiCreateRequest request) {
+        log.info("AI multiple choice problem generation requested. certId={}", request.getCertId());
         var createRequest = generateProblemFromAi(
-                certId,
+                request.getCertId(),
                 ProblemType.MULTIPLE_CHOICE,
+                request.getReferenceText(),
                 MultipleChoiceProblemCreateRequest.class
         );
-        createRequest.setCertId(certId);
+        createRequest.setCertId(request.getCertId());
 
         saveMultipleChoiceProblem(createRequest);
     }
 
     @Override
     @Transactional
-    public void generateAndSaveShortAnswerProblemFromAi(Long certId) {
-        log.info("AI short answer problem generation requested. certId={}", certId);
+    public void generateAndSaveShortAnswerProblemFromAi(AiCreateRequest request) {
+        log.info("AI short answer problem generation requested. certId={}", request.getCertId());
         var createRequest = generateProblemFromAi(
-                certId,
+                request.getCertId(),
                 ProblemType.SHORT_ANSWER,
+                request.getReferenceText(),
                 ShortAnswerProblemCreateRequest.class
         );
-        createRequest.setCertId(certId);
+        createRequest.setCertId(request.getCertId());
 
         saveShortChoiceProblem(createRequest);
     }
@@ -129,14 +132,16 @@ public class BasicProblemService implements ProblemService {
     private <T extends AiResponse> T generateProblemFromAi(
             Long certId,
             ProblemType problemType,
+            String referenceText,
             Class<T> responseType) {
         String certificationName = certificationService.findCertificationName(certId);
-        log.info("Requesting AI problem. certId={}, certificationName={}, problemType={}",
-                certId, certificationName, problemType);
+        log.info("Requesting AI problem. certId={}, certificationName={}, problemType={}, referenceText={}",
+                certId, certificationName, problemType, referenceText);
 
         return client.generateProblem(
                 certificationName,
                 problemType,
+                referenceText,
                 responseType
         );
     }

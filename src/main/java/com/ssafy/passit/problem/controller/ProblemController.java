@@ -1,5 +1,6 @@
 package com.ssafy.passit.problem.controller;
 
+import com.ssafy.passit.problem.dto.request.AiCreateRequest;
 import com.ssafy.passit.problem.dto.request.MultipleChoiceProblemCreateRequest;
 import com.ssafy.passit.problem.dto.request.ShortAnswerProblemCreateRequest;
 import com.ssafy.passit.problem.dto.response.MultipleChoiceProblemResponse;
@@ -51,9 +52,10 @@ public class ProblemController {
             @ApiResponse(responseCode = "200", description = "객관식 문제 생성 성공")
     })
     public ResponseEntity<Void> createMultipleChoiceProblemFromAi(
-            @RequestBody Long certId) {
+            @RequestBody AiCreateRequest request
+    ) {
 
-        problemService.generateAndSaveMultipleChoiceProblemFromAi(certId);
+        problemService.generateAndSaveMultipleChoiceProblemFromAi(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -64,9 +66,9 @@ public class ProblemController {
             @ApiResponse(responseCode = "200", description = "주관식 문제 생성 성공")
     })
     public ResponseEntity<Void> createShortAnswerProblemFromAi(
-            @RequestBody Long certId) {
+            @RequestBody AiCreateRequest request) {
 
-        problemService.generateAndSaveShortAnswerProblemFromAi(certId);
+        problemService.generateAndSaveShortAnswerProblemFromAi(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
