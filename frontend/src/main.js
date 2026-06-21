@@ -13,9 +13,9 @@ const pinia = createPinia();
 app.use(pinia);
 
 const authStore = useAuthStore(pinia);
-authStore.initializeAccessToken();
+await authStore.initializeAccessToken();
 
-const certificationStore = useCertificationStore();
+const certificationStore = useCertificationStore(pinia);
 certificationStore.initCertifications();
 
 app.use(router);
