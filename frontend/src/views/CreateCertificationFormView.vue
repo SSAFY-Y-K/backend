@@ -43,7 +43,12 @@
 				>
 				<select
 					v-model="commonForm.certId"
-					class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 outline-none transition focus:border-blue-400 focus:bg-white"
+					class="h-9 w-full rounded-md border bg-slate-50 px-3 text-xs text-slate-700 outline-none transition focus:bg-white"
+					:class="
+						errorField.certId
+							? 'border-red-500'
+							: ['border-slate-200', 'focus:border-blue-400']
+					"
 				>
 					<option value="" selected disabled>자격증 선택</option>
 					<option
@@ -89,8 +94,10 @@
 				</div>
 			</div>
 
+			<!-- AI 문제 생성 컴포넌트 -->
 			<CertificationAiForm v-if="mode === AI" v-model="aiForm.referenceText" />
 
+			<!-- 직접 문제 생성 컴포넌트 -->
 			<CertificationManualForm
 				v-if="mode === MANUAL"
 				v-model:title="manualForm.title"
@@ -102,6 +109,7 @@
 				v-model:answer-number="manualForm.answerNumber"
 				v-model:answer="manualForm.answer"
 				:is-multiple-choice="isMultipleChoice"
+				:error-field="errorField"
 			/>
 
 			<div class="mt-5 flex justify-end border-t border-slate-100 pt-4">
@@ -199,7 +207,7 @@ const manualForm = ref({
 	choice2Content: "",
 	choice3Content: "",
 	choice4Content: "",
-	answerNumber: 1,
+	answerNumber: "",
 	answer: "",
 });
 
@@ -214,14 +222,10 @@ const mode = computed(() => {
 const resetForm = () => {
 	commonForm.value.certId = "";
 	aiForm.value.referenceText = "";
-	manualForm.value.title = "";
-	manualForm.value.question = "";
-	manualForm.value.choice1Content = "";
-	manualForm.value.choice2Content = "";
-	manualForm.value.choice3Content = "";
-	manualForm.value.choice4Content = "";
-	manualForm.value.answerNumber = 1;
-	manualForm.value.answer = "";
+
+	Object.keys(manualForm.value).forEach((key) => {
+		manualForm.value[key] = "";
+	});
 };
 
 const setMode = (nextMode) => {
@@ -230,6 +234,19 @@ const setMode = (nextMode) => {
 		query: { ...route.query, mode: nextMode },
 	});
 };
+
+const errorField = ref({
+	certId: false,
+	problemType: false,
+	title: false,
+	question: false,
+	choice1Content: false,
+	choice2Content: false,
+	choice3Content: false,
+	choice4Content: false,
+	answerNumber: false,
+	answer: false,
+});
 
 const goModeSelect = () => {
 	router.push({ name: "create-certification" });
@@ -245,10 +262,76 @@ const closeFailureModal = () => {
 	showFailureModal.value = false;
 };
 
+const isBlank = (value) => typeof value === "string" && value.trim() === "";
+
+const resetErrorField = () => {
+	Object.keys(errorField.value).forEach(
+		(key) => (errorField.value[key] = false),
+	);
+};
+
+const validateForm = () => {
+	resetErrorField();
+
+	let result = true;
+	if (isBlank(commonForm.value.certId)) {
+		errorField.value.certId = true;
+		result = false;
+	}
+
+	if (mode.value === AI) {
+		return result;
+	}
+
+	if (isBlank(manualForm.value.title)) {
+		errorField.value.title = true;
+		result = false;
+	}
+	if (isBlank(manualForm.value.question)) {
+		errorField.value.question = true;
+		result = false;
+	}
+
+	if (commonForm.value.problemType === MULTIPLE_CHOICE) {
+		if (isBlank(manualForm.value.choice1Content)) {
+			errorField.value.choice1Content = true;
+			result = false;
+		}
+		if (isBlank(manualForm.value.choice2Content)) {
+			errorField.value.choice2Content = true;
+			result = false;
+		}
+		if (isBlank(manualForm.value.choice3Content)) {
+			errorField.value.choice3Content = true;
+			result = false;
+		}
+		if (isBlank(manualForm.value.choice4Content)) {
+			errorField.value.choice4Content = true;
+			result = false;
+		}
+		if (isBlank(manualForm.value.answerNumber)) {
+			errorField.value.answerNumber = true;
+			result = false;
+		}
+	} else if (commonForm.value.problemType === SHORT_ANSWER) {
+		if (isBlank(manualForm.value.answer)) {
+			errorField.value.answer = true;
+			result = false;
+		}
+	}
+
+	return result;
+};
+
 const onSubmit = async () => {
-	isLoading.value = true;
 	showSuccessModal.value = false;
 	showFailureModal.value = false;
+
+	const isValidAll = validateForm();
+	if (!isValidAll) {
+		return;
+	}
+	isLoading.value = true;
 
 	try {
 		let response = null;
@@ -263,6 +346,7 @@ const onSubmit = async () => {
 					referenceText: aiForm.value.referenceText,
 				},
 			);
+			// 직접 문제 생성
 		} else {
 			// 객관식 문제 생성
 			if (commonForm.value.problemType === MULTIPLE_CHOICE) {

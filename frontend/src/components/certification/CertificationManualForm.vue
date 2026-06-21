@@ -1,65 +1,125 @@
 <template>
 	<div class="space-y-4">
 		<div>
-			<label class="mb-1 block text-xs font-medium text-slate-500">문제 제목</label>
+			<!-- 문제 제목 인풋 -->
+			<label class="mb-1 block text-xs font-medium text-slate-500"
+				>문제 제목</label
+			>
 			<input
 				v-model="title"
 				type="text"
 				placeholder="문제 제목을 입력하세요"
-				class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-blue-400 focus:bg-white focus:ring-1 focus:ring-blue-100"
+				class="h-9 w-full rounded-md border bg-slate-50 px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:bg-white focus:ring-1 focus:ring-blue-100"
+				:class="
+					errorField.title
+						? 'border-red-500'
+						: ['border-slate-200', 'focus:border-blue-400']
+				"
 			/>
 		</div>
 
 		<div>
 			<label class="mb-1 block text-xs font-medium text-slate-500">문제</label>
-			<div class="flex items-center gap-1 rounded-t-md border border-slate-200 bg-slate-50 px-2 py-1.5">
-				<button class="rounded px-1.5 py-0.5 text-xs font-bold text-slate-600 hover:bg-slate-200">B</button>
-				<button class="rounded px-1.5 py-0.5 text-xs italic text-slate-600 hover:bg-slate-200">I</button>
-				<button class="rounded px-1.5 py-0.5 text-xs font-bold underline text-slate-600 hover:bg-slate-200">U</button>
+			<div
+				class="flex items-center gap-1 rounded-t-md border border-slate-200 bg-slate-50 px-2 py-1.5"
+			>
+				<button
+					class="rounded px-1.5 py-0.5 text-xs font-bold text-slate-600 hover:bg-slate-200"
+				>
+					B
+				</button>
+				<button
+					class="rounded px-1.5 py-0.5 text-xs italic text-slate-600 hover:bg-slate-200"
+				>
+					I
+				</button>
+				<button
+					class="rounded px-1.5 py-0.5 text-xs font-bold underline text-slate-600 hover:bg-slate-200"
+				>
+					U
+				</button>
 			</div>
+			<!-- 문제 내용 인풋 -->
 			<textarea
 				v-model="question"
 				rows="5"
 				placeholder="문제를 입력하세요"
-				class="w-full resize-none rounded-b-md border border-t-0 border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-100"
+				class="w-full resize-none rounded-b-md border border-t-0 bg-white px-3 py-2 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:ring-1 focus:ring-blue-100"
+				:class="
+					errorField.question
+						? 'border-red-500'
+						: ['border-slate-200', 'focus:border-blue-400']
+				"
 			></textarea>
 		</div>
 
+		<!-- 객관식 선택지 인풋 -->
 		<template v-if="isMultipleChoice">
 			<div class="space-y-2">
-				<label class="mb-1 block text-xs font-medium text-slate-500">선택지</label>
+				<label class="mb-1 block text-xs font-medium text-slate-500"
+					>선택지</label
+				>
 				<input
 					v-model="choice1Content"
 					type="text"
 					placeholder="1번 선택지"
-					class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-blue-400 focus:bg-white focus:ring-1 focus:ring-blue-100"
+					class="h-9 w-full rounded-md border bg-slate-50 px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:bg-white focus:ring-1 focus:ring-blue-100"
+					:class="
+						errorField.choice1Content
+							? 'border-red-500'
+							: ['border-slate-200', 'focus:border-blue-400']
+					"
 				/>
 				<input
 					v-model="choice2Content"
 					type="text"
 					placeholder="2번 선택지"
-					class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-blue-400 focus:bg-white focus:ring-1 focus:ring-blue-100"
+					class="h-9 w-full rounded-md border bg-slate-50 px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:bg-white focus:ring-1 focus:ring-blue-100"
+					:class="
+						errorField.choice2Content
+							? 'border-red-500'
+							: ['border-slate-200', 'focus:border-blue-400']
+					"
 				/>
 				<input
 					v-model="choice3Content"
 					type="text"
 					placeholder="3번 선택지"
-					class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-blue-400 focus:bg-white focus:ring-1 focus:ring-blue-100"
+					class="h-9 w-full rounded-md border bg-slate-50 px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:bg-white focus:ring-1 focus:ring-blue-100"
+					:class="
+						errorField.choice3Content
+							? 'border-red-500'
+							: ['border-slate-200', 'focus:border-blue-400']
+					"
 				/>
 				<input
 					v-model="choice4Content"
 					type="text"
 					placeholder="4번 선택지"
-					class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-blue-400 focus:bg-white focus:ring-1 focus:ring-blue-100"
+					class="h-9 w-full rounded-md border bg-slate-50 px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:bg-white focus:ring-1 focus:ring-blue-100"
+					:class="
+						errorField.choice4Content
+							? 'border-red-500'
+							: ['border-slate-200', 'focus:border-blue-400']
+					"
 				/>
 			</div>
 
 			<div>
-				<label class="mb-1 block text-xs font-medium text-slate-500">정답 선택지 번호</label>
+				<!-- 객관식 정답 선택 인풋 -->
+				<label class="mb-1 block text-xs font-medium text-slate-500"
+					>정답 선택지 번호</label
+				>
 				<select
 					v-model.number="answerNumber"
-					class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 outline-none transition focus:border-blue-400 focus:bg-white"
+					class="h-9 w-full rounded-md border bg-slate-50 px-3 text-xs text-slate-700 outline-none transition focus:bg-white"
+					:class="
+						errorField.answerNumber
+							? 'border-red-500'
+							: ['border-slate-200', 'focus:border-blue-400']
+					"
 				>
+					<option value="" selected disabled>정답 선택</option>
 					<option :value="1">1번</option>
 					<option :value="2">2번</option>
 					<option :value="3">3번</option>
@@ -68,13 +128,19 @@
 			</div>
 		</template>
 
+		<!-- 주관식 정답 인풋 -->
 		<div v-else>
 			<label class="mb-1 block text-xs font-medium text-slate-500">정답</label>
 			<input
 				v-model="answer"
 				type="text"
 				placeholder="정답을 입력하세요"
-				class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-blue-400 focus:bg-white focus:ring-1 focus:ring-blue-100"
+				class="h-9 w-full rounded-md border bg-slate-50 px-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:bg-white focus:ring-1 focus:ring-blue-100"
+				:class="
+					errorField.answer
+						? 'border-red-500'
+						: ['border-slate-200', 'focus:border-blue-400']
+				"
 			/>
 		</div>
 	</div>
@@ -113,12 +179,16 @@ const props = defineProps({
 		default: "",
 	},
 	answerNumber: {
-		type: Number,
-		default: 1,
+		type: [Number, String],
+		default: "",
 	},
 	answer: {
 		type: String,
 		default: "",
+	},
+	errorField: {
+		type: Object,
+		default: () => ({}),
 	},
 });
 
@@ -133,10 +203,11 @@ const emit = defineEmits([
 	"update:answer",
 ]);
 
-const bindModel = (propName, eventName) => computed({
-	get: () => props[propName],
-	set: (value) => emit(eventName, value),
-});
+const bindModel = (propName, eventName) =>
+	computed({
+		get: () => props[propName],
+		set: (value) => emit(eventName, value),
+	});
 
 const title = bindModel("title", "update:title");
 const question = bindModel("question", "update:question");

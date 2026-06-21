@@ -1,6 +1,8 @@
 <template>
 	<div class="mb-4">
-		<label class="mb-1 block text-xs font-medium text-slate-500">참고 자료 (선택)</label>
+		<label class="mb-1 block text-xs font-medium text-slate-500"
+			>참고 자료 (선택)</label
+		>
 		<textarea
 			v-model="referenceText"
 			rows="4"
@@ -17,6 +19,10 @@ const props = defineProps({
 	modelValue: {
 		type: String,
 		default: "",
+	},
+	errorField: {
+		type: Object,
+		default: () => ({}),
 	},
 });
 
