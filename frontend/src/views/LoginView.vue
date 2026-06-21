@@ -91,9 +91,13 @@
 
 <script setup>
 import { publicApi } from "@/api/client";
-import router from "@/router";
+import { useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { ref, useTemplateRef } from "vue";
+
+const router = useRouter();
+const route = useRoute();
 
 const authStore = useAuthStore();
 
@@ -140,9 +144,17 @@ const onSubmit = async () => {
 		authStore.setAccessToken(accessToken);
 
 		isLoading.value = false;
-		router.push({
-			name: "home",
-		});
+
+		// 리다이렉트
+		const redirectPath = route.query.redirect;
+
+		if (typeof redirectPath === "string" && redirectPath.startsWith("/")) {
+			router.push(redirectPath);
+		} else {
+			router.push({
+				name: "home",
+			});
+		}
 	} catch (error) {
 		if (error.response?.status === 401) {
 			errorField.value.all = "아이디 또는 비밀번호가 잘못되었습니다.";
