@@ -17,115 +17,115 @@ import MypageView from "@/views/MypageView.vue";
 import AdminReportView from "@/views/AdminReportView.vue";
 
 const router = createRouter({
-	history: createWebHistory(import.meta.env.BASE_URL),
-	routes: [
-		{
-			path: "/",
-			name: "home",
-			component: HomeView,
-		},
-		{
-			path: "/problem",
-			name: "problem",
-			component: ProblemView,
-			children: [
-				{
-					path: "certification",
-					name: "problem-certification",
-					component: ProblemCertificationView,
-				},
-				{
-					path: "coding",
-					name: "problem-coding",
-					component: ProblemCodingView,
-				},
-			],
-		},
-		{
-			path: "/problem/cert/:id",
-			name: "problem-detail",
-			component: ProblemDetailView,
-		},
-		{
-			path: "/problem/coding/:id",
-			name: "coding-problem-detail",
-			component: CodingProblemDetailView,
-			meta: { requiresAuth: true },
-		},
-		{
-			path: "/create",
-			name: "create",
-			component: CreateView,
-			meta: { requiresAuth: true },
-			children: [
-				{
-					path: "coding",
-					name: "create-coding",
-					component: CreateCodingView,
-					meta: { requiresAuth: true },
-				},
-				{
-					path: "certification",
-					name: "create-certification",
-					component: CreateCertificationView,
-					meta: { requiresAuth: true },
-					children: [
-						{
-							path: "write",
-							name: "create-certification-write",
-							component: CreateCertificationFormView,
-							meta: { requiresAuth: true },
-						},
-					],
-				},
-			],
-		},
-		{
-			path: "/community",
-			name: "community",
-			component: CommunityView,
-		},
-		{
-			path: "/community/:id",
-			name: "community-detail",
-			component: CommunityDetailView,
-		},
-		{
-			path: "/mypage",
-			name: "mypage",
-			component: MypageView,
-			meta: { hideSidebar: true, requiresAuth: true },
-		},
-		{
-			path: "/admin/reports",
-			name: "admin-reports",
-			component: AdminReportView,
-			meta: { requiresAuth: true, hideSidebar: true },
-		},
-		{
-			path: "/login",
-			name: "login",
-			component: LoginView,
-			meta: { hideSidebar: true },
-		},
-		{
-			path: "/signup",
-			name: "signup",
-			component: SignupView,
-			meta: { hideSidebar: true },
-		},
-	],
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: "/",
+      name: "home",
+      component: HomeView,
+    },
+    {
+      path: "/problem",
+      name: "problem",
+      component: ProblemView,
+      children: [
+        {
+          path: "certification",
+          name: "problem-certification",
+          component: ProblemCertificationView,
+        },
+        {
+          path: "coding",
+          name: "problem-coding",
+          component: ProblemCodingView,
+        },
+      ],
+    },
+    {
+      path: "/problem/certification/:id",
+      name: "problem-detail",
+      component: ProblemDetailView,
+    },
+    {
+      path: "/problem/coding/:id",
+      name: "coding-problem-detail",
+      component: CodingProblemDetailView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/create",
+      name: "create",
+      component: CreateView,
+      meta: { requiresAuth: true },
+      children: [
+        {
+          path: "coding",
+          name: "create-coding",
+          component: CreateCodingView,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: "certification",
+          name: "create-certification",
+          component: CreateCertificationView,
+          meta: { requiresAuth: true },
+          children: [
+            {
+              path: "write",
+              name: "create-certification-write",
+              component: CreateCertificationFormView,
+              meta: { requiresAuth: true },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      path: "/community",
+      name: "community",
+      component: CommunityView,
+    },
+    {
+      path: "/community/:id",
+      name: "community-detail",
+      component: CommunityDetailView,
+    },
+    {
+      path: "/mypage",
+      name: "mypage",
+      component: MypageView,
+      meta: { hideSidebar: true, requiresAuth: true },
+    },
+    {
+      path: "/admin/reports",
+      name: "admin-reports",
+      component: AdminReportView,
+      meta: { requiresAuth: true, hideSidebar: true },
+    },
+    {
+      path: "/login",
+      name: "login",
+      component: LoginView,
+      meta: { hideSidebar: true },
+    },
+    {
+      path: "/signup",
+      name: "signup",
+      component: SignupView,
+      meta: { hideSidebar: true },
+    },
+  ],
 });
 
 import { useAuthStore } from "@/stores/auth";
 
 router.beforeEach((to) => {
-	if (to.meta.requiresAuth) {
-		const authStore = useAuthStore();
-		if (!authStore.hasAccessToken) {
-			return { name: "login", query: { redirect: to.fullPath } };
-		}
-	}
+  if (to.meta.requiresAuth) {
+    const authStore = useAuthStore();
+    if (!authStore.hasAccessToken) {
+      return { name: "login", query: { redirect: to.fullPath } };
+    }
+  }
 });
 
 export default router;
