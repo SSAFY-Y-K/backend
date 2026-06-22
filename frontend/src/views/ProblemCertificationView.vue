@@ -86,6 +86,7 @@
               :to="{
                 name: 'problem-detail',
                 params: { id: problem.problemId },
+                query: { problemType: problem.problemType },
               }"
               class="rounded-md bg-blue-600 px-3 py-1.5 text-[10px] font-semibold text-white no-underline transition hover:bg-blue-700"
             >
