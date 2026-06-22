@@ -29,4 +29,8 @@ public interface ProblemRepository {
     MultipleChoiceProblemResponse findMultipleChoiceProblem(long problemId);
 
     ShortAnswerProblemResponse findShortAnswerProblem(long problemId);
+
+    Long findCertificationProblemCount();
+
+    List<ProblemEntity> findRecentCertificationProblems(long limit);
 }

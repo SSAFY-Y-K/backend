@@ -39,4 +39,10 @@ public class CertificationController {
     public List<CertificationProblemCount> findAllCertificationProblemCount() {
         return certificationService.findAllCertificationProblemCount();
     }
+
+    @Operation(summary = "등록된 자격증 총 개수 조회", description = "현재 DB에 저장된 자격증 개수를 구하는 엔드포인트")
+    @GetMapping("/count")
+    public Long findCertificationCount() {
+        return certificationService.findCertificationCount();
+    }
 }

@@ -126,10 +126,20 @@
 
             <button
               type="submit"
-              class="h-9 w-full rounded-md bg-blue-600 text-xs font-semibold text-white transition hover:bg-blue-700 disabled:bg-gray-400"
+              class="vl-parent relative flex h-9 w-full items-center justify-center overflow-hidden rounded-md bg-blue-600 text-xs font-semibold text-white transition hover:bg-blue-700 disabled:bg-gray-400"
               :disabled="isLoading"
             >
-              <p>{{ isLoading ? "진행중..." : "회원가입" }}</p>
+              <p v-if="!isLoading">회원가입</p>
+              <Loading
+                v-model:active="isLoading"
+                :is-full-page="false"
+                :can-cancel="false"
+                background-color="transparent"
+                color="#ffffff"
+                :height="18"
+                :width="18"
+                loader="spinner"
+              />
             </button>
           </form>
 
@@ -153,6 +163,7 @@ import { publicApi } from "@/api/client";
 import { ref, useTemplateRef } from "vue";
 import { useRouter } from "vue-router";
 import { toast } from "vue3-toastify";
+import { Component as Loading } from "vue-loading-overlay";
 
 const router = useRouter();
 

@@ -20,6 +20,8 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -111,11 +113,14 @@ public class BasicProblemService implements ProblemService {
     @Override
     public ProblemsResponse findProblems(@Nullable Long certId, @Nullable Long problemId) {
         var problems = problemRepository.findProblems(certId, problemId, PAGE_SIZE);
+        Long minProblemId = problems.stream().map(ProblemEntity::getProblemId).min(Long::compareTo)
+                .orElse(0L);
         boolean isLast = problems.size() < PAGE_SIZE;
 
         return ProblemsResponse.builder()
                 .problems(problems)
                 .isLast(isLast)
+                .minProblemId(minProblemId)
                 .build();
     }
 
@@ -127,6 +132,11 @@ public class BasicProblemService implements ProblemService {
     @Override
     public ShortAnswerProblemResponse findShortAnswerProblem(long problemId) {
         return problemRepository.findShortAnswerProblem(problemId);
+    }
+
+    @Override
+    public Long findCertificationProblemCount() {
+        return problemRepository.findCertificationProblemCount();
     }
 
     private <T extends AiResponse> T generateProblemFromAi(
@@ -144,6 +154,11 @@ public class BasicProblemService implements ProblemService {
                 referenceText,
                 responseType
         );
+    }
+
+    @Override
+    public List<ProblemEntity> findRecentCertificationProblems(long limit) {
+        return problemRepository.findRecentCertificationProblems(limit);
     }
 
     /**

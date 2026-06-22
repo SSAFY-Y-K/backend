@@ -29,4 +29,10 @@
         GROUP BY c.cert_id, c.name
         ORDER BY c.name ASC;
     </select>
+
+    <select id="findCertificationCount" resultType="Long">
+        SELECT
+            COUNT(cert_id)
+        FROM certifications;
+    </select>
 </mapper>

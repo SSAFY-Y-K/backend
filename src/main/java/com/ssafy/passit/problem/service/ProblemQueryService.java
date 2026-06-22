@@ -6,6 +6,7 @@ import com.ssafy.passit.problem.dto.response.CodingProblemDetailResponse;
 import com.ssafy.passit.problem.dto.response.CodingProblemListItemResponse;
 import com.ssafy.passit.problem.mapper.CodingProblemMapper;
 import com.ssafy.passit.problem.mapper.TestCaseMapper;
+import com.ssafy.passit.problem.model.CategoryCount;
 import com.ssafy.passit.problem.model.CodingProblem;
 import com.ssafy.passit.problem.model.TestCase;
 import java.util.List;
@@ -58,5 +59,20 @@ public class ProblemQueryService {
         }
 
         return testCases;
+    }
+
+    public Long findCertificationProblemCount() {
+        return codingProblemMapper.findCertificationProblemCount();
+    }
+
+    public List<CodingProblemListItemResponse> findRecentCodingProblems(long limit) {
+        var codingProblems = codingProblemMapper.findRecentCodingProblems(limit);
+
+        return codingProblems.stream().map(CodingProblemListItemResponse::from).toList();
+    }
+
+    public List<CategoryCount> findCategoryAndCount() {
+
+        return codingProblemMapper.findCategoryAndCount();
     }
 }

@@ -45,6 +45,7 @@ const router = createRouter({
       path: "/problem/certification/:id",
       name: "problem-detail",
       component: ProblemDetailView,
+      meta: { requiresAuth: true },
     },
     {
       path: "/problem/coding/:id",

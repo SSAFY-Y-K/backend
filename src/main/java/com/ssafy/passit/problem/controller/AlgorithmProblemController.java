@@ -5,6 +5,7 @@ import com.ssafy.passit.problem.dto.GenerateAlgorithmRequest;
 import com.ssafy.passit.problem.dto.GenerateAlgorithmResponse;
 import com.ssafy.passit.problem.dto.response.CodingProblemDetailResponse;
 import com.ssafy.passit.problem.dto.response.CodingProblemListItemResponse;
+import com.ssafy.passit.problem.model.CategoryCount;
 import com.ssafy.passit.problem.service.AlgorithmProblemService;
 import com.ssafy.passit.problem.service.ProblemQueryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,14 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Algorithm Problems", description = "AI 알고리즘 코딩 문제 API")
 @RestController
@@ -69,5 +63,27 @@ public class AlgorithmProblemController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCodingProblem(@PathVariable Long problemId) {
         problemQueryService.deleteCodingProblem(problemId);
+    }
+
+    @Operation(summary = "코딩 문제 개수 조회")
+    @GetMapping("/algorithm/count")
+    @ResponseStatus(HttpStatus.OK)
+    public Long findCodingProblemCount() {
+        return problemQueryService.findCertificationProblemCount();
+    }
+
+    @Operation(summary = "최근 등록된 코딩 문제 n개 조회")
+    @GetMapping("/algorithm/recent")
+    @ResponseStatus(HttpStatus.OK)
+    public List<CodingProblemListItemResponse> findRecentCodingProblems(
+            @RequestParam long limit
+    ) {
+        return problemQueryService.findRecentCodingProblems(limit);
+    }
+
+    @Operation(summary = "코딩 문제 카테고리별 문제 개수 조회")
+    @GetMapping("/category-count")
+    public List<CategoryCount> findCategoryAndCount() {
+        return problemQueryService.findCategoryAndCount();
     }
 }

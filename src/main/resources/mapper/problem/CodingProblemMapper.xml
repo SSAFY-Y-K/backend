@@ -86,4 +86,31 @@
         ORDER BY cp.created_at DESC
     </select>
 
+    <select id="findCertificationProblemCount" resultType="Long">
+        SELECT
+            COUNT(problem_id)
+        FROM coding_problems;
+    </select>
+
+    <select id="findRecentCodingProblems" resultMap="codingProblemResultMap">
+        SELECT cp.problem_id, cp.title, cp.difficulty, cp.category, cp.created_at, cp.updated_at,
+               COALESCE(s.total, 0) AS total_submissions,
+               COALESCE(s.ac_count, 0) AS ac_count
+        FROM coding_problems cp
+                 LEFT JOIN (
+            SELECT problem_id, COUNT(*) AS total, SUM(verdict = 'AC') AS ac_count
+            FROM submissions
+            GROUP BY problem_id
+        ) s ON cp.problem_id = s.problem_id
+        ORDER BY cp.created_at DESC, cp.problem_id DESC
+        LIMIT #{limit};
+    </select>
+
+    <select id="findCategoryAndCount" resultType="CategoryCount">
+        SELECT
+            category,
+            COUNT(problem_id) AS `count`
+        FROM coding_problems
+        GROUP BY category;
+    </select>
 </mapper>
