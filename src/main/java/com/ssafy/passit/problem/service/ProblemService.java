@@ -1,8 +1,6 @@
 package com.ssafy.passit.problem.service;
 
-import com.ssafy.passit.problem.dto.entity.MultipleChoiceProblemEntity;
 import com.ssafy.passit.problem.dto.entity.ProblemEntity;
-import com.ssafy.passit.problem.dto.entity.ShortAnswerProblemEntity;
 import com.ssafy.passit.problem.dto.request.AiCreateRequest;
 import com.ssafy.passit.problem.dto.request.MultipleChoiceProblemCreateRequest;
 import com.ssafy.passit.problem.dto.request.ShortAnswerProblemCreateRequest;
@@ -61,4 +59,16 @@ public interface ProblemService {
      * @return
      */
     ShortAnswerProblemResponse findShortAnswerProblem(long problemId);
+
+    /**
+     * 자격증 문제 개수 조회
+     * @return
+     */
+    Long findCertificationProblemCount();
+
+    /**
+     * 최근에 등록된 n개 자격증 문제 조회
+     * @return
+     */
+    List<ProblemEntity> findRecentCertificationProblems(long limit);
 }

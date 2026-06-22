@@ -28,4 +28,9 @@ public class BasicCertificationService implements CertificationService {
     public List<CertificationProblemCount> findAllCertificationProblemCount() {
         return certificationRepository.findAllCertificationProblemCount();
     }
+
+    @Override
+    public Long findCertificationCount() {
+        return certificationRepository.findCertificationCount();
+    }
 }

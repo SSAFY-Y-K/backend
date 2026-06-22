@@ -20,6 +20,8 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -132,6 +134,11 @@ public class BasicProblemService implements ProblemService {
         return problemRepository.findShortAnswerProblem(problemId);
     }
 
+    @Override
+    public Long findCertificationProblemCount() {
+        return problemRepository.findCertificationProblemCount();
+    }
+
     private <T extends AiResponse> T generateProblemFromAi(
             Long certId,
             ProblemType problemType,
@@ -147,6 +154,11 @@ public class BasicProblemService implements ProblemService {
                 referenceText,
                 responseType
         );
+    }
+
+    @Override
+    public List<ProblemEntity> findRecentCertificationProblems(long limit) {
+        return problemRepository.findRecentCertificationProblems(limit);
     }
 
     /**

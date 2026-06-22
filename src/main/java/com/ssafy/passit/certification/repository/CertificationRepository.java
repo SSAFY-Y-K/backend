@@ -14,4 +14,6 @@ public interface CertificationRepository {
     List<Certification> findAllCertifications();
 
     List<CertificationProblemCount> findAllCertificationProblemCount();
+
+    Long findCertificationCount();
 }

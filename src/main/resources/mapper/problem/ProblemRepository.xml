@@ -106,4 +106,23 @@
             ON p.problem_id = s.problem_id
         WHERE p.problem_id = #{problemId};
     </select>
+
+    <select id="findCertificationProblemCount" resultType="Long">
+        SELECT
+            COUNT(problem_id)
+        FROM problems;
+    </select>
+
+    <select id="findRecentCertificationProblems" resultType="ProblemEntity">
+        SELECT
+            c.cert_id AS `certId`,
+            p.problem_id AS `problemId`,
+            p.problem_type AS `problemType`,
+            p.problem_title AS `problemTitle`
+        FROM certifications c
+        JOIN problems p
+            ON c.cert_id = p.cert_id
+        ORDER BY created_at DESC, problem_id DESC
+        LIMIT #{limit};
+    </select>
 </mapper>

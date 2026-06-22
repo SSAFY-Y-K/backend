@@ -25,4 +25,10 @@ public interface CertificationService {
      * @return
      */
     List<CertificationProblemCount> findAllCertificationProblemCount();
+
+    /**
+     * 자격증 개수 구하여 리턴
+     * @return
+     */
+    Long findCertificationCount();
 }

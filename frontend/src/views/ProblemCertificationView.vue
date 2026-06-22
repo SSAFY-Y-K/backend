@@ -113,17 +113,19 @@
 <script setup>
 import { publicApi } from "@/api/client";
 import { useCertificationStore } from "@/stores/certification";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import { Component as Loading } from "vue-loading-overlay";
 
 const certificationStore = useCertificationStore();
+const route = useRoute();
 
 const isLoading = ref(false);
 
 // 페이징 용
 const minProblemId = ref(null);
 
-const searchCertification = ref("all");
+const searchCertification = ref(route.query.cert_id ?? "all");
 
 const problems = ref([]);
 
@@ -188,4 +190,15 @@ const onChange = async () => {
   problems.value = [];
   await fetchProblems();
 };
+
+watch(
+  () => route.query.cert_id,
+  async (certId) => {
+    const nextCertification = certId ?? "all";
+    if (searchCertification.value === nextCertification) return;
+
+    searchCertification.value = nextCertification;
+    await onChange();
+  },
+);
 </script>

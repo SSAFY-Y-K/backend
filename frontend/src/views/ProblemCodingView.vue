@@ -60,14 +60,16 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { getCodingProblems } from "@/api/index.js";
+import { useRoute } from "vue-router";
 
 const codingProblems = ref([]);
 const codingLoading = ref(false);
 const codingError = ref(null);
 const filterDifficulty = ref("");
-const filterCategory = ref("");
+const route = useRoute();
+const filterCategory = ref(route.query.category ?? "");
 
 const categoryOptions = computed(() => {
 	const set = new Set(codingProblems.value.map((p) => p.category).filter(Boolean));
@@ -94,6 +96,13 @@ onMounted(async () => {
 		codingLoading.value = false;
 	}
 });
+
+watch(
+	() => route.query.category,
+	(category) => {
+		filterCategory.value = category ?? "";
+	},
+);
 
 const difficultyColor = { EASY: "bg-emerald-500", MEDIUM: "bg-orange-500", HARD: "bg-red-500" };
 const difficultyLabel = { EASY: "초급", MEDIUM: "중급", HARD: "상급" };

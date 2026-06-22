@@ -1,11 +1,13 @@
 package com.ssafy.passit.problem.controller;
 
+import com.ssafy.passit.problem.dto.entity.ProblemEntity;
 import com.ssafy.passit.problem.dto.request.AiCreateRequest;
 import com.ssafy.passit.problem.dto.request.MultipleChoiceProblemCreateRequest;
 import com.ssafy.passit.problem.dto.request.ShortAnswerProblemCreateRequest;
 import com.ssafy.passit.problem.dto.response.MultipleChoiceProblemResponse;
 import com.ssafy.passit.problem.dto.response.ProblemsResponse;
 import com.ssafy.passit.problem.dto.response.ShortAnswerProblemResponse;
+import com.ssafy.passit.problem.model.CategoryCount;
 import com.ssafy.passit.problem.service.ProblemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -15,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/problem")
@@ -118,5 +122,19 @@ public class ProblemController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok().body(problem);
+    }
+
+    @GetMapping("/certification/count")
+    @Operation(summary = "자격증 문제 개수 조회")
+    public Long findCertificationProblemCount() {
+        return problemService.findCertificationProblemCount();
+    }
+
+    @GetMapping("/certification/recent")
+    @Operation(summary = "최근 등록된 자격증 문제 n개 조회")
+    public List<ProblemEntity> findRecentCertificationProblems(
+            @RequestParam() long limit
+    ) {
+        return problemService.findRecentCertificationProblems(limit);
     }
 }
