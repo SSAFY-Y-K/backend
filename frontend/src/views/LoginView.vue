@@ -1,10 +1,10 @@
 <template>
 	<div
-		class="flex min-h-full items-center justify-center bg-gray-50 px-4 py-12"
+		class="flex min-h-full items-center justify-center bg-slate-100 px-4 py-12"
 	>
 		<div class="w-full max-w-sm">
 			<div
-				class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm"
+				class="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-xl shadow-slate-200/70 ring-1 ring-slate-900/5"
 			>
 				<div class="p-6">
 					<form class="space-y-4" @submit.prevent="onSubmit">
