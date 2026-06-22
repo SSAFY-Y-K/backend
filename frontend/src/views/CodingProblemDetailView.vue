@@ -1,7 +1,14 @@
 <template>
-	<div class="flex h-[calc(100vh-3rem)] overflow-hidden">
+	<div ref="containerRef" class="flex h-[calc(100vh-3rem)] overflow-hidden">
 		<!-- 왼쪽: 문제 설명 (스크롤) -->
-		<div class="flex w-1/2 flex-col overflow-y-auto border-r border-slate-200 bg-white">
+		<div
+			:class="[
+				'flex flex-col overflow-y-auto bg-white',
+				showEditor ? 'border-r border-slate-200' : '',
+				showEditor && !isResizing ? 'transition-[width] duration-200' : '',
+			]"
+			:style="showEditor ? { width: `${leftPaneWidth}%` } : { width: '100%' }"
+		>
 			<div v-if="loading" class="flex flex-1 items-center justify-center text-xs text-slate-400">
 				불러오는 중...
 			</div>
@@ -9,7 +16,11 @@
 				{{ error }}
 			</div>
 
-			<div v-else-if="problem" class="space-y-0">
+			<div
+				v-else-if="problem"
+				v-memo="[problem, showEditor, showReportForm, reportContent, reporting, showAdminPanel, reports, testCases, editingTc, savingTc, authStore.userId, authStore.isAdmin]"
+				class="space-y-0"
+			>
 				<!-- 헤더 -->
 				<div class="border-b border-slate-100 px-6 py-4">
 					<div class="mb-3 flex items-center justify-between">
@@ -19,13 +30,15 @@
 						>
 							← 목록으로
 						</button>
-						<button
-							v-if="authStore.isAdmin"
-							class="text-xs text-red-400 transition hover:text-red-600"
-							@click="handleDelete"
-						>
-							문제 삭제
-						</button>
+						<div class="flex items-center gap-2">
+							<button
+								v-if="authStore.isAdmin"
+								class="text-xs text-red-400 transition hover:text-red-600"
+								@click="handleDelete"
+							>
+								문제 삭제
+							</button>
+						</div>
 					</div>
 					<div class="mb-1.5 flex items-center gap-2">
 						<span :class="['rounded px-2 py-0.5 text-[10px] font-bold text-white', difficultyColor[problem.difficulty]]">
@@ -82,7 +95,11 @@
 				<div v-if="problem.sampleTestCases?.length" class="border-b border-slate-100 px-6 py-4">
 					<h4 class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">샘플 테스트케이스</h4>
 					<div class="space-y-3">
-						<div v-for="(tc, i) in problem.sampleTestCases" :key="i" class="grid grid-cols-2 gap-2">
+						<div
+							v-for="(tc, i) in problem.sampleTestCases"
+							:key="i"
+							:class="['grid gap-2', showEditor ? 'grid-cols-1 xl:grid-cols-2' : 'grid-cols-2']"
+						>
 							<div>
 								<p class="mb-1 text-[10px] font-medium text-slate-400">입력 {{ i + 1 }}</p>
 								<pre class="rounded-md bg-slate-900 p-3 text-xs text-green-300">{{ tc.inputData }}</pre>
@@ -224,23 +241,32 @@
 		</div>
 
 		<!-- 오른쪽: 에디터 -->
-		<div class="flex w-1/2 flex-col bg-slate-900">
+		<div
+			v-if="showEditor"
+			class="group flex w-3 cursor-col-resize items-center justify-center bg-slate-100/80"
+			@pointerdown.prevent="startResize"
+		>
+			<div :class="['h-16 w-1 rounded-full transition-colors', isResizing ? 'bg-blue-400' : 'bg-slate-300 group-hover:bg-slate-400']"></div>
+		</div>
+		<div v-show="showEditor" class="flex min-w-0 flex-1 flex-col bg-slate-900">
 			<!-- 툴바 -->
 			<div class="flex items-center justify-between border-b border-slate-700 px-4 py-2">
-				<select
-					v-model="language"
-					class="h-7 rounded border border-slate-600 bg-slate-800 px-2 text-xs text-slate-200 outline-none focus:border-blue-400"
-				>
-					<option value="PYTHON">Python</option>
-					<option value="JAVA">Java</option>
-					<option value="CPP">C++</option>
-				</select>
-				<button
-					class="text-[10px] text-slate-500 transition hover:text-slate-300"
-					@click="code = ''"
-				>
-					초기화
-				</button>
+				<div class="flex items-center gap-2">
+					<select
+						v-model="language"
+						class="h-7 rounded border border-slate-600 bg-slate-800 px-2 text-xs text-slate-200 outline-none focus:border-blue-400"
+					>
+						<option value="PYTHON">Python</option>
+						<option value="JAVA">Java</option>
+						<option value="CPP">C++</option>
+					</select>
+					<button
+						class="text-[10px] text-slate-500 transition hover:text-slate-300"
+						@click="code = ''"
+					>
+						초기화
+					</button>
+				</div>
 			</div>
 
 			<!-- 코드 에디터 -->
@@ -361,7 +387,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
+import { onBeforeUnmount, onMounted, ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import { getCodingProblemDetail, submitCode, runCode, deleteCodingProblem, submitReport, getReports, resolveReport, getAllTestCases, updateTestCase } from "@/api/index.js";
 import { useAuthStore } from "@/stores/auth";
@@ -384,6 +410,10 @@ const runResults = ref(null);
 const history = ref([]);
 const showHistory = ref(false);
 const editorRef = ref(null);
+const showEditor = ref(true);
+const containerRef = ref(null);
+const leftPaneWidth = ref(50);
+const isResizing = ref(false);
 
 // 오류 신고
 const showReportForm = ref(false);
@@ -419,6 +449,41 @@ const resultStyle = computed(() => {
 	if (v === "CE" || v === "RE") return { border: "border-red-700 bg-red-900/40", text: "text-red-400" };
 	return { border: "border-orange-700 bg-orange-900/40", text: "text-orange-400" };
 });
+
+const clampPaneWidth = (value) => Math.min(75, Math.max(25, value));
+
+const updatePaneWidth = (clientX) => {
+	const container = containerRef.value;
+	if (!container) return;
+	const rect = container.getBoundingClientRect();
+	if (rect.width <= 0) return;
+	const ratio = ((clientX - rect.left) / rect.width) * 100;
+	leftPaneWidth.value = clampPaneWidth(ratio);
+};
+
+const handleResizeMove = (event) => {
+	if (!isResizing.value) return;
+	updatePaneWidth(event.clientX);
+};
+
+const stopResize = () => {
+	if (!isResizing.value) return;
+	isResizing.value = false;
+	window.removeEventListener("pointermove", handleResizeMove);
+	window.removeEventListener("pointerup", stopResize);
+	document.body.style.cursor = "";
+	document.body.style.userSelect = "";
+};
+
+const startResize = (event) => {
+	if (!showEditor.value) return;
+	isResizing.value = true;
+	updatePaneWidth(event.clientX);
+	document.body.style.cursor = "col-resize";
+	document.body.style.userSelect = "none";
+	window.addEventListener("pointermove", handleResizeMove);
+	window.addEventListener("pointerup", stopResize);
+};
 
 const handleTab = () => {
 	const el = editorRef.value;
@@ -556,4 +621,5 @@ const handleSubmit = async () => {
 };
 
 onMounted(loadProblem);
+onBeforeUnmount(stopResize);
 </script>
