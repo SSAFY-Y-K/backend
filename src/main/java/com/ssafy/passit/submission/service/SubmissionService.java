@@ -12,6 +12,7 @@ import com.ssafy.passit.submission.dto.SubmissionResultResponse;
 import com.ssafy.passit.submission.mapper.SubmissionMapper;
 import com.ssafy.passit.submission.model.Submission;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,15 +28,15 @@ public class SubmissionService {
     private final JudgeService judgeService;
 
     @Transactional
-    public SubmissionResultResponse submit(Long problemId, CreateSubmissionRequest request) {
+    public SubmissionResultResponse submit(Long problemId, Long actorUserId, CreateSubmissionRequest request) {
         validateSubmissionRequest(problemId, request);
         LanguageType language = parseLanguage(request.language());
-        log.info("Submission requested. problemId={}, userId={}, language={}",
-            problemId, request.userId(), language);
+        log.info("Submission requested. problemId={}, actorUserId={}, language={}",
+            problemId, actorUserId, language);
 
         Submission submission = Submission.builder()
             .problemId(problemId)
-            .userId(request.userId())
+            .userId(actorUserId)
             .language(language)
             .sourceCode(request.sourceCode())
             .status(SubmissionStatus.PENDING)
@@ -43,14 +44,21 @@ public class SubmissionService {
 
         submissionMapper.insertSubmission(submission);
         log.info("Submission saved. submissionId={}, problemId={}, userId={}",
-            submission.getSubmissionId(), problemId, request.userId());
+            submission.getSubmissionId(), problemId, actorUserId);
         judgeService.judge(submission.getSubmissionId());
 
         return SubmissionResultResponse.from(findById(submission.getSubmissionId()));
     }
 
-    public SubmissionResultResponse getSubmission(Long submissionId) {
-        return SubmissionResultResponse.from(findById(submissionId));
+    public SubmissionResultResponse getSubmission(Long submissionId, Long actorUserId, boolean isAdmin) {
+        Submission submission = findById(submissionId);
+        validateOwnerOrAdmin(
+            submission.getUserId(),
+            actorUserId,
+            isAdmin,
+            "Only the owner or an admin can view this submission."
+        );
+        return SubmissionResultResponse.from(submission);
     }
 
     public Submission findById(Long submissionId) {
@@ -110,19 +118,15 @@ public class SubmissionService {
 
     private void validateSubmissionRequest(Long problemId, CreateSubmissionRequest request) {
         if (request == null) {
-            throw new ApiException(ErrorCode.INVALID_REQUEST, "제출 요청 본문이 비어 있습니다.");
+            throw new ApiException(ErrorCode.INVALID_REQUEST, "?쒖텧 ?붿껌 蹂몃Ц??鍮꾩뼱 ?덉뒿?덈떎.");
         }
 
         if (problemId == null) {
-            throw new ApiException(ErrorCode.INVALID_REQUEST, "문제 ID는 필수입니다.");
-        }
-
-        if (request.userId() == null) {
-            throw new ApiException(ErrorCode.INVALID_REQUEST, "사용자 ID는 필수입니다.");
+            throw new ApiException(ErrorCode.INVALID_REQUEST, "臾몄젣 ID???꾩닔?낅땲??");
         }
 
         if (request.sourceCode() == null || request.sourceCode().isBlank()) {
-            throw new ApiException(ErrorCode.INVALID_REQUEST, "소스코드는 비어 있을 수 없습니다.");
+            throw new ApiException(ErrorCode.INVALID_REQUEST, "?뚯뒪肄붾뱶??鍮꾩뼱 ?덉쓣 ???놁뒿?덈떎.");
         }
 
         problemQueryService.getCodingProblem(problemId);
@@ -131,13 +135,27 @@ public class SubmissionService {
 
     private LanguageType parseLanguage(String language) {
         if (language == null || language.isBlank()) {
-            throw new ApiException(ErrorCode.UNSUPPORTED_LANGUAGE, "언어 값은 필수입니다.");
+            throw new ApiException(ErrorCode.UNSUPPORTED_LANGUAGE, "?몄뼱 媛믪? ?꾩닔?낅땲??");
         }
 
         try {
             return LanguageType.valueOf(language.trim().toUpperCase());
         } catch (IllegalArgumentException exception) {
             throw new ApiException(ErrorCode.UNSUPPORTED_LANGUAGE);
+        }
+    }
+
+    private void validateOwnerOrAdmin(
+        Long ownerUserId,
+        Long actorUserId,
+        boolean isAdmin,
+        String message
+    ) {
+        if (isAdmin) {
+            return;
+        }
+        if (!Objects.equals(ownerUserId, actorUserId)) {
+            throw new ApiException(ErrorCode.FORBIDDEN, message);
         }
     }
 }

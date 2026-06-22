@@ -6,12 +6,15 @@ import com.ssafy.passit.post.dto.PostDetailResponse;
 import com.ssafy.passit.post.dto.PostListResponse;
 import com.ssafy.passit.post.dto.UpdatePostRequest;
 import com.ssafy.passit.post.service.PostService;
+import com.ssafy.passit.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Posts", description = "게시글 API")
+@Tag(name = "Posts", description = "寃뚯떆湲 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/posts")
@@ -31,63 +34,78 @@ public class PostController {
 
     private final PostService postService;
 
-    @Operation(summary = "게시글 작성", description = "새 게시글을 작성합니다. category는 REVIEW / TIP / QNA 중 하나입니다.")
+    @Operation(summary = "寃뚯떆湲 ?묒꽦", description = "??寃뚯떆湲???묒꽦?⑸땲?? category??REVIEW / TIP / QNA 以??섎굹?낅땲??")
     @ApiResponses({
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "게시글 작성 성공")
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "寃뚯떆湲 ?묒꽦 ?깃났")
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<PostDetailResponse> createPost(@RequestBody CreatePostRequest request) {
-        return ApiResponse.success(postService.createPost(request));
+    public ApiResponse<PostDetailResponse> createPost(
+        @AuthenticationPrincipal UserPrincipal principal,
+        @RequestBody CreatePostRequest request
+    ) {
+        return ApiResponse.success(postService.createPost(principal.getUserId(), request));
     }
 
-    @Operation(summary = "게시글 목록 조회", description = "전체 게시글 목록을 조회합니다.")
+    @Operation(summary = "寃뚯떆湲 紐⑸줉 議고쉶", description = "?꾩껜 寃뚯떆湲 紐⑸줉??議고쉶?⑸땲??")
     @ApiResponses({
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공")
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "議고쉶 ?깃났")
     })
     @GetMapping
     public ApiResponse<PostListResponse> getPosts(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+        @RequestParam(required = false) String keyword,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
         return ApiResponse.success(postService.getPosts(keyword, page, size));
     }
 
-    @Operation(summary = "게시글 상세 조회", description = "특정 게시글의 상세 내용을 조회합니다.")
+    @Operation(summary = "寃뚯떆湲 ?곸꽭 議고쉶", description = "?뱀젙 寃뚯떆湲???곸꽭 ?댁슜??議고쉶?⑸땲??")
     @ApiResponses({
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "게시글 없음")
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "議고쉶 ?깃났"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "寃뚯떆湲 ?놁쓬")
     })
     @GetMapping("/{postId}")
     public ApiResponse<PostDetailResponse> getPostDetail(
-        @Parameter(description = "게시글 ID") @PathVariable Long postId
+        @Parameter(description = "寃뚯떆湲 ID") @PathVariable Long postId
     ) {
         return ApiResponse.success(postService.getPostDetail(postId));
     }
 
-    @Operation(summary = "게시글 수정", description = "특정 게시글을 수정합니다.")
+    @Operation(summary = "寃뚯떆湲 ?섏젙", description = "?뱀젙 寃뚯떆湲???섏젙?⑸땲??")
     @ApiResponses({
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "수정 성공"),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "게시글 없음")
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "?섏젙 ?깃났"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "寃뚯떆湲 ?놁쓬")
     })
     @PutMapping("/{postId}")
     public ApiResponse<PostDetailResponse> updatePost(
-        @Parameter(description = "게시글 ID") @PathVariable Long postId,
+        @AuthenticationPrincipal UserPrincipal principal,
+        Authentication authentication,
+        @Parameter(description = "寃뚯떆湲 ID") @PathVariable Long postId,
         @RequestBody UpdatePostRequest request
     ) {
-        return ApiResponse.success(postService.updatePost(postId, request));
+        return ApiResponse.success(
+            postService.updatePost(postId, principal.getUserId(), isAdmin(authentication), request)
+        );
     }
 
-    @Operation(summary = "게시글 삭제", description = "특정 게시글을 삭제합니다.")
+    @Operation(summary = "寃뚯떆湲 ??젣", description = "?뱀젙 寃뚯떆湲????젣?⑸땲??")
     @ApiResponses({
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "삭제 성공"),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "게시글 없음")
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "??젣 ?깃났"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "寃뚯떆湲 ?놁쓬")
     })
     @DeleteMapping("/{postId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePost(
-        @Parameter(description = "게시글 ID") @PathVariable Long postId
+        @AuthenticationPrincipal UserPrincipal principal,
+        Authentication authentication,
+        @Parameter(description = "寃뚯떆湲 ID") @PathVariable Long postId
     ) {
-        postService.deletePost(postId);
+        postService.deletePost(postId, principal.getUserId(), isAdmin(authentication));
+    }
+
+    private boolean isAdmin(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+            .anyMatch(authority -> "ADMIN".equals(authority.getAuthority()));
     }
 }

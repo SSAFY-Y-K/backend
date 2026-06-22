@@ -3,7 +3,6 @@ package com.ssafy.passit.report.service;
 import com.ssafy.passit.common.exception.ApiException;
 import com.ssafy.passit.common.exception.ErrorCode;
 import com.ssafy.passit.problem.mapper.TestCaseMapper;
-import com.ssafy.passit.problem.model.TestCase;
 import com.ssafy.passit.problem.service.ProblemQueryService;
 import com.ssafy.passit.report.dto.ReportRequest;
 import com.ssafy.passit.report.dto.ReportResponse;
@@ -23,14 +22,14 @@ public class ProblemReportService {
     private final TestCaseMapper testCaseMapper;
     private final ProblemQueryService problemQueryService;
 
-    public void report(Long problemId, ReportRequest request) {
+    public void report(Long problemId, Long actorUserId, ReportRequest request) {
         if (request.content() == null || request.content().isBlank()) {
-            throw new ApiException(ErrorCode.INVALID_REQUEST, "신고 내용을 입력해주세요.");
+            throw new ApiException(ErrorCode.INVALID_REQUEST, "?좉퀬 ?댁슜???낅젰?댁＜?몄슂.");
         }
         problemQueryService.getCodingProblem(problemId);
         ProblemReport report = ProblemReport.builder()
             .problemId(problemId)
-            .userId(request.userId())
+            .userId(actorUserId)
             .content(request.content())
             .build();
         reportMapper.insert(report);
@@ -51,7 +50,7 @@ public class ProblemReportService {
     public void resolve(Long reportId) {
         int updated = reportMapper.resolve(reportId);
         if (updated == 0) {
-            throw new ApiException(ErrorCode.INVALID_REQUEST, "신고를 찾을 수 없습니다.");
+            throw new ApiException(ErrorCode.INVALID_REQUEST, "?좉퀬瑜?李얠쓣 ???놁뒿?덈떎.");
         }
     }
 
@@ -63,11 +62,11 @@ public class ProblemReportService {
 
     public void updateTestCase(Long testCaseId, TestCaseUpdateRequest request) {
         if (request.inputData() == null || request.expectedOutput() == null) {
-            throw new ApiException(ErrorCode.INVALID_REQUEST, "inputData와 expectedOutput은 필수입니다.");
+            throw new ApiException(ErrorCode.INVALID_REQUEST, "inputData? expectedOutput? ?꾩닔?낅땲??");
         }
         int updated = testCaseMapper.update(testCaseId, request.inputData(), request.expectedOutput());
         if (updated == 0) {
-            throw new ApiException(ErrorCode.INVALID_REQUEST, "테스트케이스를 찾을 수 없습니다.");
+            throw new ApiException(ErrorCode.INVALID_REQUEST, "?뚯뒪?몄??댁뒪瑜?李얠쓣 ???놁뒿?덈떎.");
         }
     }
 }

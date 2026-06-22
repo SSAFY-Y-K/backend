@@ -31,10 +31,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
         httpSecurity.authorizeHttpRequests(
                 registry -> registry
-                        // 관리자 전용
                         .requestMatchers(HttpMethod.DELETE, "/api/problems/algorithm/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
-                        // 로그인 필요
                         .requestMatchers(HttpMethod.POST, "/api/posts").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/posts/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/posts/**").authenticated()
@@ -42,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/posts/*/comments/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/problems/algorithm/generate").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/problems/*/submissions").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/submissions/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/problems/*/run").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/problems/*/reports").authenticated()
                         .requestMatchers("/api/users/me/**").authenticated()
@@ -49,18 +48,10 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
         );
 
-        httpSecurity.formLogin(
-                AbstractHttpConfigurer::disable
-        );
-        httpSecurity.httpBasic(
-                AbstractHttpConfigurer::disable
-        );
-        httpSecurity.csrf(
-                AbstractHttpConfigurer::disable
-        );
-        httpSecurity.cors(
-                AbstractHttpConfigurer::disable
-        );
+        httpSecurity.formLogin(AbstractHttpConfigurer::disable);
+        httpSecurity.httpBasic(AbstractHttpConfigurer::disable);
+        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+        httpSecurity.cors(AbstractHttpConfigurer::disable);
 
         httpSecurity.addFilterBefore(
                 jwtAuthenticationFilter,
@@ -68,13 +59,8 @@ public class SecurityConfig {
         );
 
         httpSecurity.exceptionHandling(
-                (exception) -> {
-                    exception.authenticationEntryPoint(
-                            jwtAuthenticationEntryPoint
-                    );
-                }
+                (exception) -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
         );
-
 
         return httpSecurity.build();
     }
