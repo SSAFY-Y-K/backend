@@ -63,10 +63,20 @@
 
             <button
               type="submit"
-              class="h-9 w-full rounded-md bg-blue-600 text-xs font-semibold text-white transition hover:bg-blue-700 disabled:bg-gray-400"
+              class="vl-parent relative flex h-9 w-full items-center justify-center overflow-hidden rounded-md bg-blue-600 text-xs font-semibold text-white transition hover:bg-blue-700 disabled:bg-gray-400"
               :disabled="isLoading"
             >
-              <p>{{ isLoading ? "진행중..." : "로그인" }}</p>
+              <p v-if="!isLoading">로그인</p>
+              <Loading
+                v-model:active="isLoading"
+                :is-full-page="false"
+                :can-cancel="false"
+                background-color="transparent"
+                color="#ffffff"
+                :height="18"
+                :width="18"
+                loader="spinner"
+              />
             </button>
             <p v-if="errorField.all" class="mt-1 text-[11px] text-red-500">
               {{ errorField.all }}
@@ -96,6 +106,7 @@ import { useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { ref, useTemplateRef } from "vue";
 import { toast } from "vue3-toastify";
+import { Component as Loading } from "vue-loading-overlay";
 
 const router = useRouter();
 const route = useRoute();
