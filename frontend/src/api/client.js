@@ -1,4 +1,5 @@
 import { useAuthStore } from "@/stores/auth";
+import { normalizeApiText } from "@/utils/text";
 import axios from "axios";
 
 /**
@@ -17,6 +18,16 @@ export const authApi = axios.create({
 	withCredentials: true,
 });
 
+const normalizeResponseData = (response) => {
+	response.data = normalizeApiText(response.data);
+	return response;
+};
+
+publicApi.interceptors.response.use(
+	(response) => normalizeResponseData(response),
+	(error) => Promise.reject(error),
+);
+
 authApi.interceptors.request.use(
 	(config) => {
 		const authStore = useAuthStore();
@@ -30,7 +41,7 @@ authApi.interceptors.request.use(
 );
 
 authApi.interceptors.response.use(
-	(response) => response,
+	(response) => normalizeResponseData(response),
 	async (error) => {
 		const authStore = useAuthStore();
 

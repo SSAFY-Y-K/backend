@@ -1,5 +1,35 @@
 @import "tailwindcss";
 
+html {
+  font-family:
+    "Pretendard Variable",
+    "Pretendard",
+    "Noto Sans KR",
+    "Apple SD Gothic Neo",
+    "Malgun Gothic",
+    "맑은 고딕",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  font-family: inherit;
+}
+
+#app {
+  font-family: inherit;
+}
+
+button,
+input,
+select,
+textarea,
+option {
+  font: inherit;
+}
+
 main {
   font-size: 15px;
 }
