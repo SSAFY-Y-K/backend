@@ -9,7 +9,7 @@
           v-for="tab in tabs"
           :key="tab.id"
           :class="[
-            'px-4 py-1.5 text-xs font-medium transition',
+            'px-4 py-1.5 text-sm font-medium transition',
             activeTab === tab.id
               ? 'bg-blue-600 text-white'
               : 'text-slate-500 hover:bg-slate-50',
@@ -21,7 +21,7 @@
       </div>
 
       <button
-        class="h-7 rounded-md bg-blue-600 px-3 text-xs font-semibold text-white transition hover:bg-blue-700"
+        class="h-7 rounded-md bg-blue-600 px-3 text-sm font-semibold text-white transition hover:bg-blue-700"
         @click="handleWriteClick"
       >
         + 글쓰기
@@ -34,11 +34,11 @@
         v-model="searchInput"
         type="text"
         placeholder="제목 또는 내용 검색"
-        class="h-8 flex-1 rounded-md border border-slate-200 bg-white px-3 text-xs text-slate-700 outline-none focus:border-blue-400"
+        class="h-8 flex-1 rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-blue-400"
         @keydown.enter="handleSearch"
       />
       <button
-        class="h-8 rounded-md bg-slate-100 px-3 text-xs text-slate-600 hover:bg-slate-200"
+        class="h-8 rounded-md bg-slate-100 px-3 text-sm text-slate-600 hover:bg-slate-200"
         @click="handleSearch"
       >
         검색
@@ -46,12 +46,12 @@
     </div>
 
     <!-- 로딩 -->
-    <div v-if="loading" class="py-10 text-center text-xs text-slate-400">
+    <div v-if="loading" class="py-10 text-center text-sm text-slate-400">
       불러오는 중...
     </div>
 
     <!-- 에러 -->
-    <div v-else-if="error" class="py-10 text-center text-xs text-red-400">
+    <div v-else-if="error" class="py-10 text-center text-sm text-red-400">
       {{ error }}
     </div>
 
@@ -59,7 +59,7 @@
     <div v-else class="space-y-2">
       <div
         v-if="filteredPosts.length === 0"
-        class="py-10 text-center text-xs text-slate-400"
+        class="py-10 text-center text-sm text-slate-400"
       >
         게시글이 없습니다.
       </div>
@@ -75,15 +75,15 @@
         "
       >
         <div
-          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-600"
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-600"
         >
           {{ post.title.charAt(0) }}
         </div>
         <div class="min-w-0 flex-1">
-          <p class="text-xs font-semibold leading-snug text-slate-800">
+          <p class="text-sm font-semibold leading-snug text-slate-800">
             {{ post.title }}
           </p>
-          <div class="mt-1 flex items-center gap-3 text-[10px] text-slate-400">
+          <div class="mt-1 flex items-center gap-3 text-xs text-slate-400">
             <span class="font-medium text-slate-500">{{
               post.nickname ?? "알 수 없음"
             }}</span>
@@ -102,7 +102,7 @@
     >
       <button
         :disabled="currentPage === 0"
-        class="h-7 rounded px-2 text-xs text-slate-500 hover:bg-slate-100 disabled:opacity-30"
+        class="h-7 rounded px-2 text-sm text-slate-500 hover:bg-slate-100 disabled:opacity-30"
         @click="goPage(currentPage - 1)"
       >
         ‹
@@ -111,7 +111,7 @@
         v-for="p in totalPages"
         :key="p"
         :class="[
-          'h-7 w-7 rounded text-xs',
+          'h-7 w-7 rounded text-sm',
           currentPage === p - 1
             ? 'bg-blue-600 text-white'
             : 'text-slate-500 hover:bg-slate-100',
@@ -122,7 +122,7 @@
       </button>
       <button
         :disabled="currentPage === totalPages - 1"
-        class="h-7 rounded px-2 text-xs text-slate-500 hover:bg-slate-100 disabled:opacity-30"
+        class="h-7 rounded px-2 text-sm text-slate-500 hover:bg-slate-100 disabled:opacity-30"
         @click="goPage(currentPage + 1)"
       >
         ›
@@ -140,7 +140,7 @@
         <div
           class="flex items-center justify-between border-b border-slate-100 px-5 py-3"
         >
-          <h3 class="text-sm font-bold text-slate-700">새 글 작성</h3>
+          <h3 class="text-base font-bold text-slate-700">새 글 작성</h3>
           <button
             class="text-slate-400 hover:text-slate-600"
             @click="closeForm"
@@ -151,7 +151,7 @@
         <div class="space-y-3 p-5">
           <select
             v-model="form.category"
-            class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 outline-none focus:border-blue-400"
+            class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 outline-none focus:border-blue-400"
           >
             <option value="">카테고리 선택</option>
             <option value="REVIEW">합격후기</option>
@@ -162,24 +162,24 @@
             v-model="form.title"
             type="text"
             placeholder="제목"
-            class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 outline-none focus:border-blue-400"
+            class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 outline-none focus:border-blue-400"
           />
           <textarea
             v-model="form.content"
             rows="6"
             placeholder="내용을 입력하세요"
-            class="w-full resize-none rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 outline-none focus:border-blue-400"
+            class="w-full resize-none rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none focus:border-blue-400"
           ></textarea>
         </div>
         <div class="flex justify-end gap-2 border-t border-slate-100 px-5 py-3">
           <button
-            class="h-8 rounded-md border border-slate-200 px-4 text-xs text-slate-600 hover:bg-slate-50"
+            class="h-8 rounded-md border border-slate-200 px-4 text-sm text-slate-600 hover:bg-slate-50"
             @click="closeForm"
           >
             취소
           </button>
           <button
-            class="h-8 rounded-md bg-blue-600 px-4 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+            class="h-8 rounded-md bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
             :disabled="submitting"
             @click="submitPost"
           >

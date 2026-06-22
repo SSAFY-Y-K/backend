@@ -1,19 +1,19 @@
 <template>
   <section class="min-h-full p-4">
     <button
-      class="mb-4 text-xs text-slate-400 transition hover:text-slate-600"
+      class="mb-4 text-sm text-slate-400 transition hover:text-slate-600"
       @click="$router.push({ name: 'community' })"
     >
       ← 목록으로
     </button>
 
     <!-- 로딩 -->
-    <div v-if="loading" class="py-10 text-center text-xs text-slate-400">
+    <div v-if="loading" class="py-10 text-center text-sm text-slate-400">
       불러오는 중...
     </div>
 
     <!-- 에러 -->
-    <div v-else-if="error" class="py-10 text-center text-xs text-red-400">
+    <div v-else-if="error" class="py-10 text-center text-sm text-red-400">
       {{ error }}
     </div>
 
@@ -23,18 +23,18 @@
         <!-- 카테고리 + 제목 -->
         <div class="mb-3">
           <span
-            class="rounded-full border border-blue-200 px-2 py-0.5 text-[10px] font-medium text-blue-600"
+            class="rounded-full border border-blue-200 px-2 py-0.5 text-xs font-medium text-blue-600"
           >
             {{ categoryLabel(post.category) }}
           </span>
-          <h2 class="mt-2 text-base font-bold text-slate-800">
+          <h2 class="mt-2 text-lg font-bold text-slate-800">
             {{ post.title }}
           </h2>
         </div>
 
         <!-- 메타 -->
         <div
-          class="mb-4 flex items-center gap-3 border-b border-slate-100 pb-3 text-[10px] text-slate-400"
+          class="mb-4 flex items-center gap-3 border-b border-slate-100 pb-3 text-xs text-slate-400"
         >
           <span class="font-medium text-slate-500">{{
             post.nickname ?? "알 수 없음"
@@ -44,7 +44,7 @@
         </div>
 
         <!-- 본문 -->
-        <p class="whitespace-pre-wrap text-xs leading-relaxed text-slate-700">
+        <p class="whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
           {{ post.content }}
         </p>
       </div>
@@ -55,13 +55,13 @@
         class="flex justify-end gap-2"
       >
         <button
-          class="h-8 rounded-md border border-slate-200 px-4 text-xs text-slate-600 hover:bg-slate-50"
+          class="h-8 rounded-md border border-slate-200 px-4 text-sm text-slate-600 hover:bg-slate-50"
           @click="startEdit"
         >
           수정
         </button>
         <button
-          class="h-8 rounded-md border border-red-200 px-4 text-xs text-red-500 hover:bg-red-50"
+          class="h-8 rounded-md border border-red-200 px-4 text-sm text-red-500 hover:bg-red-50"
           @click="handleDelete"
         >
           삭제
@@ -70,7 +70,7 @@
 
       <!-- 댓글 섹션 -->
       <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-        <h3 class="mb-3 text-xs font-bold text-slate-700">
+        <h3 class="mb-3 text-sm font-bold text-slate-700">
           댓글 {{ comments.length }}
         </h3>
 
@@ -78,7 +78,7 @@
         <div class="space-y-3">
           <div
             v-if="comments.length === 0"
-            class="py-4 text-center text-xs text-slate-400"
+            class="py-4 text-center text-sm text-slate-400"
           >
             첫 번째 댓글을 남겨보세요
           </div>
@@ -88,27 +88,27 @@
             class="flex items-start gap-2"
           >
             <div
-              class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-500"
+              class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-500"
             >
               {{ (c.nickname ?? "?").charAt(0) }}
             </div>
             <div class="flex-1">
               <div class="flex items-center gap-2">
-                <span class="text-[11px] font-semibold text-slate-700">{{
+                <span class="text-sm font-semibold text-slate-700">{{
                   c.nickname ?? "알 수 없음"
                 }}</span>
-                <span class="text-[10px] text-slate-400">{{
+                <span class="text-xs text-slate-400">{{
                   formatDate(c.createdAt)
                 }}</span>
                 <button
                   v-if="c.userId === authStore.userId || authStore.isAdmin"
-                  class="ml-auto text-[10px] text-slate-400 hover:text-red-400"
+                  class="ml-auto text-xs text-slate-400 hover:text-red-400"
                   @click="handleDeleteComment(c.commentId)"
                 >
                   삭제
                 </button>
               </div>
-              <p class="mt-0.5 text-xs text-slate-600">{{ c.content }}</p>
+              <p class="mt-0.5 text-sm text-slate-600">{{ c.content }}</p>
             </div>
           </div>
         </div>
@@ -122,11 +122,11 @@
             v-model="commentInput"
             type="text"
             placeholder="댓글을 입력하세요"
-            class="h-8 flex-1 rounded-md border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 outline-none focus:border-blue-400"
+            class="h-8 flex-1 rounded-md border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 outline-none focus:border-blue-400"
             @keydown.enter="submitComment"
           />
           <button
-            class="h-8 rounded-md bg-blue-600 px-3 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+            class="h-8 rounded-md bg-blue-600 px-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
             :disabled="commentSubmitting"
             @click="submitComment"
           >
@@ -135,7 +135,7 @@
         </div>
         <p
           v-else
-          class="mt-3 border-t border-slate-100 pt-3 text-center text-[10px] text-slate-400"
+          class="mt-3 border-t border-slate-100 pt-3 text-center text-xs text-slate-400"
         >
           댓글을 작성하려면
           <RouterLink to="/login" class="text-blue-500">로그인</RouterLink>이
@@ -155,7 +155,7 @@
         <div
           class="flex items-center justify-between border-b border-slate-100 px-5 py-3"
         >
-          <h3 class="text-sm font-bold text-slate-700">게시글 수정</h3>
+          <h3 class="text-base font-bold text-slate-700">게시글 수정</h3>
           <button
             class="text-slate-400 hover:text-slate-600"
             @click="showEditForm = false"
@@ -166,7 +166,7 @@
         <div class="space-y-3 p-5">
           <select
             v-model="editForm.category"
-            class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 outline-none focus:border-blue-400"
+            class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 outline-none focus:border-blue-400"
           >
             <option value="REVIEW">합격후기</option>
             <option value="TIP">공부팁</option>
@@ -175,23 +175,23 @@
           <input
             v-model="editForm.title"
             type="text"
-            class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 outline-none focus:border-blue-400"
+            class="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 outline-none focus:border-blue-400"
           />
           <textarea
             v-model="editForm.content"
             rows="6"
-            class="w-full resize-none rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 outline-none focus:border-blue-400"
+            class="w-full resize-none rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none focus:border-blue-400"
           ></textarea>
         </div>
         <div class="flex justify-end gap-2 border-t border-slate-100 px-5 py-3">
           <button
-            class="h-8 rounded-md border border-slate-200 px-4 text-xs text-slate-600 hover:bg-slate-50"
+            class="h-8 rounded-md border border-slate-200 px-4 text-sm text-slate-600 hover:bg-slate-50"
             @click="showEditForm = false"
           >
             취소
           </button>
           <button
-            class="h-8 rounded-md bg-blue-600 px-4 text-xs font-semibold text-white hover:bg-blue-700"
+            class="h-8 rounded-md bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700"
             @click="handleUpdate"
           >
             저장

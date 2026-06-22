@@ -1,1 +1,49 @@
 @import "tailwindcss";
+
+main {
+  font-size: 15px;
+}
+
+main :where(.text-xs) {
+  font-size: 0.8125rem;
+  line-height: 1.15rem;
+}
+
+main :where(.text-sm) {
+  font-size: 0.9375rem;
+  line-height: 1.4rem;
+}
+
+main :where([class~="text-[10px]"]) {
+  font-size: 0.6875rem;
+  line-height: 0.95rem;
+}
+
+main :where([class~="text-[11px]"]) {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+main :where(.border-slate-100) {
+  border-color: #dbe3ee;
+}
+
+main :where(.border-slate-200) {
+  border-color: #cbd5e1;
+}
+
+main :where(.border-blue-100) {
+  border-color: #bfdbfe;
+}
+
+main :where(.border-emerald-100) {
+  border-color: #a7f3d0;
+}
+
+main :where(.border-red-100) {
+  border-color: #fecaca;
+}
+
+main :where(.border-orange-100) {
+  border-color: #fed7aa;
+}
