@@ -24,7 +24,7 @@ certificationStore.initCertifications();
 app.use(router);
 
 app.use(Vue3Toastify, {
-  autoClose: 3_000,
+  autoClose: 1_500,
   position: "top-center",
   closeOnClick: true,
   pauseOnHover: false,
