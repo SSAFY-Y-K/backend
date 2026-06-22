@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class BasicProblemService implements ProblemService {
 
-    private static final long PAGE_SIZE = 10;
+    private static final long PAGE_SIZE = 9;
 
     private final ExternalServerClient client;
     private final ProblemRepository problemRepository;

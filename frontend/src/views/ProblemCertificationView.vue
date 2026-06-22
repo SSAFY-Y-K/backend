@@ -1,79 +1,189 @@
 <template>
-	<div>
-		<div class="mb-4">
-			<select class="h-7 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-600 outline-none focus:border-blue-400">
-				<option value="">전체 자격증</option>
-				<option>정보처리기사</option>
-				<option>AWS SA</option>
-				<option>SQLD</option>
-				<option>정보보안기사</option>
-			</select>
-		</div>
+  <div>
+    <div class="mb-4">
+      <select
+        class="h-7 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-600 outline-none focus:border-blue-400"
+        v-model="search"
+        @change="onChange"
+      >
+        <option value="all" selected>전체 자격증</option>
+        <option
+          v-for="certification in certificationStore.getCertifications()"
+          :key="certification.certId"
+          :value="certification.certId"
+        >
+          {{ certification.name }}
+        </option>
+      </select>
+    </div>
 
-		<div class="mb-3 grid grid-cols-3 gap-3">
-			<div
-				v-for="card in featuredCards"
-				:key="card.id"
-				class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:shadow-md"
-			>
-				<div class="border-b border-slate-100 p-3">
-					<h3 class="text-xs font-bold text-slate-800">{{ card.title }}</h3>
-					<p class="mt-0.5 text-[10px] text-slate-400">{{ card.cert }}</p>
-				</div>
-				<div class="flex items-center justify-between p-2.5">
-					<span class="flex items-center gap-1 text-[10px] text-slate-500">
-						<span :class="['h-1.5 w-1.5 rounded-full', card.dotColor]"></span>
-						{{ card.type }}
-					</span>
-					<RouterLink
-						:to="{ name: 'problem-detail', params: { id: card.id } }"
-						class="rounded border border-blue-200 px-2 py-0.5 text-[10px] text-blue-600 no-underline transition hover:bg-blue-50"
-					>
-						풀기
-					</RouterLink>
-				</div>
-			</div>
-		</div>
+    <div class="vl-parent relative min-h-60">
+      <Loading
+        v-model:active="isLoading"
+        :is-full-page="false"
+        :can-cancel="false"
+        :opacity="0.45"
+        color="#2563eb"
+        :height="48"
+        :width="48"
+        loader="spinner"
+      />
 
-		<div class="grid grid-cols-3 gap-3">
-			<div
-				v-for="card in normalCards"
-				:key="card.id"
-				class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:shadow-md"
-			>
-				<div class="border-b border-slate-100 p-3">
-					<h3 class="text-xs font-bold text-slate-800">{{ card.title }}</h3>
-					<p class="mt-0.5 text-[10px] text-slate-400">{{ card.cert }}</p>
-					<p class="mt-1 text-[10px] leading-relaxed text-slate-500 line-clamp-2">{{ card.description }}</p>
-				</div>
-				<div class="flex items-center justify-between p-2.5">
-					<span :class="['rounded px-1.5 py-0.5 text-[10px] font-bold text-white', levelColor[card.level]]">
-						{{ card.level }}
-					</span>
-					<RouterLink
-						:to="{ name: 'problem-detail', params: { id: card.id } }"
-						class="rounded border border-blue-200 px-2 py-0.5 text-[10px] text-blue-600 no-underline transition hover:bg-blue-50"
-					>
-						풀기
-					</RouterLink>
-				</div>
-			</div>
-		</div>
-	</div>
+      <div class="mb-3 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div
+          v-for="problem in problems"
+          :key="problem.problemId"
+          class="group flex min-h-44 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm ring-1 ring-slate-100 transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-100/60"
+        >
+          <div
+            class="relative flex flex-1 flex-col justify-between overflow-hidden bg-linear-to-br from-blue-50 via-white to-sky-50 p-4"
+          >
+            <div
+              class="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-blue-100/70 transition group-hover:scale-110"
+            ></div>
+            <div
+              class="absolute right-9 top-9 h-10 w-10 rounded-full bg-white/70"
+            ></div>
+
+            <div class="relative flex items-start justify-between gap-3">
+              <span
+                class="rounded-full border border-blue-100 bg-white/80 px-2.5 py-1 text-[11px] font-semibold text-blue-600 shadow-sm"
+              >
+                {{ getCertificationName(problem) }}
+              </span>
+              <span class="text-[10px] font-semibold text-slate-300">
+                #{{ problem.problemId }}
+              </span>
+            </div>
+
+            <h3
+              class="relative mt-6 line-clamp-2 text-sm font-bold leading-5 text-slate-800"
+            >
+              {{ problem.problemTitle }}
+            </h3>
+          </div>
+          <div
+            class="flex items-center justify-between border-t border-slate-100 p-3"
+          >
+            <span
+              :class="[
+                'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold',
+                problemTypeBadgeClasses[problem.problemType] ??
+                  'border-slate-100 bg-slate-50 text-slate-500',
+              ]"
+            >
+              <span
+                :class="[
+                  'h-1.5 w-1.5 rounded-full',
+                  problemTypeDotClasses[problem.problemType] ?? 'bg-slate-400',
+                ]"
+              ></span>
+              {{
+                problemTypeLabels[problem.problemType] ?? problem.problemType
+              }}
+            </span>
+            <RouterLink
+              :to="{
+                name: 'problem-detail',
+                params: { id: problem.problemId },
+              }"
+              class="rounded-md bg-blue-600 px-3 py-1.5 text-[10px] font-semibold text-white no-underline transition hover:bg-blue-700"
+            >
+              풀기
+            </RouterLink>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="!isLast" class="mt-5 flex justify-center">
+        <button
+          @click="fetchProblems"
+          type="button"
+          class="rounded-md border border-blue-200 bg-white px-4 py-2 text-xs font-semibold text-blue-600 transition hover:-translate-y-0.5 hover:border-blue-400 hover:bg-blue-50 hover:shadow-md disabled:bg-slate-200 hover:shadow-blue-100"
+          :disabled="isLoading"
+        >
+          더보기
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-const levelColor = { 초급: "bg-emerald-500", 중급: "bg-orange-500", 상급: "bg-red-500" };
+import { publicApi } from "@/api/client";
+import { useCertificationStore } from "@/stores/certification";
+import { onMounted, ref } from "vue";
+import { Component as Loading } from "vue-loading-overlay";
 
-const featuredCards = [
-	{ id: 1, title: "데이터베이스 정규화 개념", cert: "정보처리기사", type: "객관식", dotColor: "bg-blue-400" },
-	{ id: 2, title: "AWS VPC 구성 설계", cert: "AWS SA", type: "객관식", dotColor: "bg-green-400" },
-	{ id: 3, title: "SQL 집계 함수 활용", cert: "SQLD", type: "주관식", dotColor: "bg-orange-400" },
-];
+const certificationStore = useCertificationStore();
 
-const normalCards = [
-	{ id: 4, title: "운영체제 프로세스 관리", cert: "정보처리기사", level: "초급", description: "프로세스 스케줄링 및 동기화 관련 문제입니다." },
-	{ id: 5, title: "EC2 인스턴스 유형 선택", cert: "AWS SA", level: "중급", description: "워크로드별 EC2 인스턴스 유형 선택 기준을 묻는 문제입니다." },
-	{ id: 6, title: "네트워크 보안 프로토콜", cert: "정보보안기사", level: "상급", description: "TLS/SSL 핸드셰이크 과정과 보안 취약점 관련 문제입니다." },
-];
+const isLoading = ref(false);
+
+// 페이징 용
+const minProblemId = ref(null);
+
+const search = ref("all");
+
+const problems = ref([]);
+
+const isLast = ref(false);
+
+const problemTypeLabels = {
+  MULTIPLE_CHOICE: "객관식",
+  SHORT_ANSWER: "주관식",
+};
+
+const problemTypeBadgeClasses = {
+  MULTIPLE_CHOICE: "border-blue-100 bg-blue-50 text-blue-600",
+  SHORT_ANSWER: "border-emerald-100 bg-emerald-50 text-emerald-600",
+};
+
+const problemTypeDotClasses = {
+  MULTIPLE_CHOICE: "bg-blue-500",
+  SHORT_ANSWER: "bg-emerald-500",
+};
+
+const getCertificationName = (problem) => {
+  return (
+    certificationStore
+      .getCertifications()
+      .find((certification) => certification.certId === problem.certId)?.name ??
+    "자격증 문제"
+  );
+};
+
+const fetchProblems = async () => {
+  isLoading.value = true;
+  try {
+    const response = await publicApi("/problem", {
+      params: {
+        cert_id: search.value === "all" ? null : search.value,
+        problem_id: minProblemId.value,
+      },
+    });
+
+    const findProblems = response.data?.problems ?? [];
+    if (findProblems.length > 0) {
+      minProblemId.value = Math.min(
+        ...findProblems.map((problem) => problem.problemId),
+      );
+      problems.value.push(...findProblems);
+    }
+    isLast.value = response.data?.isLast ?? false;
+  } catch (error) {
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(async () => {
+  await fetchProblems();
+});
+
+const onChange = async () => {
+  isLast.value = false;
+  minProblemId.value = null;
+  problems.value = [];
+  await fetchProblems();
+};
 </script>

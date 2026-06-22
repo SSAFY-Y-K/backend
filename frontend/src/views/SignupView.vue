@@ -149,7 +149,7 @@
 </template>
 
 <script setup>
-import axios from "axios";
+import { publicApi } from "@/api/client";
 import { ref, useTemplateRef } from "vue";
 import { useRouter } from "vue-router";
 import { toast } from "vue3-toastify";
@@ -237,7 +237,7 @@ const onSubmit = async () => {
 
   try {
     isLoading.value = true;
-    await axios.post("/api/users/signup", form.value);
+    await publicApi.post("/users/signup", form.value);
     toast.success("회원가입이 완료되었습니다.");
     router.push({
       name: "login",
