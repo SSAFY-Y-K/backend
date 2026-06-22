@@ -28,6 +28,7 @@ app.use(Vue3Toastify, {
   position: "top-center",
   closeOnClick: true,
   pauseOnHover: false,
+  hideProgressBar: true,
 });
 
 app.mount("#app");
