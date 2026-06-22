@@ -10,6 +10,7 @@ import com.ssafy.passit.post.dto.UpdatePostRequest;
 import com.ssafy.passit.post.mapper.PostMapper;
 import com.ssafy.passit.post.model.Post;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,11 +24,12 @@ public class PostService {
     private final PostMapper postMapper;
 
     @Transactional
-    public PostDetailResponse createPost(CreatePostRequest request) {
-        log.info("Post creation requested. userId={}, certId={}, category={}",
-            request.userId(), request.certId(), request.category());
+    public PostDetailResponse createPost(Long actorUserId, CreatePostRequest request) {
+        log.info("Post creation requested. actorUserId={}, certId={}, category={}",
+            actorUserId, request.certId(), request.category());
+
         Post post = Post.builder()
-            .userId(request.userId())
+            .userId(actorUserId)
             .certId(request.certId())
             .category(request.category())
             .title(request.title())
@@ -59,23 +61,44 @@ public class PostService {
     }
 
     @Transactional
-    public PostDetailResponse updatePost(Long postId, UpdatePostRequest request) {
-        log.info("Post update requested. postId={}, category={}", postId, request.category());
+    public PostDetailResponse updatePost(
+        Long postId,
+        Long actorUserId,
+        boolean isAdmin,
+        UpdatePostRequest request
+    ) {
+        log.info("Post update requested. postId={}, actorUserId={}, category={}",
+            postId, actorUserId, request.category());
+
         Post post = findById(postId);
+        validateOwnerOrAdmin(
+            post.getUserId(),
+            actorUserId,
+            isAdmin,
+            "Only the owner or an admin can update this post."
+        );
+
         post.setCategory(request.category());
         post.setTitle(request.title());
         post.setContent(request.content());
 
         postMapper.updatePost(post);
-        log.info("Post updated. postId={}", postId);
+        log.info("Post updated. postId={}, actorUserId={}", postId, actorUserId);
         return PostDetailResponse.from(findById(postId));
     }
 
     @Transactional
-    public void deletePost(Long postId) {
-        findById(postId);
+    public void deletePost(Long postId, Long actorUserId, boolean isAdmin) {
+        Post post = findById(postId);
+        validateOwnerOrAdmin(
+            post.getUserId(),
+            actorUserId,
+            isAdmin,
+            "Only the owner or an admin can delete this post."
+        );
+
         postMapper.deletePost(postId);
-        log.info("Post deleted. postId={}", postId);
+        log.info("Post deleted. postId={}, actorUserId={}", postId, actorUserId);
     }
 
     private Post findById(Long postId) {
@@ -85,5 +108,19 @@ public class PostService {
             throw new ApiException(ErrorCode.POST_NOT_FOUND);
         }
         return post;
+    }
+
+    private void validateOwnerOrAdmin(
+        Long ownerUserId,
+        Long actorUserId,
+        boolean isAdmin,
+        String message
+    ) {
+        if (isAdmin) {
+            return;
+        }
+        if (!Objects.equals(ownerUserId, actorUserId)) {
+            throw new ApiException(ErrorCode.FORBIDDEN, message);
+        }
     }
 }

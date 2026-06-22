@@ -7,6 +7,7 @@ import com.ssafy.passit.post.dto.CreateCommentRequest;
 import com.ssafy.passit.post.mapper.CommentMapper;
 import com.ssafy.passit.post.model.Comment;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,10 +25,10 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResponse createComment(Long postId, CreateCommentRequest request) {
+    public CommentResponse createComment(Long postId, Long actorUserId, CreateCommentRequest request) {
         Comment comment = Comment.builder()
                 .postId(postId)
-                .userId(request.userId())
+                .userId(actorUserId)
                 .content(request.content())
                 .build();
         commentMapper.insertComment(comment);
@@ -35,9 +36,31 @@ public class CommentService {
     }
 
     @Transactional
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long commentId, Long actorUserId, boolean isAdmin) {
         Comment comment = commentMapper.findById(commentId);
-        if (comment == null) throw new ApiException(ErrorCode.POST_NOT_FOUND, "댓글을 찾을 수 없습니다.");
+        if (comment == null) {
+            throw new ApiException(ErrorCode.POST_NOT_FOUND, "?볤???李얠쓣 ???놁뒿?덈떎.");
+        }
+        validateOwnerOrAdmin(
+                comment.getUserId(),
+                actorUserId,
+                isAdmin,
+                "Only the owner or an admin can delete this comment."
+        );
         commentMapper.deleteComment(commentId);
+    }
+
+    private void validateOwnerOrAdmin(
+            Long ownerUserId,
+            Long actorUserId,
+            boolean isAdmin,
+            String message
+    ) {
+        if (isAdmin) {
+            return;
+        }
+        if (!Objects.equals(ownerUserId, actorUserId)) {
+            throw new ApiException(ErrorCode.FORBIDDEN, message);
+        }
     }
 }
