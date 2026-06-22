@@ -3,7 +3,7 @@
     <div class="mb-4">
       <select
         class="h-7 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-600 outline-none focus:border-blue-400"
-        v-model="search"
+        v-model="searchCertification"
         @change="onChange"
       >
         <option value="all" selected>전체 자격증</option>
@@ -123,7 +123,7 @@ const isLoading = ref(false);
 // 페이징 용
 const minProblemId = ref(null);
 
-const search = ref("all");
+const searchCertification = ref("all");
 
 const problems = ref([]);
 
@@ -158,16 +158,17 @@ const fetchProblems = async () => {
   try {
     const response = await publicApi("/problem", {
       params: {
-        cert_id: search.value === "all" ? null : search.value,
+        cert_id:
+          searchCertification.value === "all"
+            ? null
+            : searchCertification.value,
         problem_id: minProblemId.value,
       },
     });
 
     const findProblems = response.data?.problems ?? [];
     if (findProblems.length > 0) {
-      minProblemId.value = Math.min(
-        ...findProblems.map((problem) => problem.problemId),
-      );
+      minProblemId.value = response.data?.minProblemId ?? minProblemId.value;
       problems.value.push(...findProblems);
     }
     isLast.value = response.data?.isLast ?? false;

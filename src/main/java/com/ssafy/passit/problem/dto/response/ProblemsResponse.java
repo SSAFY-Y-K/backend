@@ -24,4 +24,7 @@ public class ProblemsResponse {
 
     @Schema(description = "마지막 페이지인지")
     private Boolean isLast;
+
+    @Schema(description = "조회한 문제 중 가장 작은 id")
+    private Long minProblemId;
 }

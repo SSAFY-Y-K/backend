@@ -111,11 +111,14 @@ public class BasicProblemService implements ProblemService {
     @Override
     public ProblemsResponse findProblems(@Nullable Long certId, @Nullable Long problemId) {
         var problems = problemRepository.findProblems(certId, problemId, PAGE_SIZE);
+        Long minProblemId = problems.stream().map(ProblemEntity::getProblemId).min(Long::compareTo)
+                .orElse(0L);
         boolean isLast = problems.size() < PAGE_SIZE;
 
         return ProblemsResponse.builder()
                 .problems(problems)
                 .isLast(isLast)
+                .minProblemId(minProblemId)
                 .build();
     }
 
