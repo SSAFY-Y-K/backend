@@ -7,6 +7,7 @@ import { useAuthStore } from "./stores/auth.js";
 import { useCertificationStore } from "./stores/certification.js";
 import Vue3Toastify from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
+import "vue-loading-overlay/dist/css/index.css";
 
 const app = createApp(App);
 
