@@ -118,11 +118,13 @@ const router = createRouter({
 });
 
 import { useAuthStore } from "@/stores/auth";
+import { toast } from "vue3-toastify";
 
 router.beforeEach((to) => {
   if (to.meta.requiresAuth) {
     const authStore = useAuthStore();
     if (!authStore.hasAccessToken) {
+      toast.error("로그인이 필요한 서비스입니다.");
       return { name: "login", query: { redirect: to.fullPath } };
     }
   }
