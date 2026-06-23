@@ -148,10 +148,10 @@
       </div>
 
       <!-- ── 최근 문제 ───────────────────────────────────────── -->
-      <div class="grid gap-5 lg:grid-cols-[1.3fr_1fr]">
+      <div class="grid items-stretch gap-5 sm:grid-cols-2">
 
         <!-- 자격증 -->
-        <section class="animate-fade-in-up overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm" style="animation-delay:380ms">
+        <section class="animate-fade-in-up flex h-full flex-col overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm" style="animation-delay:380ms">
           <div class="flex items-center justify-between border-b border-slate-100 bg-gradient-to-r from-blue-50/60 to-transparent px-4 py-3">
             <div class="flex items-center gap-2.5">
               <div class="h-4 w-1 rounded-full bg-blue-500"></div>
@@ -164,10 +164,10 @@
               전체 보기
             </RouterLink>
           </div>
-          <div v-if="recentCertificationProblems.length === 0" class="px-4 py-10 text-center text-xs text-slate-400">
+          <div v-if="recentCertificationProblems.length === 0" class="flex flex-1 items-center justify-center px-4 py-10 text-center text-xs text-slate-400">
             등록된 자격증 문제가 없습니다.
           </div>
-          <div v-else class="divide-y divide-slate-50">
+          <div v-else class="flex-1 divide-y divide-slate-50">
             <RouterLink
               v-for="(problem, i) in recentCertificationProblems"
               :key="`cert-${problem.problemId}`"
@@ -195,7 +195,7 @@
         </section>
 
         <!-- 코딩 -->
-        <section class="animate-fade-in-up overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm" style="animation-delay:460ms">
+        <section class="animate-fade-in-up flex h-full flex-col overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm" style="animation-delay:460ms">
           <div class="flex items-center justify-between border-b border-slate-100 bg-gradient-to-r from-purple-50/60 to-transparent px-4 py-3">
             <div class="flex items-center gap-2.5">
               <div class="h-4 w-1 rounded-full bg-purple-500"></div>
@@ -208,10 +208,10 @@
               전체 보기
             </RouterLink>
           </div>
-          <div v-if="recentCodingProblems.length === 0" class="px-4 py-10 text-center text-xs text-slate-400">
+          <div v-if="recentCodingProblems.length === 0" class="flex flex-1 items-center justify-center px-4 py-10 text-center text-xs text-slate-400">
             등록된 코딩 문제가 없습니다.
           </div>
-          <div v-else class="divide-y divide-slate-50">
+          <div v-else class="flex-1 divide-y divide-slate-50">
             <RouterLink
               v-for="(problem, i) in recentCodingProblems"
               :key="`coding-${problem.problemId}`"
