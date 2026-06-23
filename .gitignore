@@ -26,6 +26,8 @@ frontend/.vite/
 
 # Environment
 .env
+.env.aws
+.env.images*
 .env.local
 .env.*.local
 

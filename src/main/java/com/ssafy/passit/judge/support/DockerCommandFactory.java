@@ -4,6 +4,7 @@ import com.ssafy.passit.judge.dto.ExecutionRequest;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -11,6 +12,19 @@ public class DockerCommandFactory {
 
     private static final String WORKSPACE_DIR = "/workspace";
     public static final String EXEC_TIME_MARKER = "__PASSIT_EXEC_MS__";
+    private final String pythonImage;
+    private final String javaImage;
+    private final String cppImage;
+
+    public DockerCommandFactory(
+        @Value("${judge.image.python:python:3.11-slim}") String pythonImage,
+        @Value("${judge.image.java:eclipse-temurin:21}") String javaImage,
+        @Value("${judge.image.cpp:gcc:13}") String cppImage
+    ) {
+        this.pythonImage = pythonImage;
+        this.javaImage = javaImage;
+        this.cppImage = cppImage;
+    }
 
     public List<String> buildPythonCommand(ExecutionRequest request, Path workspace) {
         String timeArg = toTimeoutArg(request.timeLimitMs());
@@ -21,7 +35,7 @@ public class DockerCommandFactory {
             "END=$(date +%s%N); " +
             "echo '" + EXEC_TIME_MARKER + "'$(( (END-START)/1000000 )) >&2; " +
             "if [ $ec -eq 124 ]; then exit 124; fi; exit $ec";
-        return buildBaseCommand(request, workspace, "python:3.11-slim", List.of("sh", "-c", script));
+        return buildBaseCommand(request, workspace, pythonImage, List.of("sh", "-c", script));
     }
 
     public List<String> buildJavaCommand(ExecutionRequest request, Path workspace) {
@@ -34,7 +48,7 @@ public class DockerCommandFactory {
             "END=$(date +%s%N); " +
             "echo '" + EXEC_TIME_MARKER + "'$(( (END-START)/1000000 )) >&2; " +
             "if [ $ec -eq 124 ]; then exit 124; fi; exit $ec";
-        return buildBaseCommand(request, workspace, "eclipse-temurin:21", List.of("sh", "-c", script));
+        return buildBaseCommand(request, workspace, javaImage, List.of("sh", "-c", script));
     }
 
     public List<String> buildCppCommand(ExecutionRequest request, Path workspace) {
@@ -47,7 +61,7 @@ public class DockerCommandFactory {
             "END=$(date +%s%N); " +
             "echo '" + EXEC_TIME_MARKER + "'$(( (END-START)/1000000 )) >&2; " +
             "if [ $ec -eq 124 ]; then exit 124; fi; exit $ec";
-        return buildBaseCommand(request, workspace, "gcc:13", List.of("sh", "-c", script));
+        return buildBaseCommand(request, workspace, cppImage, List.of("sh", "-c", script));
     }
 
     private String toTimeoutArg(Integer timeLimitMs) {

@@ -6,17 +6,26 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class WorkspaceManager {
 
     private static final String ROOT_DIR = "passit-judge";
+    private final Path rootDirectory;
+
+    public WorkspaceManager(@Value("${judge.workspace-root:}") String configuredRoot) {
+        if (configuredRoot != null && !configuredRoot.isBlank()) {
+            this.rootDirectory = Path.of(configuredRoot);
+            return;
+        }
+        this.rootDirectory = Path.of(System.getProperty("java.io.tmpdir"), ROOT_DIR);
+    }
 
     public Path createWorkspace(String key, LanguageType language) throws IOException {
-        Path root = Path.of(System.getProperty("java.io.tmpdir"), ROOT_DIR);
-        Files.createDirectories(root);
-        Path workspace = root.resolve(key + "-" + language.name().toLowerCase());
+        Files.createDirectories(rootDirectory);
+        Path workspace = rootDirectory.resolve(key + "-" + language.name().toLowerCase());
         deleteWorkspace(workspace);
         return Files.createDirectories(workspace);
     }

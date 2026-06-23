@@ -1,0 +1,97 @@
+name: Build And Deploy Backend Images To EC2
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  BACKEND_ECR_REPOSITORY: passit-backend
+  FRONTEND_ECR_REPOSITORY: passit-frontend
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Ensure ECR repositories exist
+        run: |
+          aws ecr describe-repositories --repository-names "$BACKEND_ECR_REPOSITORY" >/dev/null 2>&1 || \
+            aws ecr create-repository --repository-name "$BACKEND_ECR_REPOSITORY" --image-scanning-configuration scanOnPush=true
+          aws ecr describe-repositories --repository-names "$FRONTEND_ECR_REPOSITORY" >/dev/null 2>&1 || \
+            aws ecr create-repository --repository-name "$FRONTEND_ECR_REPOSITORY" --image-scanning-configuration scanOnPush=true
+
+      - name: Build and push backend image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t "$REGISTRY/$BACKEND_ECR_REPOSITORY:$IMAGE_TAG" -t "$REGISTRY/$BACKEND_ECR_REPOSITORY:latest" .
+          docker push "$REGISTRY/$BACKEND_ECR_REPOSITORY:$IMAGE_TAG"
+          docker push "$REGISTRY/$BACKEND_ECR_REPOSITORY:latest"
+
+      - name: Build and push frontend image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t "$REGISTRY/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG" -t "$REGISTRY/$FRONTEND_ECR_REPOSITORY:latest" ./frontend
+          docker push "$REGISTRY/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG"
+          docker push "$REGISTRY/$FRONTEND_ECR_REPOSITORY:latest"
+
+      - name: Prepare SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Prepare remote directories
+        run: |
+          ssh -i ~/.ssh/id_rsa "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" \
+            "mkdir -p '${{ secrets.EC2_DEPLOY_ROOT }}/backend/scripts' '/opt/passit/ai/chroma_db' '/opt/passit/judge-workspaces'"
+
+      - name: Upload deployment assets
+        run: |
+          scp -i ~/.ssh/id_rsa docker-compose.aws.yml "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ secrets.EC2_DEPLOY_ROOT }}/backend/docker-compose.aws.yml"
+          scp -i ~/.ssh/id_rsa scripts/deploy-stack.sh "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ secrets.EC2_DEPLOY_ROOT }}/backend/scripts/deploy-stack.sh"
+
+      - name: Update backend image tags on EC2
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          ssh -i ~/.ssh/id_rsa "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" "cat > '${{ secrets.EC2_DEPLOY_ROOT }}/backend/.env.images.backend' <<'EOF'
+BACKEND_IMAGE=$REGISTRY/$BACKEND_ECR_REPOSITORY:$IMAGE_TAG
+FRONTEND_IMAGE=$REGISTRY/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG
+EOF"
+
+      - name: Run Docker Compose deployment if AI image is ready
+        run: |
+          ssh -i ~/.ssh/id_rsa "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" \
+            "if [[ -f '${{ secrets.EC2_DEPLOY_ROOT }}/backend/.env.images.ai' ]]; then \
+               chmod +x '${{ secrets.EC2_DEPLOY_ROOT }}/backend/scripts/deploy-stack.sh' && \
+               PASSIT_ROOT='${{ secrets.EC2_DEPLOY_ROOT }}' \
+               ENV_FILE='.env.aws' \
+               '${{ secrets.EC2_DEPLOY_ROOT }}/backend/scripts/deploy-stack.sh'; \
+             else \
+               echo 'AI image manifest not found yet. Backend and frontend image tags were updated, but deployment was skipped until the AI workflow runs once.'; \
+             fi"
