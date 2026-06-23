@@ -112,19 +112,66 @@
         :error-field="errorField"
       />
 
+      <!-- AI 생성 중 애니메이션 -->
+      <div
+        v-if="isLoading && mode === AI"
+        class="mt-5 overflow-hidden rounded-xl border border-blue-200 bg-linear-to-r from-blue-50 via-white to-sky-50"
+      >
+        <div class="flex items-start gap-4 px-4 py-4">
+          <div class="relative mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center">
+            <div class="absolute inset-0 rounded-full border-2 border-blue-200"></div>
+            <div class="absolute inset-0 rounded-full border-2 border-transparent border-t-blue-500 animate-spin"></div>
+            <div class="h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_18px_rgba(59,130,246,0.45)]"></div>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2">
+              <p class="text-sm font-bold text-slate-800">AI가 자격증 문제를 생성하고 있습니다</p>
+              <div class="flex items-center gap-1">
+                <span class="h-1.5 w-1.5 rounded-full bg-blue-400 animate-bounce [animation-delay:-0.3s]"></span>
+                <span class="h-1.5 w-1.5 rounded-full bg-blue-400 animate-bounce [animation-delay:-0.15s]"></span>
+                <span class="h-1.5 w-1.5 rounded-full bg-blue-400 animate-bounce"></span>
+              </div>
+            </div>
+            <p class="mt-1 text-xs font-medium text-blue-700">
+              {{ aiGeneratingMessage }}
+            </p>
+            <div class="mt-3 grid grid-cols-3 gap-2 text-[11px] text-slate-500">
+              <div class="rounded-lg border border-white/80 bg-white/80 px-3 py-2 shadow-sm">
+                <p class="font-semibold text-slate-700">진행 시간</p>
+                <p class="mt-0.5 text-xs font-bold text-blue-600">{{ elapsedLabel }}</p>
+              </div>
+              <div class="rounded-lg border border-white/80 bg-white/80 px-3 py-2 shadow-sm">
+                <p class="font-semibold text-slate-700">작업 단계</p>
+                <p class="mt-0.5 text-xs font-bold text-slate-600">{{ currentPhase }}</p>
+              </div>
+              <div class="rounded-lg border border-white/80 bg-white/80 px-3 py-2 shadow-sm">
+                <p class="font-semibold text-slate-700">안내</p>
+                <p class="mt-0.5 text-xs font-bold text-red-500">잠시만 기다려요</p>
+              </div>
+            </div>
+            <div class="mt-3 h-2 overflow-hidden rounded-full bg-blue-100">
+              <div class="h-full w-1/3 rounded-full bg-linear-to-r from-blue-400 via-sky-400 to-blue-500 animate-pulse"></div>
+            </div>
+            <p class="mt-2 text-[11px] text-slate-500">
+              자료 분석, 문제 구성, 정답 검증까지 순차적으로 진행됩니다. 창을 닫지 말고 잠시만 기다려주세요.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div class="mt-5 flex justify-end border-t border-slate-100 pt-4">
         <button
-          class="h-9 rounded-md bg-blue-600 px-5 text-xs font-semibold text-white transition hover:bg-blue-700 disabled:bg-gray-400"
+          class="h-9 rounded-md bg-blue-600 px-5 text-xs font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
           :disabled="isLoading"
           @click="onSubmit"
         >
           {{
             mode === AI
               ? isLoading
-                ? "진행 중..."
+                ? "AI 생성 중..."
                 : "AI 문제 생성"
               : isLoading
-                ? "진행 중..."
+                ? "등록 중..."
                 : "문제 등록"
           }}
         </button>
@@ -138,7 +185,7 @@ import { authApi } from "@/api/client";
 import CertificationAiForm from "@/components/certification/CertificationAiForm.vue";
 import CertificationManualForm from "@/components/certification/CertificationManualForm.vue";
 import { useCertificationStore } from "@/stores/certification";
-import { computed, ref } from "vue";
+import { computed, onUnmounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { toast } from "vue3-toastify";
 
@@ -153,6 +200,52 @@ const router = useRouter();
 const certificationStore = useCertificationStore();
 
 const isLoading = ref(false);
+const elapsedSeconds = ref(0);
+
+const aiPhaseMessages = [
+  "참고 자료를 분석하는 중",
+  "문제 유형과 난이도를 설정하는 중",
+  "선택지와 정답을 구성하는 중",
+  "문제 품질을 검증하는 중",
+];
+
+let aiTimerId = null;
+
+const currentPhase = computed(() => {
+  const index = Math.floor(elapsedSeconds.value / 6) % aiPhaseMessages.length;
+  return aiPhaseMessages[index];
+});
+
+const elapsedLabel = computed(() => {
+  const minutes = Math.floor(elapsedSeconds.value / 60);
+  const seconds = elapsedSeconds.value % 60;
+  if (minutes === 0) return `${seconds}초`;
+  return `${minutes}분 ${seconds.toString().padStart(2, "0")}초`;
+});
+
+const aiGeneratingMessage = computed(() =>
+  elapsedSeconds.value >= 60
+    ? "예상보다 조금 더 걸리고 있습니다. 검증 단계까지 진행 중일 수 있어요."
+    : "AI 서버가 응답을 준비 중입니다. 잠시만 기다려주세요.",
+);
+
+const startAiTimer = () => {
+  elapsedSeconds.value = 0;
+  aiTimerId = window.setInterval(() => {
+    elapsedSeconds.value += 1;
+  }, 1000);
+};
+
+const stopAiTimer = () => {
+  if (aiTimerId !== null) {
+    window.clearInterval(aiTimerId);
+    aiTimerId = null;
+  }
+};
+
+onUnmounted(() => {
+  stopAiTimer();
+});
 
 const commonForm = ref({
   certId: "",
@@ -287,6 +380,7 @@ const onSubmit = async () => {
     return;
   }
   isLoading.value = true;
+  if (mode.value === AI) startAiTimer();
 
   try {
     let response = null;
@@ -334,6 +428,7 @@ const onSubmit = async () => {
     toast.error("문제 생성에 실패하였습니다.");
   } finally {
     isLoading.value = false;
+    stopAiTimer();
   }
 };
 </script>
