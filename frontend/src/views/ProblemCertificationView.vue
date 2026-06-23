@@ -29,7 +29,10 @@
         loader="spinner"
       />
 
-      <div class="mb-3 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div
+        v-if="problems.length > 0"
+        class="mb-3 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"
+      >
         <div
           v-for="problem in problems"
           :key="problem.problemId"
@@ -96,7 +99,37 @@
         </div>
       </div>
 
-      <div v-if="!isLast" class="mt-5 flex justify-center">
+      <div
+        v-else-if="!isLoading"
+        class="flex flex-col items-center justify-center py-16"
+      >
+        <div
+          class="flex h-14 w-14 items-center justify-center rounded-full bg-blue-50"
+        >
+          <svg
+            class="h-7 w-7 text-blue-300"
+            viewBox="0 0 28 28"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+          >
+            <path
+              d="M8 7h10a2 2 0 0 1 2 2v12H8a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path d="M10 11h6M10 15h8" stroke-linecap="round" />
+          </svg>
+        </div>
+        <p class="mt-3 text-sm font-semibold text-slate-600">
+          등록된 자격증 문제가 없습니다
+        </p>
+        <p class="mt-1 text-xs text-slate-400">
+          만들기에서 자격증 문제를 생성해보세요
+        </p>
+      </div>
+
+      <div v-if="problems.length > 0 && !isLast" class="mt-5 flex justify-center">
         <button
           @click="fetchProblems"
           type="button"

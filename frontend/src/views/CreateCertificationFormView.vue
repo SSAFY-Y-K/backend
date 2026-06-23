@@ -153,8 +153,6 @@ const router = useRouter();
 const certificationStore = useCertificationStore();
 
 const isLoading = ref(false);
-const showSuccessModal = ref(false);
-const showFailureModal = ref(false);
 
 const commonForm = ref({
   certId: "",
@@ -194,6 +192,10 @@ const resetForm = () => {
 };
 
 const setMode = (nextMode) => {
+  if (nextMode !== mode.value) {
+    resetErrorField();
+  }
+
   router.replace({
     name: "create-certification-write",
     query: { ...route.query, mode: nextMode },
@@ -215,10 +217,6 @@ const errorField = ref({
 
 const goModeSelect = () => {
   router.push({ name: "create-certification" });
-};
-
-const closeFailureModal = () => {
-  showFailureModal.value = false;
 };
 
 const isBlank = (value) => typeof value === "string" && value.trim() === "";
@@ -285,6 +283,7 @@ const validateForm = () => {
 const onSubmit = async () => {
   const isValidAll = validateForm();
   if (!isValidAll) {
+    toast.error("모든 필수 입력란을 채워주세요.");
     return;
   }
   isLoading.value = true;

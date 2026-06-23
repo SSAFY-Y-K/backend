@@ -20,31 +20,12 @@
 
 		<div>
 			<label class="mb-1 block text-xs font-medium text-slate-500">문제</label>
-			<div
-				class="flex items-center gap-1 rounded-t-md border border-slate-200 bg-slate-50 px-2 py-1.5"
-			>
-				<button
-					class="rounded px-1.5 py-0.5 text-xs font-bold text-slate-600 hover:bg-slate-200"
-				>
-					B
-				</button>
-				<button
-					class="rounded px-1.5 py-0.5 text-xs italic text-slate-600 hover:bg-slate-200"
-				>
-					I
-				</button>
-				<button
-					class="rounded px-1.5 py-0.5 text-xs font-bold underline text-slate-600 hover:bg-slate-200"
-				>
-					U
-				</button>
-			</div>
 			<!-- 문제 내용 인풋 -->
 			<textarea
 				v-model="question"
 				rows="5"
 				placeholder="문제를 입력하세요"
-				class="w-full resize-none rounded-b-md border border-t-0 bg-white px-3 py-2 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:ring-1 focus:ring-blue-100"
+				class="w-full resize-none rounded-md border bg-white px-3 py-2 text-xs text-slate-700 outline-none transition placeholder:text-slate-300 focus:ring-1 focus:ring-blue-100"
 				:class="
 					errorField.question
 						? 'border-red-500'
