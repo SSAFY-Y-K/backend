@@ -177,7 +177,8 @@ Backend deploy workflow:
 - uploads only deployment assets to EC2
 - writes `.env.images.backend`
 - runs the deploy script only if `.env.images.ai` already exists
-- redeploys only `frontend` and `backend` services so unchanged AI images are not pulled again on every UI or API deploy
+- redeploys only `frontend` and `backend` services
+- uses `--no-deps` during that partial deploy so `backend` does not trigger an `ai-server` repull through Compose dependency startup
 
 AI server deploy workflow:
 

@@ -7,6 +7,7 @@ ENV_FILE="${ENV_FILE:-.env.aws}"
 BACKEND_IMAGE_ENV_FILE="${BACKEND_IMAGE_ENV_FILE:-.env.images.backend}"
 AI_IMAGE_ENV_FILE="${AI_IMAGE_ENV_FILE:-.env.images.ai}"
 SERVICES="${SERVICES:-}"
+NO_DEPS="${NO_DEPS:-false}"
 
 if [[ ! -d "$BACKEND_DIR" ]]; then
   echo "backend directory not found: $BACKEND_DIR" >&2
@@ -48,7 +49,11 @@ compose_args=(-f docker-compose.aws.yml)
 if [[ -n "$SERVICES" ]]; then
   read -r -a service_args <<< "$SERVICES"
   docker compose "${compose_args[@]}" pull "${service_args[@]}"
-  docker compose "${compose_args[@]}" up -d --remove-orphans "${service_args[@]}"
+  if [[ "$NO_DEPS" == "true" ]]; then
+    docker compose "${compose_args[@]}" up -d --remove-orphans --no-deps "${service_args[@]}"
+  else
+    docker compose "${compose_args[@]}" up -d --remove-orphans "${service_args[@]}"
+  fi
 else
   docker compose "${compose_args[@]}" pull
   docker compose "${compose_args[@]}" up -d --remove-orphans
