@@ -177,6 +177,7 @@ Backend deploy workflow:
 - uploads only deployment assets to EC2
 - writes `.env.images.backend`
 - runs the deploy script only if `.env.images.ai` already exists
+- redeploys only `frontend` and `backend` services so unchanged AI images are not pulled again on every UI or API deploy
 
 AI server deploy workflow:
 
@@ -184,6 +185,7 @@ AI server deploy workflow:
 - pushes it to ECR
 - writes `.env.images.ai`
 - runs the same deploy script
+- redeploys the full stack with `ai-server backend frontend`
 
 Required GitHub repository secrets:
 

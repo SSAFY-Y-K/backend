@@ -6,6 +6,7 @@ BACKEND_DIR="$PASSIT_ROOT/backend"
 ENV_FILE="${ENV_FILE:-.env.aws}"
 BACKEND_IMAGE_ENV_FILE="${BACKEND_IMAGE_ENV_FILE:-.env.images.backend}"
 AI_IMAGE_ENV_FILE="${AI_IMAGE_ENV_FILE:-.env.images.ai}"
+SERVICES="${SERVICES:-}"
 
 if [[ ! -d "$BACKEND_DIR" ]]; then
   echo "backend directory not found: $BACKEND_DIR" >&2
@@ -42,5 +43,13 @@ fi
 REGISTRY="${BACKEND_IMAGE%%/*}"
 aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$REGISTRY"
 
-docker compose -f docker-compose.aws.yml pull
-docker compose -f docker-compose.aws.yml up -d --remove-orphans
+compose_args=(-f docker-compose.aws.yml)
+
+if [[ -n "$SERVICES" ]]; then
+  read -r -a service_args <<< "$SERVICES"
+  docker compose "${compose_args[@]}" pull "${service_args[@]}"
+  docker compose "${compose_args[@]}" up -d --remove-orphans "${service_args[@]}"
+else
+  docker compose "${compose_args[@]}" pull
+  docker compose "${compose_args[@]}" up -d --remove-orphans
+fi

@@ -107,6 +107,7 @@ jobs:
                sed -i 's/\r$//' '${{ secrets.EC2_DEPLOY_ROOT }}/backend/.env.aws' '${{ secrets.EC2_DEPLOY_ROOT }}/backend/scripts/deploy-stack.sh' && \
                PASSIT_ROOT='${{ secrets.EC2_DEPLOY_ROOT }}' \
                ENV_FILE='.env.aws' \
+               SERVICES='frontend backend' \
                '${{ secrets.EC2_DEPLOY_ROOT }}/backend/scripts/deploy-stack.sh'; \
              else \
                echo 'AI image manifest not found yet. Backend and frontend image tags were updated, but deployment was skipped until the AI workflow runs once.'; \
