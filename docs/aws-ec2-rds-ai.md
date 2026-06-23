@@ -192,6 +192,11 @@ Required GitHub repository secrets:
 - `EC2_USER`
 - `EC2_SSH_PRIVATE_KEY`
 - `EC2_DEPLOY_ROOT`
+- `PASSIT_ENV_AWS`
+
+`PASSIT_ENV_AWS` should contain the full multi-line contents of the production `.env.aws` file.
+
+This lets GitHub Actions rewrite `/opt/passit/backend/.env.aws` on every deploy so EC2 does not drift away from the repository and secret state.
 
 Recommended GitHub repository variable:
 
