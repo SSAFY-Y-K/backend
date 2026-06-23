@@ -79,10 +79,11 @@ jobs:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          ssh -i ~/.ssh/id_rsa "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" "cat > '${{ secrets.EC2_DEPLOY_ROOT }}/backend/.env.images.backend' <<'EOF'
-BACKEND_IMAGE=$REGISTRY/$BACKEND_ECR_REPOSITORY:$IMAGE_TAG
-FRONTEND_IMAGE=$REGISTRY/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG
-EOF"
+          ssh -i ~/.ssh/id_rsa "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" \
+            "printf '%s\n' \
+             'BACKEND_IMAGE=$REGISTRY/$BACKEND_ECR_REPOSITORY:$IMAGE_TAG' \
+             'FRONTEND_IMAGE=$REGISTRY/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG' \
+             > '${{ secrets.EC2_DEPLOY_ROOT }}/backend/.env.images.backend'"
 
       - name: Run Docker Compose deployment if AI image is ready
         run: |
