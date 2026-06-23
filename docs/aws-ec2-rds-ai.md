@@ -130,6 +130,14 @@ Then fill in:
 - `OPENAI_API_KEY`
 - optional `OPENAI_BASE_URL`, model names, and RAG tuning values
 
+Because `deploy-stack.sh` sources `.env.aws` as a shell file, any value containing spaces must be quoted.
+
+Example:
+
+```env
+JAVA_OPTS="-Xms512m -Xmx1024m"
+```
+
 ## 6. First deployment order
 
 For the first deployment, run the backend workflow once first, then run the AI server workflow once.
