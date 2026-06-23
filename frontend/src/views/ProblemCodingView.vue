@@ -1,9 +1,9 @@
 <template>
 	<div>
-		<div class="mb-3 flex gap-2">
+		<div class="animate-fade-in-up mb-3 flex gap-2">
 			<select
 				v-model="filterDifficulty"
-				class="h-7 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-600 outline-none focus:border-purple-400"
+				class="h-7 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-600 outline-none transition focus:border-purple-400 focus:ring-2 focus:ring-purple-100"
 			>
 				<option value="">전체 난이도</option>
 				<option value="EASY">초급</option>
@@ -12,12 +12,14 @@
 			</select>
 			<select
 				v-model="filterCategory"
-				class="h-7 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-600 outline-none focus:border-purple-400"
+				class="h-7 rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-600 outline-none transition focus:border-purple-400 focus:ring-2 focus:ring-purple-100"
 			>
 				<option value="">전체 유형</option>
 				<option v-for="cat in categoryOptions" :key="cat" :value="cat">{{ cat }}</option>
 			</select>
-			<span class="ml-auto text-[10px] text-slate-400 self-center">{{ filteredCodingProblems.length }}문제</span>
+			<span class="ml-auto self-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
+				{{ filteredCodingProblems.length }}문제
+			</span>
 		</div>
 
 		<div v-if="codingLoading" class="py-10 text-center text-xs text-slate-400">불러오는 중...</div>
@@ -37,12 +39,13 @@
 
 		<div v-else class="space-y-2">
 			<div
-				v-for="problem in filteredCodingProblems"
+				v-for="(problem, i) in filteredCodingProblems"
 				:key="problem.problemId"
-				class="flex cursor-pointer items-center justify-between rounded-lg border border-slate-200 bg-white p-3 shadow-sm transition hover:shadow-md"
+				class="animate-fade-in-up flex cursor-pointer items-center justify-between rounded-lg border border-slate-200 bg-white p-3 shadow-sm transition hover:-translate-y-px hover:shadow-md"
+				:style="{ animationDelay: `${i * 30}ms` }"
 				@click="$router.push({ name: 'coding-problem-detail', params: { id: problem.problemId } })"
 			>
-				<div class="min-w-0">
+				<div class="min-w-0 flex-1">
 					<p class="text-xs font-semibold text-slate-800">{{ problem.title }}</p>
 					<p class="mt-0.5 text-[10px] text-slate-400">{{ problem.category }}</p>
 				</div>
@@ -50,7 +53,7 @@
 					<span v-if="problem.totalSubmissions > 0" class="text-[10px] text-slate-400">
 						정답률 {{ Math.round((problem.acCount / problem.totalSubmissions) * 100) }}%
 					</span>
-					<span :class="['rounded px-1.5 py-0.5 text-[10px] font-bold text-white', difficultyColor[problem.difficulty]]">
+					<span :class="['rounded-md px-2 py-0.5 text-[10px] font-bold text-white shadow-sm transition hover:scale-105', difficultyColor[problem.difficulty]]">
 						{{ difficultyLabel[problem.difficulty] ?? problem.difficulty }}
 					</span>
 				</div>

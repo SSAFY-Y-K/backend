@@ -4,7 +4,11 @@
 		<div class="flex flex-1 overflow-hidden">
 			<SideBar v-if="!route.meta.hideSidebar" />
 			<main class="flex-1 overflow-y-auto bg-gray-50">
-				<RouterView />
+				<RouterView v-slot="{ Component }">
+					<Transition name="page" mode="out-in">
+						<component :is="Component" />
+					</Transition>
+				</RouterView>
 			</main>
 		</div>
 	</div>

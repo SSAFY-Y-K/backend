@@ -1,11 +1,19 @@
 <template>
   <div
-    class="flex min-h-full items-center justify-center bg-slate-100 px-4 py-12"
+    class="flex min-h-full items-center justify-center bg-gradient-to-br from-slate-100 via-slate-100 to-blue-50 px-4 py-12"
   >
-    <div class="w-full max-w-sm">
+    <div class="animate-scale-in w-full max-w-sm">
       <div
-        class="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-xl shadow-slate-200/70 ring-1 ring-slate-900/5"
+        class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-xl shadow-slate-300/40 ring-1 ring-slate-900/5"
       >
+        <!-- 브랜드 헤더 -->
+        <div class="bg-gradient-to-br from-[#1d3461] via-[#1e4090] to-[#2563eb] px-6 py-6 text-center">
+          <div class="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-white/20 text-base font-extrabold text-white ring-1 ring-white/25">
+            P
+          </div>
+          <p class="mt-2 text-sm font-bold tracking-widest text-white">PASSIT</p>
+          <p class="mt-0.5 text-[11px] text-blue-200">자격증 &amp; 코딩 학습 플랫폼</p>
+        </div>
         <div class="p-6">
           <form class="space-y-4" @submit.prevent="onSubmit">
             <div>
@@ -63,7 +71,7 @@
 
             <button
               type="submit"
-              class="vl-parent relative flex h-9 w-full items-center justify-center overflow-hidden rounded-md bg-blue-600 text-xs font-semibold text-white transition hover:bg-blue-700 disabled:bg-gray-400"
+              class="vl-parent relative flex h-9 w-full items-center justify-center overflow-hidden rounded-md bg-gradient-to-r from-blue-600 to-blue-700 text-xs font-semibold text-white shadow-sm shadow-blue-500/25 transition hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-400 disabled:shadow-none"
               :disabled="isLoading"
             >
               <p v-if="!isLoading">로그인</p>

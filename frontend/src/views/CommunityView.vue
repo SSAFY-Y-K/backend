@@ -1,18 +1,17 @@
 <template>
   <section class="min-h-full p-4">
     <!-- Tab filter + 글쓰기 -->
-    <div class="mb-3 flex items-center justify-between">
-      <div
-        class="flex gap-0 overflow-hidden rounded-md border border-slate-200 bg-white"
-      >
+    <div class="animate-fade-in-up mb-3 flex items-center justify-between">
+      <!-- 세그먼트 컨트롤 -->
+      <div class="flex gap-1 rounded-lg bg-slate-100/80 p-1">
         <button
           v-for="tab in tabs"
           :key="tab.id"
           :class="[
-            'px-4 py-1.5 text-sm font-medium transition',
+            'rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200',
             activeTab === tab.id
-              ? 'bg-blue-600 text-white'
-              : 'text-slate-500 hover:bg-slate-50',
+              ? 'bg-white text-slate-800 shadow-sm'
+              : 'text-slate-500 hover:text-slate-700',
           ]"
           @click="activeTab = tab.id"
         >
@@ -21,7 +20,7 @@
       </div>
 
       <button
-        class="h-7 rounded-md bg-blue-600 px-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+        class="animate-pulse-glow h-8 rounded-md bg-gradient-to-r from-blue-600 to-blue-700 px-4 text-sm font-semibold text-white shadow-sm shadow-blue-500/25 transition hover:from-blue-700 hover:to-blue-800"
         @click="handleWriteClick"
       >
         + 글쓰기
@@ -29,16 +28,16 @@
     </div>
 
     <!-- 검색 -->
-    <div class="mb-3 flex gap-2">
+    <div class="animate-fade-in-up mb-3 flex gap-2" style="animation-delay:60ms">
       <input
         v-model="searchInput"
         type="text"
         placeholder="제목 또는 내용 검색"
-        class="h-8 flex-1 rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-blue-400"
+        class="h-8 flex-1 rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
         @keydown.enter="handleSearch"
       />
       <button
-        class="h-8 rounded-md bg-slate-100 px-3 text-sm text-slate-600 hover:bg-slate-200"
+        class="h-8 rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-600 transition hover:border-blue-300 hover:text-blue-600"
         @click="handleSearch"
       >
         검색
@@ -59,23 +58,31 @@
     <div v-else class="space-y-2">
       <div
         v-if="filteredPosts.length === 0"
-        class="py-10 text-center text-sm text-slate-400"
+        class="animate-fade-in py-10 text-center text-sm text-slate-400"
       >
         게시글이 없습니다.
       </div>
       <div
-        v-for="post in filteredPosts"
+        v-for="(post, i) in filteredPosts"
         :key="post.postId"
-        class="flex cursor-pointer gap-3 rounded-lg border border-slate-200 bg-white p-3 shadow-sm transition hover:shadow-md"
-        @click="
-          $router.push({
-            name: 'community-detail',
-            params: { id: post.postId },
-          })
-        "
+        class="animate-fade-in-up flex cursor-pointer gap-3 rounded-lg border border-l-4 border-slate-200 bg-white p-3 shadow-sm transition hover:-translate-y-px hover:shadow-md"
+        :class="{
+          'border-l-emerald-400': post.category === 'REVIEW',
+          'border-l-blue-400':    post.category === 'TIP',
+          'border-l-amber-400':   post.category === 'QNA',
+          'border-l-slate-300':   !post.category,
+        }"
+        :style="{ animationDelay: `${120 + i * 35}ms` }"
+        @click="$router.push({ name: 'community-detail', params: { id: post.postId } })"
       >
         <div
-          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-600"
+          :class="[
+            'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold',
+            post.category === 'REVIEW' ? 'bg-emerald-100 text-emerald-600' :
+            post.category === 'TIP'    ? 'bg-blue-100    text-blue-600'    :
+            post.category === 'QNA'    ? 'bg-amber-100   text-amber-600'   :
+                                         'bg-slate-100   text-slate-500',
+          ]"
         >
           {{ post.title.charAt(0) }}
         </div>
@@ -84,10 +91,15 @@
             {{ post.title }}
           </p>
           <div class="mt-1 flex items-center gap-3 text-xs text-slate-400">
-            <span class="font-medium text-slate-500">{{
-              post.nickname ?? "알 수 없음"
-            }}</span>
-            <span>{{ categoryLabel(post.category) }}</span>
+            <span class="font-medium text-slate-500">{{ post.nickname ?? "알 수 없음" }}</span>
+            <span
+              :class="[
+                'rounded-full px-1.5 py-0.5 text-[10px] font-semibold',
+                post.category === 'REVIEW' ? 'bg-emerald-50 text-emerald-600' :
+                post.category === 'TIP'    ? 'bg-blue-50    text-blue-600'    :
+                post.category === 'QNA'    ? 'bg-amber-50   text-amber-600'   : '',
+              ]"
+            >{{ categoryLabel(post.category) }}</span>
             <span>조회 {{ post.viewCount }}</span>
             <span>{{ formatDate(post.createdAt) }}</span>
           </div>
@@ -98,11 +110,11 @@
     <!-- 페이지네이션 -->
     <div
       v-if="totalCount > pageSize"
-      class="mt-4 flex items-center justify-center gap-1"
+      class="mt-5 flex items-center justify-center gap-1"
     >
       <button
         :disabled="currentPage === 0"
-        class="h-7 rounded px-2 text-sm text-slate-500 hover:bg-slate-100 disabled:opacity-30"
+        class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-sm text-slate-500 transition hover:border-blue-300 hover:text-blue-600 disabled:opacity-30"
         @click="goPage(currentPage - 1)"
       >
         ‹
@@ -111,10 +123,10 @@
         v-for="p in totalPages"
         :key="p"
         :class="[
-          'h-7 w-7 rounded text-sm',
+          'h-8 w-8 rounded-lg text-sm font-medium transition',
           currentPage === p - 1
-            ? 'bg-blue-600 text-white'
-            : 'text-slate-500 hover:bg-slate-100',
+            ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/30'
+            : 'border border-slate-200 text-slate-500 hover:border-blue-300 hover:text-blue-600',
         ]"
         @click="goPage(p - 1)"
       >
@@ -122,7 +134,7 @@
       </button>
       <button
         :disabled="currentPage === totalPages - 1"
-        class="h-7 rounded px-2 text-sm text-slate-500 hover:bg-slate-100 disabled:opacity-30"
+        class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-sm text-slate-500 transition hover:border-blue-300 hover:text-blue-600 disabled:opacity-30"
         @click="goPage(currentPage + 1)"
       >
         ›
@@ -130,12 +142,13 @@
     </div>
 
     <!-- 글쓰기 모달 -->
-    <div
-      v-if="showForm"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-    >
+    <Transition name="overlay">
       <div
-        class="w-full max-w-lg rounded-lg border border-slate-200 bg-white shadow-xl"
+        v-if="showForm"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-[2px]"
+      >
+      <div
+        class="animate-modal-in w-full max-w-lg rounded-xl border border-slate-200 bg-white shadow-2xl"
       >
         <div
           class="flex items-center justify-between border-b border-slate-100 px-5 py-3"
@@ -187,9 +200,17 @@
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </Transition>
   </section>
 </template>
+
+<style scoped>
+.overlay-enter-active { transition: opacity 0.2s ease; }
+.overlay-leave-active { transition: opacity 0.15s ease; }
+.overlay-enter-from,
+.overlay-leave-to     { opacity: 0; }
+</style>
 
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from "vue";

@@ -1,6 +1,6 @@
 <template>
 	<section class="min-h-full p-4">
-		<div class="mb-4 flex items-center gap-2">
+		<div class="animate-fade-in-up mb-4 flex items-center gap-2">
 			<button
 				v-if="isChildRoute"
 				class="text-xs text-slate-400 transition hover:text-slate-600"
@@ -15,10 +15,12 @@
 
 		<div v-else class="grid grid-cols-2 gap-4">
 			<button
-				class="group flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-slate-200 bg-white p-8 shadow-sm transition hover:border-blue-300 hover:shadow-md"
+				class="animate-fade-in-up group relative flex flex-col items-center justify-center gap-4 overflow-hidden rounded-xl border-2 border-slate-200 bg-white p-8 shadow-sm transition hover:border-blue-300 hover:shadow-lg hover:shadow-blue-100/60 hover:-translate-y-0.5"
+				style="animation-delay:80ms"
 				@click="goCertification"
 			>
-				<div class="flex h-20 w-20 items-center justify-center rounded-full border-4 border-blue-100 bg-blue-50 transition group-hover:border-blue-200">
+				<div class="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-blue-400 to-blue-600 opacity-0 transition group-hover:opacity-100"></div>
+				<div class="flex h-20 w-20 items-center justify-center rounded-full border-4 border-blue-100 bg-gradient-to-br from-blue-50 to-blue-100/70 transition group-hover:border-blue-200 group-hover:from-blue-100 group-hover:to-blue-200/70 shadow-sm">
 					<svg class="h-10 w-10 text-blue-500" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.8">
 						<rect x="6" y="4" width="28" height="32" rx="3" />
 						<path d="M12 14h16M12 20h16M12 26h10" stroke-linecap="round" />
@@ -27,23 +29,25 @@
 					</svg>
 				</div>
 				<div class="text-center">
-					<h3 class="text-base font-bold text-slate-800">자격증 문제</h3>
+					<h3 class="text-base font-bold text-slate-800 transition group-hover:text-blue-700">자격증 문제</h3>
 					<p class="mt-1 text-xs text-slate-400">객관식 · 주관식 문제를 풀어요</p>
 				</div>
 			</button>
 
 			<button
-				class="group flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-slate-200 bg-white p-8 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+				class="animate-fade-in-up group relative flex flex-col items-center justify-center gap-4 overflow-hidden rounded-xl border-2 border-slate-200 bg-white p-8 shadow-sm transition hover:border-purple-300 hover:shadow-lg hover:shadow-purple-100/60 hover:-translate-y-0.5"
+				style="animation-delay:160ms"
 				@click="goCoding"
 			>
-				<div class="flex h-20 w-20 items-center justify-center rounded-full border-4 border-purple-100 bg-purple-50 transition group-hover:border-purple-200">
+				<div class="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-purple-400 to-purple-600 opacity-0 transition group-hover:opacity-100"></div>
+				<div class="flex h-20 w-20 items-center justify-center rounded-full border-4 border-purple-100 bg-gradient-to-br from-purple-50 to-purple-100/70 transition group-hover:border-purple-200 group-hover:from-purple-100 group-hover:to-purple-200/70 shadow-sm">
 					<svg class="h-10 w-10 text-purple-500" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.8">
 						<path d="M14 15l-6 5 6 5M26 15l6 5-6 5" stroke-linecap="round" stroke-linejoin="round" />
 						<path d="M22 10l-4 20" stroke-linecap="round" />
 					</svg>
 				</div>
 				<div class="text-center">
-					<h3 class="text-base font-bold text-slate-800">코딩 문제</h3>
+					<h3 class="text-base font-bold text-slate-800 transition group-hover:text-purple-700">코딩 문제</h3>
 					<p class="mt-1 text-xs text-slate-400">알고리즘 코딩 문제를 풀어요</p>
 				</div>
 			</button>
