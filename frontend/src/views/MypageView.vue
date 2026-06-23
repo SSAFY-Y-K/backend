@@ -2,7 +2,7 @@
   <section class="min-h-full p-4">
     <div class="mx-auto max-w-2xl space-y-4">
       <!-- 프로필 카드 -->
-      <div class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="animate-fade-in-up rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
         <div
           v-if="profileLoading"
           class="py-4 text-center text-xs text-slate-400"
@@ -126,7 +126,7 @@
       </div>
 
       <!-- 내 게시글 -->
-      <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+      <div class="animate-fade-in-up rounded-lg border border-slate-200 bg-white shadow-sm" style="animation-delay:120ms">
         <div
           class="flex items-center justify-between border-b border-slate-100 px-4 py-3"
         >
@@ -174,7 +174,7 @@
       </div>
 
       <!-- 내 제출 이력 -->
-      <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+      <div class="animate-fade-in-up rounded-lg border border-slate-200 bg-white shadow-sm" style="animation-delay:220ms">
         <div
           class="flex items-center justify-between border-b border-slate-100 px-4 py-3"
         >

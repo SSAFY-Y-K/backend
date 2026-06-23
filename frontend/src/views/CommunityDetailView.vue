@@ -19,11 +19,17 @@
 
     <!-- 게시글 상세 -->
     <div v-else-if="post" class="max-w-2xl space-y-4">
-      <div class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="animate-fade-in-up rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
         <!-- 카테고리 + 제목 -->
         <div class="mb-3">
           <span
-            class="rounded-full border border-blue-200 px-2 py-0.5 text-xs font-medium text-blue-600"
+            :class="[
+              'rounded-full px-2.5 py-0.5 text-xs font-semibold',
+              post.category === 'REVIEW' ? 'bg-emerald-100 text-emerald-700' :
+              post.category === 'TIP'    ? 'bg-blue-100    text-blue-700'    :
+              post.category === 'QNA'    ? 'bg-amber-100   text-amber-700'   :
+                                           'bg-slate-100   text-slate-600',
+            ]"
           >
             {{ categoryLabel(post.category) }}
           </span>
@@ -69,7 +75,7 @@
       </div>
 
       <!-- 댓글 섹션 -->
-      <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="animate-fade-in-up rounded-lg border border-slate-200 bg-white p-4 shadow-sm" style="animation-delay:150ms">
         <h3 class="mb-3 text-sm font-bold text-slate-700">
           댓글 {{ comments.length }}
         </h3>
@@ -83,12 +89,13 @@
             첫 번째 댓글을 남겨보세요
           </div>
           <div
-            v-for="c in comments"
+            v-for="(c, i) in comments"
             :key="c.commentId"
-            class="flex items-start gap-2"
+            class="animate-fade-in-up flex items-start gap-2"
+            :style="{ animationDelay: `${200 + i * 45}ms` }"
           >
             <div
-              class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-500"
+              class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-50 text-xs font-bold text-blue-500"
             >
               {{ (c.nickname ?? "?").charAt(0) }}
             </div>

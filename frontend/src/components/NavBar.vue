@@ -1,14 +1,14 @@
 <template>
-	<nav class="flex h-14 shrink-0 items-center gap-4 bg-[#1d3461] px-5 text-white">
+	<nav class="flex h-14 shrink-0 items-center gap-4 bg-gradient-to-r from-[#0d1e3a] via-[#1d3461] to-[#1a3a6e] px-5 text-white shadow-lg shadow-slate-900/25">
 		<!-- Logo -->
 		<RouterLink
 			:to="{ name: 'home' }"
 			class="flex shrink-0 items-center gap-2.5 text-white no-underline"
 		>
-			<div class="flex h-8 w-8 items-center justify-center rounded-md bg-white/20 text-xs font-bold">
+			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-400/50 to-blue-600/50 text-sm font-extrabold ring-1 ring-white/25 shadow-inner">
 				P
 			</div>
-			<span class="text-base font-bold tracking-tight">PASSIT</span>
+			<span class="text-base font-bold tracking-widest">PASSIT</span>
 		</RouterLink>
 
 		<div class="h-5 w-px shrink-0 bg-white/20"></div>
@@ -22,8 +22,8 @@
 				v-for="item in navItems"
 				:key="item.name"
 				:to="{ name: item.name }"
-				active-class="text-white"
-				class="text-sm font-medium text-white/70 no-underline transition hover:text-white"
+				active-class="text-white after:scale-x-100"
+				class="relative text-sm font-medium text-white/65 no-underline transition hover:text-white after:absolute after:-bottom-0.5 after:inset-x-0 after:h-px after:origin-left after:scale-x-0 after:bg-white/60 after:transition-transform after:duration-200"
 			>
 				{{ item.label }}
 			</RouterLink>
