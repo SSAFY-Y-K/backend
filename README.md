@@ -104,6 +104,56 @@ frontend
 |-- package.json          # npm 스크립트 및 의존성
 `-- vite.config.js        # Vite 설정, 개발 서버 /api 프록시
 ```
+### 데이터베이스 구조
+![ERD](/images/erd.png)
+
+
+### 도메인별 구조
+
+#### 회원
+
+- `users`
+- 서비스 사용자의 계정 정보를 관리한다.
+- `username`과 `nickname`은 각각 unique 제약조건을 가진다.
+- `role`은 `USER`, `ADMIN`만 허용된다.
+
+#### 자격증
+
+- `certifications`
+- 문제와 게시글이 참조하는 자격증 기준 데이터이다.
+- 자격증 이름은 중복될 수 없다.
+
+#### 자격증 문제
+
+- `problems`
+- `multiple_choice_problems`
+- `short_answer_problems`
+
+`problems`는 문제의 공통 정보를 저장하고, 문제 유형에 따라 객관식 또는 주관식 상세 테이블과 1:1로 연결된다.
+
+#### 코딩 문제 및 채점
+
+- `coding_problems`
+- `test_cases`
+- `submissions`
+
+`coding_problems`는 알고리즘 문제 자체를 저장한다.  
+`test_cases`는 해당 문제의 예제 및 숨은 테스트케이스를 저장한다.  
+`submissions`는 사용자의 코드 제출과 채점 결과를 저장한다.
+
+#### 커뮤니티
+
+- `posts`
+- `comments`
+
+사용자는 자격증과 관련된 게시글을 작성할 수 있고, 게시글에는 댓글을 작성할 수 있다.
+
+#### 문제 신고
+
+- `problem_reports`
+
+사용자가 코딩 문제에 대해 오류를 신고할 수 있다.  
+신고 상태는 `PENDING`, `RESOLVED`로 관리된다.
 
 ## 6. 실행 가이드
 
