@@ -218,9 +218,56 @@
               <span :class="['text-[11px] font-bold', verdictColor[s.verdict]]">
                 {{ verdictLabel[s.verdict] ?? s.verdict }}
               </span>
+              <button
+                class="rounded border border-slate-200 px-2 py-0.5 text-[10px] font-medium text-slate-500 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
+                @click.stop="openSubmissionSource(s)"
+              >
+                코드 보기
+              </button>
               <span class="text-[10px] text-slate-400">{{
                 formatDate(s.submittedAt)
               }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        v-if="showSubmissionSourceModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4"
+        @click.self="closeSubmissionSourceModal"
+      >
+        <div class="flex max-h-[80vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-2xl">
+          <div class="flex items-center justify-between border-b border-slate-100 px-5 py-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-800">내 제출 코드</h3>
+              <p class="mt-0.5 text-[11px] text-slate-400">
+                {{ selectedSubmissionMeta.problemTitle ?? `문제 #${selectedSubmissionMeta.problemId ?? ""}` }}
+              </p>
+            </div>
+            <button
+              class="text-sm text-slate-400 transition hover:text-slate-600"
+              @click="closeSubmissionSourceModal"
+            >
+              닫기
+            </button>
+          </div>
+
+          <div class="flex-1 overflow-y-auto p-5">
+            <div v-if="submissionSourceLoading" class="py-12 text-center text-xs text-slate-400">
+              제출 코드를 불러오는 중입니다.
+            </div>
+            <div v-else-if="submissionSourceError" class="py-12 text-center text-xs text-red-500">
+              {{ submissionSourceError }}
+            </div>
+            <div v-else-if="selectedSubmissionSource" class="space-y-3">
+              <div class="flex items-center gap-2 text-[11px] text-slate-500">
+                <span class="rounded bg-slate-100 px-2 py-1 font-medium text-slate-600">
+                  {{ selectedSubmissionSource.language ?? selectedSubmissionMeta.language ?? "-" }}
+                </span>
+                <span>제출 ID {{ selectedSubmissionSource.submissionId }}</span>
+              </div>
+              <pre class="overflow-x-auto rounded-lg bg-slate-950 p-4 text-xs leading-relaxed text-green-300">{{ selectedSubmissionSource.sourceCode }}</pre>
             </div>
           </div>
         </div>
@@ -237,6 +284,7 @@ import {
   getMyPosts,
   getMySubmissions,
   getMyStats,
+  getSubmissionSource,
   updateProfile,
   logout,
 } from "@/api/index.js";
@@ -255,6 +303,11 @@ const postsLoading = ref(true);
 const submissionsLoading = ref(true);
 const showEditProfile = ref(false);
 const newNickname = ref("");
+const showSubmissionSourceModal = ref(false);
+const submissionSourceLoading = ref(false);
+const submissionSourceError = ref("");
+const selectedSubmissionSource = ref(null);
+const selectedSubmissionMeta = ref({});
 
 const handleUpdateProfile = async () => {
   if (!newNickname.value.trim()) return;
@@ -304,6 +357,31 @@ const handleLogout = async () => {
   } finally {
     authStore.clearAccessToken();
     router.push({ name: "home" });
+  }
+};
+
+const closeSubmissionSourceModal = () => {
+  showSubmissionSourceModal.value = false;
+  submissionSourceLoading.value = false;
+  submissionSourceError.value = "";
+  selectedSubmissionSource.value = null;
+  selectedSubmissionMeta.value = {};
+};
+
+const openSubmissionSource = async (submission) => {
+  showSubmissionSourceModal.value = true;
+  submissionSourceLoading.value = true;
+  submissionSourceError.value = "";
+  selectedSubmissionSource.value = null;
+  selectedSubmissionMeta.value = submission;
+
+  try {
+    const res = await getSubmissionSource(submission.submissionId);
+    selectedSubmissionSource.value = res.data?.data ?? null;
+  } catch {
+    submissionSourceError.value = "제출 코드를 불러오지 못했습니다.";
+  } finally {
+    submissionSourceLoading.value = false;
   }
 };
 
