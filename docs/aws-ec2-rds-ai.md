@@ -101,7 +101,9 @@ The ECR login action’s official example uses `aws-actions/configure-aws-creden
 
 Attach an IAM role to the EC2 instance with ECR pull permission, such as AmazonEC2ContainerRegistryReadOnly.
 
-## 4. AI server data
+## 4. AI server
+
+### 4-1. Chroma data
 
 The AI repository currently has a local `chroma_db/chroma.sqlite3` file that is not tracked in Git.
 
@@ -112,6 +114,45 @@ scp -i <your-key>.pem -r ./chroma_db/* <user>@<ec2-host>:/opt/passit/ai/chroma_d
 ```
 
 The Compose stack mounts `/opt/passit/ai/chroma_db` into the ai-server container.
+
+### 4-2. Algorithm generation API
+
+The AI server exposes `POST /algorithm/generate` which the backend calls to create coding problems.
+
+Request shape:
+
+```json
+{
+  "difficulty": "MEDIUM",
+  "category": "dp",
+  "language": "java"
+}
+```
+
+`language` controls the time-complexity budget used when validating the generated plan:
+
+| language | ops/ms | N2 max_n |
+| --- | --- | --- |
+| `cpp` | 50,000 | 10,000 |
+| `java` (default) | 25,000 | 5,000 |
+| `python` | 10,000 | 2,000 |
+
+Supported categories: `구현`, `dp`, `graph`, `정렬`, `이분탐색`, `greedy`, `bfs`, `string`
+
+The server logs the full generation pipeline under the `passit-ai-server` container. To tail logs on EC2:
+
+```bash
+docker logs -f passit-ai-server
+```
+
+Key log markers:
+
+| marker | meaning |
+| --- | --- |
+| `Algorithm plan attempt` | Plan 생성 시도 (최대 3회) |
+| `validation failed` | Plan 검증 실패 및 재시도 원인 |
+| `reference solution` | 레퍼런스 솔루션 생성 단계 |
+| `succeeded in` | 각 단계 소요 시간(ms) |
 
 ## 5. Environment file
 
