@@ -58,3 +58,5 @@ else
   docker compose "${compose_args[@]}" pull
   docker compose "${compose_args[@]}" up -d --remove-orphans
 fi
+
+docker image prune -f

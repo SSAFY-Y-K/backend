@@ -28,6 +28,7 @@ export const resolveReport = (reportId) => authApi.patch(`/admin/reports/${repor
 export const getAllTestCases = (problemId) => authApi.get(`/admin/problems/${problemId}/test-cases`);
 export const updateTestCase = (testCaseId, body) => authApi.put(`/admin/test-cases/${testCaseId}`, body);
 export const getSubmission = (id) => authApi.get(`/submissions/${id}`);
+export const getSubmissionSource = (id) => authApi.get(`/submissions/${id}/source`);
 
 // My page
 export const getMyProfile = () => authApi.get("/users/me");

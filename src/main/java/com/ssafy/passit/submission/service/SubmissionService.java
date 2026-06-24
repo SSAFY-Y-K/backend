@@ -9,6 +9,7 @@ import com.ssafy.passit.judge.service.JudgeService;
 import com.ssafy.passit.problem.service.ProblemQueryService;
 import com.ssafy.passit.submission.dto.CreateSubmissionRequest;
 import com.ssafy.passit.submission.dto.SubmissionResultResponse;
+import com.ssafy.passit.submission.dto.SubmissionSourceResponse;
 import com.ssafy.passit.submission.mapper.SubmissionMapper;
 import com.ssafy.passit.submission.model.Submission;
 import java.time.LocalDateTime;
@@ -59,6 +60,17 @@ public class SubmissionService {
             "Only the owner or an admin can view this submission."
         );
         return SubmissionResultResponse.from(submission);
+    }
+
+    public SubmissionSourceResponse getSubmissionSource(Long submissionId, Long actorUserId, boolean isAdmin) {
+        Submission submission = findById(submissionId);
+        validateOwnerOrAdmin(
+            submission.getUserId(),
+            actorUserId,
+            isAdmin,
+            "Only the owner or an admin can view this submission source."
+        );
+        return SubmissionSourceResponse.from(submission);
     }
 
     public Submission findById(Long submissionId) {
