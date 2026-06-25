@@ -154,6 +154,29 @@ frontend
 사용자가 코딩 문제에 대해 오류를 신고할 수 있다.  
 신고 상태는 `PENDING`, `RESOLVED`로 관리된다.
 
+## 클래스 다이어그램
+
+### 회원/인증 관련
+![회원/인증](/images/class-diagram/user-auth.png)
+
+### 자격증/자격증 문제 생성 관련
+![자격증/문제](images/class-diagram/cert-problem.png)
+
+### 코딩 문제 생성 관련
+![코딩문제생성](images/class-diagram/coding-problem.png)
+
+### 코드 실행 관련
+![코드실행](images/class-diagram/code-run.png)
+
+### 코드 제출 관련
+![코드제출](images/class-diagram/submission.png)
+
+### 커뮤니티 관련
+![커뮤니티](images/class-diagram/comminity.png)
+
+### 문제 신고 관련
+![문제신고](images/class-diagram/report.png)
+
 ## 6. 실행 가이드
 
 --- 
